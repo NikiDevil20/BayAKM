@@ -3,12 +3,13 @@ import os
 
 class DirPaths:
     def __init__(self):
-        self.base_dir = Path("BayAKM").absolute()
+        self.base_dir = Path(__file__).parent.parent.parent.absolute()
 
-        self.data_dir = os.path.join(self.base_dir, "data")
+
         self.src_dir = os.path.join(self.base_dir, "src")
         self.docs_dir = os.path.join(self.base_dir, "docs")
         self.tests_dir = os.path.join(self.base_dir, "tests")
+        self.data_dir = os.path.join(self.src_dir, "data")
 
         self.main_dir = os.path.join(self.src_dir, "bayakm")
 
