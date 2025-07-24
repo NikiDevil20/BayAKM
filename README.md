@@ -1,2 +1,0 @@
-# BayAKM
-## Unterüberschrift
