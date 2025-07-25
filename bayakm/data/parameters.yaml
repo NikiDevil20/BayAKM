@@ -1,0 +1,15 @@
+Substance Parameters:
+# Example:
+#
+#  Solvents:
+#   Water: "O"
+#   Pentane: "CCCCC"
+
+  Solvents:
+    Water: "O"
+    Hexane: "CCCCCC"
+
+  Ligands:
+    Ethane: "CC"
+    Propane: "CCC"
+
