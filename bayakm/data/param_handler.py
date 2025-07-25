@@ -43,7 +43,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
               "check for spelling errors.")
 
     try:
-        all_numeric_dict: dict[str, tuple[float]] = yaml_dict["Numerical Parameters"]
+        all_numeric_dict: dict[str, tuple[float]] = yaml_dict["Numerical Discrete Parameters"]
         for key in all_numeric_dict.keys():
             parameter_list.append(
                 NumericalDiscreteParameter(
@@ -55,4 +55,5 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
         print("No Numerical Parameters detected. \n"
               "If you wanted to include Numerical Parameters,"
               "check for spelling errors.")
+
     return parameter_list
