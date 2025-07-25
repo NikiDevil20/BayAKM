@@ -7,21 +7,27 @@ from bayakm.src.dir_paths import DirPaths
 
 SMILES = str
 
-def create_dict_from_yaml() -> dict[str, dict[str, dict[str, SMILES] | tuple[float]]]:
-    pt = DirPaths()
-    param_path = os.path.join(pt.data_dir, "parameters.yaml")
-    with open(param_path, "r") as f:
-        yaml_string = f.read()
-    return yaml.safe_load(yaml_string)
 
-
-def build_substance_params() -> list[SubstanceParameter | NumericalDiscreteParameter]:
-
+def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
+    """Builds the parameters list from the parameters.yaml file.
+    :return: A list of parameters.
+    :raise: FileNotFoundError: If parameters.yaml is not found.
+    """
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
-    yaml_string = create_dict_from_yaml()
+    pt = DirPaths()
+    param_path: str = os.path.join(pt.data_dir, "parameters.yaml")
 
     try:
-        all_subst_dict = yaml_string["Substance Parameters"]
+        with open(param_path, "r") as f:
+            yaml_string: str = f.read()
+    except FileNotFoundError:
+        print(f"Could not locate parameters.yaml at {param_path}.")
+
+    yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
+        = yaml.safe_load(yaml_string)
+
+    try:
+        all_subst_dict: dict[str, dict[str, SMILES]] = yaml_dict["Substance Parameters"]
         for key in all_subst_dict.keys():
             parameter_list.append(
                 SubstanceParameter(
@@ -37,7 +43,7 @@ def build_substance_params() -> list[SubstanceParameter | NumericalDiscreteParam
               "check for spelling errors.")
 
     try:
-        all_numeric_dict = yaml_string["Numerical Parameters"]
+        all_numeric_dict: dict[str, tuple[float]] = yaml_dict["Numerical Parameters"]
         for key in all_numeric_dict.keys():
             parameter_list.append(
                 NumericalDiscreteParameter(
@@ -47,20 +53,6 @@ def build_substance_params() -> list[SubstanceParameter | NumericalDiscreteParam
             )
     except:
         print("No Numerical Parameters detected. \n"
-              "If you wanted to include Substance Parameters,"
+              "If you wanted to include Numerical Parameters,"
               "check for spelling errors.")
-    print(parameter_list)
     return parameter_list
-
-
-class ParamHandler:
-    def __init__(self):
-        pt = DirPaths()
-        self.param_input_path = os.path.join(pt.data_dir, "parameters.yaml")
-
-
-def main():
-    build_substance_params()
-
-if __name__ == "__main__":
-    main()
