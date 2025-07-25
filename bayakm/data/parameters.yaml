@@ -13,3 +13,10 @@ Substance Parameters:
     Ethane: "CC"
     Propane: "CCC"
 
+Numerical Parameters:
+
+  Temperature:
+    [75, 80, 85]
+
+  Volume:
+    [5, 10, 15]
