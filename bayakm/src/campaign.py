@@ -10,7 +10,7 @@ from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
-from bayakm.data.param_handler import build_param_list
+from bayakm.src.param_handler import build_param_list
 
 
 def create_campaign() -> Campaign:
