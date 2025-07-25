@@ -14,8 +14,8 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     :raise: FileNotFoundError: If parameters.yaml is not found.
     """
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
-    pt = DirPaths()
-    param_path: str = os.path.join(pt.data_dir, "parameters.yaml")
+    dirs = DirPaths()
+    param_path: str = os.path.join(dirs.data_dir, "parameters.yaml")
 
     try:
         with open(param_path, "r") as f:

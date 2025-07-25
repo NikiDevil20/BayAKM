@@ -13,6 +13,9 @@ class DirPaths:
         self.tests_dir = os.path.join(self.base_dir, "tests")
         self.data_dir = os.path.join(self.bayakm_dir, "data")
 
+        self.config_path = os.path.join(self.data_dir, "config.yaml")
+        self.output_path = os.path.join(self.data_dir, "results.csv")
+
 def main():
     pt = DirPaths()
     print(pt.base_dir, pt.src_dir, pt.docs_dir)
