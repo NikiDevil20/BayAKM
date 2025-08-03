@@ -15,13 +15,13 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     """
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
     dirs = DirPaths()
-    param_path: str = os.path.join(dirs.data_dir, "parameters.yaml")
+
 
     try:
-        with open(param_path, "r") as f:
+        with open(dirs.param_path, "r") as f:
             yaml_string: str = f.read()
     except FileNotFoundError:
-        print(f"Could not locate parameters.yaml at {param_path}.")
+        print(f"Could not locate parameters.yaml at {dirs.param_path}.")
 
     yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
         = yaml.safe_load(yaml_string)
