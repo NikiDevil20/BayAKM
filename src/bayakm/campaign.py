@@ -1,6 +1,7 @@
 from types import MethodType
 from typing import Callable
 
+import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
@@ -10,8 +11,10 @@ from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
+from src.bayakm.dir_paths import DirPaths
 from src.bayakm.param_handler import build_param_list
 
+dirs = DirPaths()
 
 def create_campaign() -> Campaign:
     param_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
@@ -70,10 +73,14 @@ def attach_hook(
     campaign.recommender = recommender
     return campaign
 
-# class CampaignPlus(Campaign):
-#     def __init__(self):
-#         Campaign.__init__(self)
-#
-#         self.pending: pd.DataFrame
-#         self.recommendations: pd.DataFrame
+def load_campaign(file: str = dirs.param_path) -> Campaign:
+    with open(file, "r") as f:
+        yaml_string: str = f.read()
 
+    campaign_dict = yaml.safe_load(yaml_string)
+    return Campaign.from_dict(campaign_dict)
+
+def save_campaign(campaign: Campaign, file: str = dirs.campaign_path) -> None:
+    campaign_dict = campaign.to_dict()
+    with open(file, "w") as f:
+        yaml.dump(campaign_dict, f)

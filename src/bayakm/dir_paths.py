@@ -15,7 +15,8 @@ class DirPaths:
 
         self.config_path = os.path.join(self.data_dir, "config.yaml")
         self.output_path = os.path.join(self.data_dir, "results.csv")
-        self.param_path: str = os.path.join(self.data_dir, "parameters.yaml")
+        self.param_path = os.path.join(self.data_dir, "parameters.yaml")
+        self.campaign_path = os.path.join(self.data_dir, "campaign.yaml")
 
 def main():
     pt = DirPaths()

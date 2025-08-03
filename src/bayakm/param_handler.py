@@ -1,5 +1,3 @@
-import os
-
 import yaml
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
