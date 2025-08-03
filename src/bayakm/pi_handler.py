@@ -4,7 +4,7 @@ from baybe.acquisition.acqfs import ProbabilityOfImprovement
 from baybe.objectives.base import Objective
 from baybe.recommenders import BotorchRecommender
 from baybe.searchspace import SearchSpace
-from bayakm.src.dir_paths import DirPaths
+from src.bayakm.dir_paths import DirPaths
 
 
 def print_pi(
@@ -12,7 +12,7 @@ def print_pi(
         searchspace: SearchSpace,
         objective: Objective | None = None,
         measurements: pd.DataFrame | None = None
-) -> None:
+) -> str:
     """Prints the fraction of candidates with a probability of improvement
     above the threshold defined in the configuration.
     Args:
@@ -35,12 +35,11 @@ def print_pi(
         print(f"config.yaml not found at {dirs.config_path}.")
 
     config_dict = yaml.safe_load(yaml_string)
+
     try:
         pi_threshold = float(config_dict["pi_threshold"])
     except TypeError:
         print(f"Failed to convert entry {config_dict["pi_threshold"]} to float.")
-
-
 
     candidates, _ = searchspace.discrete.get_candidates()
     acqf = ProbabilityOfImprovement()
@@ -55,4 +54,4 @@ def print_pi(
     pi_fraction = n_pis_over / len(pi)
     pi_string: str = (f"{pi_fraction:.0%} of candidates "
                       f"have a PI > {pi_threshold:.0%}.")
-    print(pi_string)
+    return pi_string

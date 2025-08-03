@@ -3,7 +3,7 @@ import os
 import yaml
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
-from bayakm.src.dir_paths import DirPaths
+from src.bayakm.dir_paths import DirPaths
 
 SMILES = str
 
@@ -26,7 +26,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
         = yaml.safe_load(yaml_string)
 
-    try:
+    if "Substance Parameters" in yaml_dict.keys():
         all_subst_dict: dict[str, dict[str, SMILES]] = yaml_dict["Substance Parameters"]
         for key in all_subst_dict.keys():
             parameter_list.append(
@@ -37,12 +37,12 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
                     encoding="MORDRED"  # type: ignore
                 )
             )
-    except:
+    else:
         print("No Substance Parameters detected. \n"
               "If you wanted to include Substance Parameters,"
               "check for spelling errors.")
 
-    try:
+    if "Numerical Discrete Parameters" in yaml_dict.keys():
         all_numeric_dict: dict[str, tuple[float]] = yaml_dict["Numerical Discrete Parameters"]
         for key in all_numeric_dict.keys():
             parameter_list.append(
@@ -51,7 +51,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
                     values=all_numeric_dict[key]
                 )
             )
-    except:
+    else:
         print("No Numerical Parameters detected. \n"
               "If you wanted to include Numerical Parameters,"
               "check for spelling errors.")

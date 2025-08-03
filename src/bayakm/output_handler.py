@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from bayakm.src.dir_paths import DirPaths
+from src.bayakm.dir_paths import DirPaths
 
 
 def check_output() -> bool:
