@@ -14,7 +14,6 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
     dirs = DirPaths()
 
-
     try:
         with open(dirs.param_path, "r") as f:
             yaml_string: str = f.read()

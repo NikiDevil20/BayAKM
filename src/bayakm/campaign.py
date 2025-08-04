@@ -13,10 +13,13 @@ from baybe.utils.basic import register_hooks
 
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.param_handler import build_param_list
+from src.bayakm.config_handler import Config
+from src.bayakm.pi_handler import print_pi
 
 dirs = DirPaths()
 
-def create_campaign() -> Campaign:
+
+def create_campaign() -> None:
     param_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
     searchspace = SearchSpace.from_product(
         parameters=param_list,
@@ -32,7 +35,7 @@ def create_campaign() -> Campaign:
     recommender = TwoPhaseMetaRecommender(
         initial_recommender=FPSRecommender(),
         recommender=BotorchRecommender(
-            acquisition_function="qLogEi"  # type: ignore
+            acquisition_function="qLogEI"  # type: ignore
         ),
         switch_after=1,
         remain_switched=True
@@ -42,7 +45,7 @@ def create_campaign() -> Campaign:
         objective=objective,
         recommender=recommender
     )
-    return campaign
+    save_campaign(campaign, dirs.campaign_path)
 
 def attach_hook(
         campaign: Campaign,

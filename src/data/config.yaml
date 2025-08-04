@@ -1,5 +1,5 @@
 config:
-  print_pi: True
+  print_pi: False
   pi_threshold: 0.01
   journal_prefix: NA
   

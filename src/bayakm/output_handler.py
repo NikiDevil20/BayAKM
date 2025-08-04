@@ -4,13 +4,12 @@ import pandas as pd
 
 from src.bayakm.dir_paths import DirPaths
 
+dirs = DirPaths()
 
-def check_output() -> bool:
-    dirs = DirPaths()
-    return os.path.exists(dirs.output_path)
+def check_output(path: str = dirs.output_path) -> bool:
+    return os.path.exists(path)
 
 def create_output(df: pd.DataFrame) -> None:
-    dirs = DirPaths()
     df.to_csv(
         dirs.output_path,
         sep=";",
@@ -20,16 +19,7 @@ def create_output(df: pd.DataFrame) -> None:
         index=False
     )
 
-def read_from_output() -> pd.DataFrame:
-    dirs = DirPaths()
-    return pd.read_csv(
-        dirs.output_path,
-        sep=";",
-        decimal=","
-    )
-
 def append_to_output(df: pd.DataFrame) -> None:
-    dirs = DirPaths()
     df.to_csv(
         dirs.output_path,
         sep=";",
@@ -38,3 +28,12 @@ def append_to_output(df: pd.DataFrame) -> None:
         mode="a",
         index=False
     )
+
+def import_output_to_df(path: str = dirs.output_path) -> pd.DataFrame:
+    df = pd.read_csv(filepath_or_buffer=path, sep=";", decimal=",")
+    return df.drop("Journal number", axis=1)
+
+def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    measurements = df[df["Yield"].notna()]
+    pending = df[df["Yield"].isna()]
+    return measurements, pending
