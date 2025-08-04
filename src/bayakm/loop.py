@@ -45,4 +45,3 @@ def optimization_loop() -> None:
     else:
         create_output(recommendation)
     save_campaign(campaign, dirs.campaign_path)
-    print(campaign)
