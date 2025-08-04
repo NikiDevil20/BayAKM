@@ -16,7 +16,7 @@ dirs = DirPaths()
 cfg = Config()
 
 def optimization_loop() -> None:
-    if not check_output(dirs.output_path):
+    if not check_output(dirs.campaign_path):
         create_campaign()
 
     campaign: Campaign = load_campaign(dirs.campaign_path)
