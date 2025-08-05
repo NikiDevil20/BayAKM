@@ -10,7 +10,7 @@ from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import (
     check_path, create_output, append_to_output,
     import_output_to_df, split_import_df, welcome_string,
-    finished_string)
+    finished_string, info_string)
 from src.bayakm.probability_of_improvement import print_pi
 
 dirs = DirPaths()
@@ -23,29 +23,30 @@ def optimization_loop() -> None:
     """
     welcome_string()
     time_list.append(time())
-    print(" Initializing campaign...")
+    # print("[Campaign] Initializing campaign...")
+    print(info_string("Campaign") + "Initializing campaign...")
     bayakm = BayAKMCampaign()
 
     if cfg.pi:
-        print(" Attaching 'print_pi'-hook...")
+        print(info_string("Campaign") + "Attaching 'print_pi'-hook...")
         bayakm.attach_hook([print_pi])
 
-    print(" Looking for results.csv...")
+    print(info_string("Measurements") + "Looking for results.csv...")
     if check_path(dirs.output_path):
-        print(" Reading results.csv...")
+        print(info_string("Measurements") + "Reading results.csv...")
         full_input: pd.DataFrame = import_output_to_df()
         measurements, pending = split_import_df(full_input)
         if not measurements.empty:
-            print(" Adding measurements to campaign...")
+            print(info_string("Measurements") + "Adding measurements to campaign...")
             bayakm.campaign.add_measurements(measurements)
-            print(" Measurements added to campaign.")
+            print(info_string("Measurements") + "Measurements added to campaign.")
         if pending.empty:
             pending = None
     else:
-        print(" Results.csv not found.")
+        print(info_string("Measurements") + "Results.csv not found.")
         pending = None
 
-    print(" Getting recommendation...")
+    print(info_string("Recommendation") + "Getting recommendation...")
 
     time_list.append(time())
 
@@ -59,14 +60,14 @@ def optimization_loop() -> None:
     recommendation["Journal number"] = cfg.prefix
     recommendation["Yield"] = np.nan
 
-    print(f" Recommendation obtained in {time_list[2]-time_list[1]:.2f} s.")
+    print(info_string("Recommendation") + f"Recommendation obtained in {time_list[2]-time_list[1]:.2f} s.")
 
     if check_path(dirs.output_path):
         append_to_output(recommendation)
     else:
         create_output(recommendation)
 
-    print(" Overwriting campaign savefile...")
+    print(info_string("Campaign") + "Overwriting campaign savefile...")
     bayakm.save_campaign()
 
     time_list.append(time())

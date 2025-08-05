@@ -83,18 +83,18 @@ def welcome_string() -> None:
     print(line)
     print(welcome_msg)
     print(line)
-    print(" Settings:")
-    print(f"\t PI: {cfg.pi}")
-    print(f"\t PI threshold: {cfg.pi_threshold}")
-    print(f"\t Journal Prefix: {cfg.prefix}")
+
+    print(info_string("Settings") + f"PI: {cfg.pi}")
+    print(info_string("Settings") + f"PI threshold: {cfg.pi_threshold}")
+    print(info_string("Settings") + f"Journal Prefix: {cfg.prefix}")
     print(line)
 
 def finished_string(time_list) -> None:
     line = 80 * "="
     total_time = time_list[-1] - time_list[0]
-    success_string = f" New recommendation successfully appended to results!"
-    timer = f" Total time: {total_time:.2f} s."
-    final_string = f" Time to run some experiments :)"
+    success_string = f"New recommendation successfully appended to results!"
+    timer = f"Total time: {total_time:.2f} s."
+    final_string = f"Time to run some experiments :)"
 
     print(line)
     print(success_string)
@@ -102,4 +102,12 @@ def finished_string(time_list) -> None:
     print(line)
     print(final_string)
     print(line)
+
+def info_string(chapter: str) -> str:
+    text: str = "[" + chapter + "]"
+
+    while len(text) <= len("[Recommendation]"):  # type: ignore
+        text += " "
+
+    return text
 
