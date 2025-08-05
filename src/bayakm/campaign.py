@@ -12,10 +12,10 @@ from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
 from src.bayakm.dir_paths import DirPaths
-from src.bayakm.param_handler import build_param_list
-from src.bayakm.config_handler import Config
-from src.bayakm.pi_handler import print_pi
-from src.bayakm.output_handler import check_path
+from src.bayakm.parameters import build_param_list
+from src.bayakm.config_loader import Config
+from src.bayakm.probability_of_improvement import print_pi
+from src.bayakm.output import check_path
 
 dirs = DirPaths()
 

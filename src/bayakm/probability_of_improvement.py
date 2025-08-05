@@ -5,7 +5,7 @@ from baybe.objectives.base import Objective
 from baybe.recommenders import BotorchRecommender
 from baybe.searchspace import SearchSpace
 from src.bayakm.dir_paths import DirPaths
-from src.bayakm.config_handler import Config
+from src.bayakm.config_loader import Config
 
 dirs = DirPaths()
 cfg = Config()

@@ -6,9 +6,9 @@ from baybe.campaign import Campaign
 
 from src.bayakm.campaign import FullCampaign, load_campaign, create_campaign
 from src.bayakm.dir_paths import DirPaths
-from src.bayakm.config_handler import Config
-from src.bayakm.pi_handler import print_pi
-from src.bayakm.output_handler import (
+from src.bayakm.config_loader import Config
+from src.bayakm.probability_of_improvement import print_pi
+from src.bayakm.output import (
     check_path, create_output, append_to_output,
     import_output_to_df, split_import_df)
 
