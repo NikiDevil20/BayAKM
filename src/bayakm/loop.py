@@ -1,16 +1,13 @@
-import os
-
 import numpy as np
 import pandas as pd
-from baybe.campaign import Campaign
 
-from src.bayakm.full_campaign import FullCampaign, load_campaign, create_campaign
-from src.bayakm.dir_paths import DirPaths
 from src.bayakm.config_loader import Config
-from src.bayakm.probability_of_improvement import print_pi
+from src.bayakm.dir_paths import DirPaths
+from src.bayakm.full_campaign import FullCampaign, create_campaign
 from src.bayakm.output import (
     check_path, create_output, append_to_output,
     import_output_to_df, split_import_df)
+from src.bayakm.probability_of_improvement import print_pi
 
 dirs = DirPaths()
 cfg = Config()

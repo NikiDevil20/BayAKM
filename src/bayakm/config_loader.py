@@ -1,4 +1,5 @@
 import yaml
+
 from src.bayakm.dir_paths import DirPaths
 
 dirs = DirPaths()
