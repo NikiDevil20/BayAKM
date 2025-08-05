@@ -6,7 +6,7 @@ from src.bayakm.dir_paths import DirPaths
 
 dirs = DirPaths()
 
-def check_output(path: str = dirs.output_path) -> bool:
+def check_path(path: str = dirs.output_path) -> bool:
     return os.path.exists(path)
 
 def create_output(df: pd.DataFrame) -> None:

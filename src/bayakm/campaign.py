@@ -15,11 +15,52 @@ from src.bayakm.dir_paths import DirPaths
 from src.bayakm.param_handler import build_param_list
 from src.bayakm.config_handler import Config
 from src.bayakm.pi_handler import print_pi
+from src.bayakm.output_handler import check_path
 
 dirs = DirPaths()
 
+class FullCampaign(Campaign):
+    def __init__(self):
 
-def create_campaign() -> None:
+        if not check_path(dirs.campaign_path):
+            self.campaign = create_campaign()
+            self.save_campaign(dirs.campaign_path)
+        else:
+            self.campaign = load_campaign(dirs.campaign_path)
+
+    def attach_hook(
+            self,
+            hook_list: list[Callable]
+    ) -> None:
+        """Attaches hooks to the BotorchRecommender's recommend method.
+        Args:
+            hook_list (list[Callable]): A list of hooks to be attached to the
+                BotorchRecommender's recommend method.
+        Returns:
+            campaign (Campaign): The Campaign class object with the attached hooks.
+        """
+        bayesian_recommender = BotorchRecommender(
+            surrogate_model=GaussianProcessSurrogate(),
+        )
+        bayesian_recommender.recommend = MethodType(
+            register_hooks(
+                BotorchRecommender.recommend,
+                post_hooks=hook_list,
+            ),
+            bayesian_recommender,
+        )
+        recommender = TwoPhaseMetaRecommender(
+            initial_recommender=FPSRecommender(),
+            recommender=bayesian_recommender,
+        )
+        self.campaign.recommender = recommender
+
+    def save_campaign(self, file: str = dirs.campaign_path) -> None:
+        campaign_dict = self.campaign.to_dict()
+        with open(file, "w") as f:
+            yaml.dump(campaign_dict, f)
+
+def create_campaign() -> Campaign:
     param_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
     searchspace = SearchSpace.from_product(
         parameters=param_list,
@@ -45,45 +86,11 @@ def create_campaign() -> None:
         objective=objective,
         recommender=recommender
     )
-    save_campaign(campaign, dirs.campaign_path)
-
-def attach_hook(
-        campaign: Campaign,
-        hook_list: list[Callable]
-) -> Campaign:
-    """Attaches hooks to the BotorchRecommender's recommend method.
-    Args:
-        campaign (Campaign): The Campaign class object.
-        hook_list (list[Callable]): A list of hooks to be attached to the
-            BotorchRecommender's recommend method.
-    Returns:
-        campaign (Campaign): The Campaign class object with the attached hooks.
-    """
-    bayesian_recommender = BotorchRecommender(
-        surrogate_model=GaussianProcessSurrogate(),
-    )
-    bayesian_recommender.recommend = MethodType(
-        register_hooks(
-            BotorchRecommender.recommend,
-            post_hooks=hook_list,
-        ),
-        bayesian_recommender,
-    )
-    recommender = TwoPhaseMetaRecommender(
-        initial_recommender=FPSRecommender(),
-        recommender=bayesian_recommender,
-    )
-    campaign.recommender = recommender
     return campaign
 
-def load_campaign(file: str = dirs.param_path) -> Campaign:
+def load_campaign(file: str = dirs.param_path):
     with open(file, "r") as f:
         yaml_string: str = f.read()
 
     campaign_dict = yaml.safe_load(yaml_string)
     return Campaign.from_dict(campaign_dict)
-
-def save_campaign(campaign: Campaign, file: str = dirs.campaign_path) -> None:
-    campaign_dict = campaign.to_dict()
-    with open(file, "w") as f:
-        yaml.dump(campaign_dict, f)
