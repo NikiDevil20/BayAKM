@@ -1,5 +1,6 @@
-import pandas as pd
 import sys
+
+import pandas as pd
 from baybe.acquisition.acqfs import ProbabilityOfImprovement
 from baybe.objectives.base import Objective
 from baybe.recommenders import BotorchRecommender
@@ -11,6 +12,7 @@ from src.bayakm.output import info_string
 
 dirs = DirPaths()
 cfg = Config()
+
 
 def print_pi(
         self: BotorchRecommender,
@@ -35,6 +37,7 @@ def print_pi(
         pi_threshold = float(cfg.pi_threshold)
     except TypeError:
         print(f"Failed to convert entry {cfg.pi_threshold} to float.")
+        sys.exit(1)
 
     candidates, _ = searchspace.discrete.get_candidates()
     acqf = ProbabilityOfImprovement()

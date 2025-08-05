@@ -34,7 +34,7 @@ The script then recommends parameters for the next reactions in the results file
 3. Execute the `main.py` file.
 4. See your initial set of recommendations in the `results.csv` file.
 5. Run the experiments, or choose other conditions. It's just a recommendation after all :upside_down_face:
-6. Enter your measured results (and your reaction conditions, if you didnt choose the recommended) in the `results.csv` file.
+6. Enter your measured results (and your reaction conditions, if you didn't choose the recommended) in the `results.csv` file.
 
     > :rotating_light: If you chose your own conditions make sure that all parameters are included in the parameters used to build the campaign. Otherwise an error will be raised. :rotating_light:
 

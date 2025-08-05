@@ -17,28 +17,36 @@ dirs = DirPaths()
 cfg = Config()
 time_list = []
 
+
 def optimization_loop() -> None:
     """Main function of the module. Performs the
     optimization loop.
     """
+
     welcome_string()
     time_list.append(time())
-    # print("[Campaign] Initializing campaign...")
     print(info_string("Campaign") + "Initializing campaign...")
+
     bayakm = BayAKMCampaign()
 
     if cfg.pi:
         print(info_string("Campaign") + "Attaching 'print_pi'-hook...")
+
         bayakm.attach_hook([print_pi])
 
     print(info_string("Measurements") + "Looking for results.csv...")
+
     if check_path(dirs.output_path):
         print(info_string("Measurements") + "Reading results.csv...")
+
         full_input: pd.DataFrame = import_output_to_df()
         measurements, pending = split_import_df(full_input)
+
         if not measurements.empty:
             print(info_string("Measurements") + "Adding measurements to campaign...")
+
             bayakm.campaign.add_measurements(measurements)
+
             print(info_string("Measurements") + "Measurements added to campaign.")
         if pending.empty:
             pending = None
@@ -68,6 +76,7 @@ def optimization_loop() -> None:
         create_output(recommendation)
 
     print(info_string("Campaign") + "Overwriting campaign savefile...")
+
     bayakm.save_campaign()
 
     time_list.append(time())

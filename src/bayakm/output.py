@@ -11,6 +11,7 @@ from src.bayakm.config_loader import Config
 dirs = DirPaths()
 cfg = Config()
 
+
 def check_path(path: str) -> bool:
     """Checks, if a path exists.
     Args:
@@ -19,6 +20,7 @@ def check_path(path: str) -> bool:
         bool: bool, if the path exists.
     """
     return os.path.exists(path)
+
 
 def create_output(df: pd.DataFrame) -> None:
     """Takes a pd.DataFrame and writes it to the dirs.output_path.
@@ -36,6 +38,7 @@ def create_output(df: pd.DataFrame) -> None:
         index=False
     )
 
+
 def append_to_output(df: pd.DataFrame) -> None:
     """Takes a pd.DataFrame and appends it to the dirs.output_path.
         Args:
@@ -52,6 +55,7 @@ def append_to_output(df: pd.DataFrame) -> None:
         index=False
     )
 
+
 def import_output_to_df() -> pd.DataFrame:
     """Reads the results.csv file, saves it in a pd.DataFrame and
     drops the "Journal number" column.
@@ -61,6 +65,7 @@ def import_output_to_df() -> pd.DataFrame:
     """
     df = pd.read_csv(filepath_or_buffer=dirs.output_path, sep=";", decimal=",")
     return df.drop("Journal number", axis=1)
+
 
 def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Takes a pd.DataFrame which was read from the results file and splits it up
@@ -77,8 +82,9 @@ def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     pending = df[df["Yield"].isna()]
     return measurements, pending
 
+
 def welcome_string() -> None:
-    line = 80*"="
+    line = 80 * "="
     welcome_msg = "BayAKM - script for chemical reaction optimization".center(80)
     print(line)
     print(welcome_msg)
@@ -88,6 +94,7 @@ def welcome_string() -> None:
     print(info_string("Settings") + f"PI threshold: {cfg.pi_threshold}")
     print(info_string("Settings") + f"Journal Prefix: {cfg.prefix}")
     print(line)
+
 
 def finished_string(time_list) -> None:
     line = 80 * "="
@@ -103,6 +110,7 @@ def finished_string(time_list) -> None:
     print(final_string)
     print(line)
 
+
 def info_string(chapter: str) -> str:
     text: str = "[" + chapter + "]"
 
@@ -110,4 +118,3 @@ def info_string(chapter: str) -> str:
         text += " "
 
     return text
-

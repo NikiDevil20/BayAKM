@@ -17,6 +17,7 @@ from src.bayakm.parameters import build_param_list
 
 dirs = DirPaths()
 
+
 class BayAKMCampaign(Campaign):
     """An expansion of the baybe Class Campaign,
     that automatically handles creation of the
@@ -24,6 +25,7 @@ class BayAKMCampaign(Campaign):
     To change the campaign.yaml file location,
     change it insided the DirPaths Class.
     """
+
     def __init__(self):
 
         if not check_path(dirs.campaign_path):
@@ -104,6 +106,7 @@ def create_campaign() -> Campaign:
         recommender=recommender
     )
     return campaign
+
 
 def load_campaign() -> Campaign:
     """Loads the campaign from its path defined

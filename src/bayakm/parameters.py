@@ -1,4 +1,6 @@
 import yaml
+import sys
+
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
 from src.bayakm.dir_paths import DirPaths
@@ -19,8 +21,9 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     try:
         with open(dirs.param_path, "r") as f:
             yaml_string: str = f.read()
-    except:
-        raise FileNotFoundError(f"Could not locate parameters.yaml at {dirs.param_path}.")
+    except FileNotFoundError:
+        print(f"Could not locate parameters.yaml at {dirs.param_path}.")
+        sys.exit(1)
 
     yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
         = yaml.safe_load(yaml_string)
