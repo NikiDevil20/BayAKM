@@ -6,7 +6,7 @@ from pathlib import Path
 class DirPaths:
     """Class for handling the paths inside the module."""
     def __init__(self):
-        self.base_dir = Path(__file__).parent.parent.parent.absolute()
+        self.base_dir = Path(__file__).resolve().parents[2]
 
         self.bayakm_dir = os.path.join(self.base_dir, "src")
 

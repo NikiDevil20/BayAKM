@@ -19,8 +19,8 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     try:
         with open(dirs.param_path, "r") as f:
             yaml_string: str = f.read()
-    except FileNotFoundError:
-        print(f"Could not locate parameters.yaml at {dirs.param_path}.")
+    except:
+        raise FileNotFoundError(f"Could not locate parameters.yaml at {dirs.param_path}.")
 
     yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
         = yaml.safe_load(yaml_string)
