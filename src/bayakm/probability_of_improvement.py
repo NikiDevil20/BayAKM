@@ -28,7 +28,6 @@ def print_pi(
         None
     Raises:
         TypeError: If the PI threshold is not a float.
-        ValueError: If the PI threshold is not between 0 and 1.
     """
     try:
         pi_threshold = float(cfg.pi_threshold)
@@ -44,6 +43,7 @@ def print_pi(
         measurements,  # type: ignore
         acquisition_function=acqf
     )
+
     n_pis_over = (pi > pi_threshold).sum()
     pi_fraction = n_pis_over / len(pi)
     pi_string: str = (f"{pi_fraction:.0%} of candidates "

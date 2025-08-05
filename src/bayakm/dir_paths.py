@@ -1,8 +1,10 @@
+"""Contains the DirPaths Class."""
 import os
 from pathlib import Path
 
 
 class DirPaths:
+    """Class for handling the paths inside the module."""
     def __init__(self):
         self.base_dir = Path(__file__).parent.parent.parent.absolute()
 
@@ -17,10 +19,3 @@ class DirPaths:
         self.output_path = os.path.join(self.data_dir, "results.csv")
         self.param_path = os.path.join(self.data_dir, "parameters.yaml")
         self.campaign_path = os.path.join(self.data_dir, "campaign.yaml")
-
-def main():
-    pt = DirPaths()
-    print(pt.base_dir, pt.src_dir, pt.docs_dir)
-
-if __name__ == "__main__":
-    main()

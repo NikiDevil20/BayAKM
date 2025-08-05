@@ -1,3 +1,6 @@
+"""Contains functions for handling the recommendation
+and measurements.
+"""
 import os
 
 import pandas as pd
@@ -6,10 +9,22 @@ from src.bayakm.dir_paths import DirPaths
 
 dirs = DirPaths()
 
-def check_path(path: str = dirs.output_path) -> bool:
+def check_path(path: str) -> bool:
+    """Checks, if a path exists.
+    Args:
+        path: The path to check.
+    Returns:
+        bool: bool, if the path exists.
+    """
     return os.path.exists(path)
 
 def create_output(df: pd.DataFrame) -> None:
+    """Takes a pd.DataFrame and writes it to the dirs.output_path.
+    Args:
+        df: The pd.DataFrame
+    Returns:
+        None
+    """
     df.to_csv(
         dirs.output_path,
         sep=";",
@@ -20,6 +35,12 @@ def create_output(df: pd.DataFrame) -> None:
     )
 
 def append_to_output(df: pd.DataFrame) -> None:
+    """Takes a pd.DataFrame and appends it to the dirs.output_path.
+        Args:
+            df: The pd.DataFrame
+        Returns:
+            None
+        """
     df.to_csv(
         dirs.output_path,
         sep=";",
@@ -29,11 +50,27 @@ def append_to_output(df: pd.DataFrame) -> None:
         index=False
     )
 
-def import_output_to_df(path: str = dirs.output_path) -> pd.DataFrame:
-    df = pd.read_csv(filepath_or_buffer=path, sep=";", decimal=",")
+def import_output_to_df() -> pd.DataFrame:
+    """Reads the results.csv file, saves it in a pd.DataFrame and
+    drops the "Journal number" column.
+    Returns:
+        pd.DataFrame: The pd.DataFrame that was read from the results.csv,
+        without the "Journal number" column.
+    """
+    df = pd.read_csv(filepath_or_buffer=dirs.output_path, sep=";", decimal=",")
     return df.drop("Journal number", axis=1)
 
 def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Takes a pd.DataFrame which was read from the results file and splits it up
+    in measurements (those contain measured yields) and pending experiments without
+    measured yields.
+    The returned pd.DataFrames might be empty.
+    Args:
+        df: The pd.DataFrame.
+    Returns:
+        The two pd.DataFrames containing only rows with
+        measurements and without (pending).
+    """
     measurements = df[df["Yield"].notna()]
     pending = df[df["Yield"].isna()]
     return measurements, pending

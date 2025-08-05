@@ -8,8 +8,10 @@ SMILES = str
 
 def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     """Builds the parameters list from the parameters.yaml file.
-    :return: A list of parameters.
-    :raise: FileNotFoundError: If parameters.yaml is not found.
+    Returns:
+        A list of parameters.
+    Raises:
+        FileNotFoundError: If parameters.yaml is not found.
     """
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
     dirs = DirPaths()

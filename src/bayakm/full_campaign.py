@@ -18,13 +18,19 @@ from src.bayakm.parameters import build_param_list
 dirs = DirPaths()
 
 class FullCampaign(Campaign):
+    """An expansion of the baybe Class Campaign,
+    that automatically handles creation of the
+    campaign and adds further functionality.
+    To change the campaign.yaml file location,
+    change the DirPaths Class.
+    """
     def __init__(self):
 
         if not check_path(dirs.campaign_path):
             self.campaign = create_campaign()
-            self.save_campaign(dirs.campaign_path)
+            self.save_campaign()
         else:
-            self.campaign = load_campaign(dirs.campaign_path)
+            self.campaign = load_campaign()
 
     def attach_hook(
             self,
@@ -32,10 +38,11 @@ class FullCampaign(Campaign):
     ) -> None:
         """Attaches hooks to the BotorchRecommender's recommend method.
         Args:
+            self: The FullCampaign object.
             hook_list (list[Callable]): A list of hooks to be attached to the
                 BotorchRecommender's recommend method.
         Returns:
-            campaign (Campaign): The Campaign class object with the attached hooks.
+            None
         """
         bayesian_recommender = BotorchRecommender(
             surrogate_model=GaussianProcessSurrogate(),
@@ -53,12 +60,24 @@ class FullCampaign(Campaign):
         )
         self.campaign.recommender = recommender
 
-    def save_campaign(self, file: str = dirs.campaign_path) -> None:
+    def save_campaign(self) -> None:
+        """Method for saving the baybe Campaign to the campaign.yaml file.
+        Args:
+            self: The FullCampaign object.
+        Returns:
+            None
+        """
         campaign_dict = self.campaign.to_dict()
-        with open(file, "w") as f:
+        with open(dirs.campaign_path, "w") as f:
             yaml.dump(campaign_dict, f)
 
+
 def create_campaign() -> Campaign:
+    """Create a new campaign based on the parameters from
+    the parameters in the parameters.yaml file.
+    Returns:
+        campaign (Campaign): The campaign object.
+    """
     param_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
     searchspace = SearchSpace.from_product(
         parameters=param_list,
@@ -86,8 +105,16 @@ def create_campaign() -> Campaign:
     )
     return campaign
 
-def load_campaign(file: str = dirs.param_path):
-    with open(file, "r") as f:
+def load_campaign() -> Campaign:
+    """Loads the campaign from its path defined
+    in the DirPaths class and returns it.
+    Returns:
+        campaign (Campaign): The campaign as it was saved in the campaign.yaml file.
+    """
+    if not check_path(dirs.campaign_path):
+        raise FileNotFoundError(f"Campaign save file not found at {dirs.campaign_path}")
+
+    with open(dirs.campaign_path, "r") as f:
         yaml_string: str = f.read()
 
     campaign_dict = yaml.safe_load(yaml_string)
