@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from baybe.campaign import Campaign
 
-from src.bayakm.campaign import FullCampaign, load_campaign, create_campaign
+from src.bayakm.full_campaign import FullCampaign, load_campaign, create_campaign
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.config_loader import Config
 from src.bayakm.probability_of_improvement import print_pi
