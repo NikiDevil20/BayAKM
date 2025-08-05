@@ -17,12 +17,12 @@ from src.bayakm.parameters import build_param_list
 
 dirs = DirPaths()
 
-class FullCampaign(Campaign):
+class BayAKMCampaign(Campaign):
     """An expansion of the baybe Class Campaign,
     that automatically handles creation of the
     campaign and adds further functionality.
     To change the campaign.yaml file location,
-    change the DirPaths Class.
+    change it insided the DirPaths Class.
     """
     def __init__(self):
 
@@ -38,7 +38,7 @@ class FullCampaign(Campaign):
     ) -> None:
         """Attaches hooks to the BotorchRecommender's recommend method.
         Args:
-            self: The FullCampaign object.
+            self: The BayAKMCampaign object.
             hook_list (list[Callable]): A list of hooks to be attached to the
                 BotorchRecommender's recommend method.
         Returns:

@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
-from src.bayakm.full_campaign import FullCampaign
+from src.bayakm.bayakm_campaign import BayAKMCampaign
 from src.bayakm.output import (
     check_path, create_output, append_to_output,
     import_output_to_df, split_import_df)
@@ -18,22 +18,22 @@ def optimization_loop() -> None:
     optimization loop.
     """
 
-    cmp = FullCampaign()
+    bayakm = BayAKMCampaign()
 
     if cfg.pi:
-        cmp.attach_hook([print_pi])
+        bayakm.attach_hook([print_pi])
 
     if check_path(dirs.output_path):
         full_input: pd.DataFrame = import_output_to_df()
         measurements, pending = split_import_df(full_input)
         if not measurements.empty:
-            cmp.campaign.add_measurements(measurements)
+            bayakm.campaign.add_measurements(measurements)
         if pending.empty:
             pending = None
     else:
         pending = None
 
-    recommendation = cmp.campaign.recommend(
+    recommendation = bayakm.campaign.recommend(
         batch_size=1,
         pending_experiments=pending
     )
@@ -46,4 +46,4 @@ def optimization_loop() -> None:
     else:
         create_output(recommendation)
 
-    cmp.save_campaign()
+    bayakm.save_campaign()
