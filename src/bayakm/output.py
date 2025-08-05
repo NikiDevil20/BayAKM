@@ -6,8 +6,10 @@ import os
 import pandas as pd
 
 from src.bayakm.dir_paths import DirPaths
+from src.bayakm.config_loader import Config
 
 dirs = DirPaths()
+cfg = Config()
 
 def check_path(path: str) -> bool:
     """Checks, if a path exists.
@@ -74,3 +76,30 @@ def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     measurements = df[df["Yield"].notna()]
     pending = df[df["Yield"].isna()]
     return measurements, pending
+
+def welcome_string() -> None:
+    line = 80*"="
+    welcome_msg = "BayAKM - script for chemical reaction optimization".center(80)
+    print(line)
+    print(welcome_msg)
+    print(line)
+    print(" Settings:")
+    print(f"\t PI: {cfg.pi}")
+    print(f"\t PI threshold: {cfg.pi_threshold}")
+    print(f"\t Journal Prefix: {cfg.prefix}")
+    print(line)
+
+def finished_string(time_list) -> None:
+    line = 80 * "="
+    total_time = time_list[-1] - time_list[0]
+    success_string = f" New recommendation successfully appended to results!"
+    timer = f" Total time: {total_time:.2f} s."
+    final_string = f" Time to run some experiments :)"
+
+    print(line)
+    print(success_string)
+    print(timer)
+    print(line)
+    print(final_string)
+    print(line)
+

@@ -47,7 +47,7 @@ def print_pi(
 
     n_pis_over = (pi > pi_threshold).sum()
     pi_fraction = n_pis_over / len(pi)
-    pi_string: str = (f"{pi_fraction:.0%} of candidates "
+    pi_string: str = (f" {pi_fraction:.0%} of candidates "
                       f"have a PI > {pi_threshold:.0%}.")
     # sys.stdout.write(pi_string + "\n")
     print(pi_string)
