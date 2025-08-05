@@ -14,7 +14,6 @@ from baybe.utils.basic import register_hooks
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
-from src.bayakm.function_timer import timing
 
 dirs = DirPaths()
 
