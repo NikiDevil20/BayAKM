@@ -23,62 +23,45 @@ def optimization_loop() -> None:
     optimization loop.
     """
 
-    welcome_string()
-    time_list.append(time())
-    print(info_string("Campaign") + "Initializing campaign...")
+    start_time = welcome_string()
 
     bayakm = BayAKMCampaign()
-
     if cfg.pi:
-        print(info_string("Campaign") + "Attaching 'print_pi'-hook...")
-
         bayakm.attach_hook([print_pi])
 
-    print(info_string("Measurements") + "Looking for results.csv...")
-
+    info_string("Measurements", "Checking for results.csv...")
     if check_path(dirs.output_path):
-        print(info_string("Measurements") + "Reading results.csv...")
-
         full_input: pd.DataFrame = import_output_to_df()
         measurements, pending = split_import_df(full_input)
 
         if not measurements.empty:
-            print(info_string("Measurements") + "Adding measurements to campaign...")
-
+            info_string("Measurements", "Adding measurements...")
             bayakm.campaign.add_measurements(measurements)
 
-            print(info_string("Measurements") + "Measurements added to campaign.")
+            info_string("Measurements", "Measurements added to campaign.")
         if pending.empty:
             pending = None
     else:
-        print(info_string("Measurements") + "Results.csv not found.")
         pending = None
 
-    print(info_string("Recommendation") + "Getting recommendation...")
-
+    info_string("Recommendation", "Getting recommendation...")
     time_list.append(time())
-
     recommendation = bayakm.campaign.recommend(
         batch_size=1,
         pending_experiments=pending
     )
-
     time_list.append(time())
 
     recommendation["Journal number"] = cfg.prefix
     recommendation["Yield"] = np.nan
 
-    print(info_string("Recommendation") + f"Recommendation obtained in {time_list[2]-time_list[1]:.2f} s.")
+    info_string("Recommendation", f"Recommendation obtained in {time_list[1]-time_list[0]:.2f} s.")
 
     if check_path(dirs.output_path):
         append_to_output(recommendation)
     else:
         create_output(recommendation)
 
-    print(info_string("Campaign") + "Overwriting campaign savefile...")
-
     bayakm.save_campaign()
 
-    time_list.append(time())
-
-    finished_string(time_list)
+    finished_string(start_time)

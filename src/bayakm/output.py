@@ -2,6 +2,7 @@
 and measurements.
 """
 import os
+from time import time
 
 import pandas as pd
 
@@ -63,6 +64,7 @@ def import_output_to_df() -> pd.DataFrame:
         pd.DataFrame: The pd.DataFrame that was read from the results.csv,
         without the "Journal number" column.
     """
+    info_string("Measurements", "Reading results.csv...")
     df = pd.read_csv(filepath_or_buffer=dirs.output_path, sep=";", decimal=",")
     return df.drop("Journal number", axis=1)
 
@@ -83,22 +85,23 @@ def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return measurements, pending
 
 
-def welcome_string() -> None:
+def welcome_string() -> float:
     line = 80 * "="
     welcome_msg = "BayAKM - script for chemical reaction optimization".center(80)
     print(line)
     print(welcome_msg)
     print(line)
 
-    print(info_string("Settings") + f"PI: {cfg.pi}")
-    print(info_string("Settings") + f"PI threshold: {cfg.pi_threshold}")
-    print(info_string("Settings") + f"Journal Prefix: {cfg.prefix}")
+    info_string("Settings", f"PI: {cfg.pi}")
+    info_string("Settings", f"PI threshold: {cfg.pi_threshold}")
+    info_string("Settings", f"Journal Prefix: {cfg.prefix}")
     print(line)
+    return time()
 
 
-def finished_string(time_list) -> None:
+def finished_string(start_time) -> None:
     line = 80 * "="
-    total_time = time_list[-1] - time_list[0]
+    total_time = time()-start_time
     success_string = f"New recommendation successfully appended to results!"
     timer = f"Total time: {total_time:.2f} s."
     final_string = f"Time to run some experiments :)"
@@ -111,10 +114,10 @@ def finished_string(time_list) -> None:
     print(line)
 
 
-def info_string(chapter: str) -> str:
-    text: str = "[" + chapter + "]"
+def info_string(chapter: str, text: str):
+    chapter_in_brackets: str = "[" + chapter + "]"
 
-    while len(text) <= len("[Recommendation]"):  # type: ignore
-        text += " "
+    while len(chapter_in_brackets) <= len("[Recommendation]"):  # type: ignore
+        chapter_in_brackets += " "
 
-    return text
+    print(chapter_in_brackets + text)

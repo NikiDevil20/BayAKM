@@ -12,7 +12,7 @@ from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
 from src.bayakm.dir_paths import DirPaths
-from src.bayakm.output import check_path
+from src.bayakm.output import check_path, info_string
 from src.bayakm.parameters import build_param_list
 
 dirs = DirPaths()
@@ -27,7 +27,7 @@ class BayAKMCampaign(Campaign):
     """
 
     def __init__(self):
-
+        info_string("Campaign", "Initializing campaign...")
         if not check_path(dirs.campaign_path):
             self.campaign = create_campaign()
             self.save_campaign()
@@ -46,6 +46,7 @@ class BayAKMCampaign(Campaign):
         Returns:
             None
         """
+        info_string("Campaign", "Attaching hook...")
         bayesian_recommender = BotorchRecommender(
             surrogate_model=GaussianProcessSurrogate(),
         )
@@ -69,6 +70,7 @@ class BayAKMCampaign(Campaign):
         Returns:
             None
         """
+        info_string("Campaign", "Overwriting campaign savefile...")
         campaign_dict = self.campaign.to_dict()
         with open(dirs.campaign_path, "w") as f:
             yaml.dump(campaign_dict, f)
@@ -89,7 +91,8 @@ def create_campaign() -> Campaign:
         target=NumericalTarget(
             mode="MAX",  # type: ignore
             name="Yield",
-            transformation=None
+            transformation=None,
+            bounds=[0, 100]
         )
     )
     recommender = TwoPhaseMetaRecommender(
