@@ -20,6 +20,7 @@ class MainFrame(ctk.CTkFrame):
         btn_config = [
             ("New campaign", lambda: test_func()),
             ("New recommendation", lambda: test_func()),
+            ("View Parameters", lambda: test_func()),
             ("Help", lambda: test_func())
         ]
         for i, (text, command) in enumerate(btn_config):
