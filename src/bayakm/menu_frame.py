@@ -1,5 +1,7 @@
 import customtkinter as ctk
-
+from help_frame import HelpFrame
+from new_campaign_frame import NewCampaignFrame
+from param_view_frame import ParamViewFrame
 
 class MainFrame(ctk.CTkFrame):
     def __init__(self, master=None, *args, **kwargs):
@@ -18,10 +20,10 @@ class MainFrame(ctk.CTkFrame):
 
     def _create_subwindows(self):
         btn_config = [
-            ("New campaign", lambda: test_func()),
+            ("New campaign", lambda: self._create_subwindow(name="New campaign")),
             ("New recommendation", lambda: test_func()),
-            ("View Parameters", lambda: test_func()),
-            ("Help", lambda: test_func())
+            ("View Parameters", lambda: self._create_subwindow(name="View parameters")),
+            ("Help", lambda: self._create_subwindow(name="Help"))
         ]
         for i, (text, command) in enumerate(btn_config):
             button = ctk.CTkButton(
@@ -36,6 +38,22 @@ class MainFrame(ctk.CTkFrame):
             )
             button.grid(row=i, column=0, pady=5, padx=10)
 
+    def _create_subwindow(self, name: str):
+        match name:
+            case "Help":
+                frame_class = HelpFrame
+            case "New campaign":
+                frame_class = NewCampaignFrame
+            case "View parameters":
+                frame_class = ParamViewFrame
+            case _:
+                raise ValueError()
+        dialog = ctk.CTkToplevel(self)
+        dialog.title(name)
+        dialog.grab_set()
+        dialog.focus_set()
+        dialog.frame = frame_class(dialog)
+        dialog.frame.pack()
 
 def test_func():
     print("Test.")
