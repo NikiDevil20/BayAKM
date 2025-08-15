@@ -3,6 +3,7 @@ from help_frame import HelpFrame
 from new_campaign_frame import NewCampaignFrame
 from param_view_frame import ParamViewFrame
 
+
 class MainFrame(ctk.CTkFrame):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master)
@@ -47,7 +48,7 @@ class MainFrame(ctk.CTkFrame):
             case "View parameters":
                 frame_class = ParamViewFrame
             case _:
-                raise ValueError()
+                raise ValueError("Tippfehler?")
         subwindow = ctk.CTkToplevel(self)
         subwindow.title(name)
         subwindow.grab_set()

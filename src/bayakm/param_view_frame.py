@@ -2,6 +2,7 @@ import customtkinter as ctk
 from src.bayakm.parameters import build_param_list
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
+
 class ParamViewFrame(ctk.CTkFrame):
     def __init__(self, master=None):
         super().__init__(master)

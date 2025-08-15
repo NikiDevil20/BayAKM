@@ -1,6 +1,8 @@
 import customtkinter as ctk
 import pandas as pd
 
+from src.bayakm.output import import_output_to_df
+
 
 class TableFrame(ctk.CTkFrame):
     def __init__(self, master=None):
@@ -8,8 +10,14 @@ class TableFrame(ctk.CTkFrame):
 
         self.table_state = False
         if not self.table_state:
-            label = ctk.CTkLabel(master=self, text="No table to display.", pady=5, padx=5)
+            label = ctk.CTkLabel(
+                master=self,
+                text="Create a new campaign \n to display table.",
+                pady=5, padx=5, corner_radius=15
+            )
             label.pack()
+        else:
+            self.create_table_from_df()
 
     def _create_header(self, categories: list[str] | pd.Index):
         header_frame = ctk.CTkFrame(
@@ -36,12 +44,14 @@ class TableFrame(ctk.CTkFrame):
             entry.grid(row=0, column=col)
         background_frame.pack()
 
-    def create_table_from_df(self, df: pd.DataFrame):
+    def create_table_from_df(self):
+        df = import_output_to_df()
         self._create_header(df.columns)
         for series in df.itertuples(index=False):
             print(series)
             self._create_row(content=list(series))
         self.table_state = True
+
 
 
 

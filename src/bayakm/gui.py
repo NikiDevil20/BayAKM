@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from src.bayakm.menu_frame import MainFrame
 from src.bayakm.table_frame import TableFrame
-ctk.set_default_color_theme("dark-blue")
+# ctk.set_default_color_theme("dark-blue")
 
 
 class App(ctk.CTk):
@@ -44,7 +44,6 @@ class App(ctk.CTk):
 
     def _display_recommendation(self):
         self.table_frame = TableFrame(master=self)
-        # self.tableframe.create_table_from_df()
         self.table_frame.grid(row=1, column=1, pady=5, padx=10)
 
     def _create_info_frame(self):
