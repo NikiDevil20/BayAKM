@@ -48,12 +48,14 @@ class MainFrame(ctk.CTkFrame):
                 frame_class = ParamViewFrame
             case _:
                 raise ValueError()
-        dialog = ctk.CTkToplevel(self)
-        dialog.title(name)
-        dialog.grab_set()
-        dialog.focus_set()
-        dialog.frame = frame_class(dialog)
-        dialog.frame.pack()
+        subwindow = ctk.CTkToplevel(self)
+        subwindow.title(name)
+        subwindow.grab_set()
+        subwindow.focus_set()
+        subwindow.columnconfigure(0, weight=1)
+        subwindow.rowconfigure(0, weight=1)
+        subwindow.frame = frame_class(subwindow)
+        subwindow.frame.grid(row=0, column=0, sticky="nsew")
 
 def test_func():
     print("Test.")
