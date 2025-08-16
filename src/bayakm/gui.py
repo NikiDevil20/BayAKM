@@ -1,7 +1,9 @@
 import customtkinter as ctk
 from time import time
-from src.bayakm.menu_frame import MainFrame
+from src.bayakm.menu_frame import MenuFrame
 from src.bayakm.table_frame import TableFrame
+from src.bayakm.output import check_path, import_output_to_df
+from src.bayakm.dir_paths import DirPaths
 # ctk.set_default_color_theme("dark-blue")
 
 
@@ -10,6 +12,7 @@ class App(ctk.CTk):
         super().__init__()
         self.table_frame = None
         self.menu_frame = None
+        self.dirs = DirPaths()
 
         for row in range(3):
             self.rowconfigure(row, weight=1)
@@ -39,11 +42,16 @@ class App(ctk.CTk):
         self.header_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10, sticky="ew")
 
     def _create_menu_frame(self):
-        self.menu_frame = MainFrame(master=self)
+        self.menu_frame = MenuFrame(master=self)
         self.menu_frame.grid(row=1, column=0, pady=5, padx=10)
 
     def _display_recommendation(self):
-        self.table_frame = TableFrame(master=self)
+        if check_path(self.dirs.output_path):
+            content = import_output_to_df()
+        else:
+            content = None
+
+        self.table_frame = TableFrame(master=self, content=content)
         self.table_frame.grid(row=1, column=1, pady=5, padx=10)
 
     def _create_info_frame(self):

@@ -5,11 +5,10 @@ from src.bayakm.output import import_output_to_df
 
 
 class TableFrame(ctk.CTkFrame):
-    def __init__(self, master=None):
+    def __init__(self, master=None, content=None):
         super().__init__(master)
 
-        self.table_state = False
-        if not self.table_state:
+        if not content:
             label = ctk.CTkLabel(
                 master=self,
                 text="Create a new campaign \n to display table.",
@@ -17,7 +16,7 @@ class TableFrame(ctk.CTkFrame):
             )
             label.pack()
         else:
-            self.create_table_from_df()
+            self._create_table_from_df(content)
 
     def _create_header(self, categories: list[str] | pd.Index):
         header_frame = ctk.CTkFrame(
@@ -34,7 +33,7 @@ class TableFrame(ctk.CTkFrame):
             headline.grid(row=0, column=col)
         header_frame.pack()
 
-    def _create_row(self, content: list[int | float | str] | pd.Series):
+    def _create_row(self, content: list[int | float | str]):
         background_frame = ctk.CTkFrame(master=self)
         background_frame.rowconfigure(0, weight=1)
         for col in range(len(content)):
@@ -44,13 +43,20 @@ class TableFrame(ctk.CTkFrame):
             entry.grid(row=0, column=col)
         background_frame.pack()
 
-    def create_table_from_df(self):
-        df = import_output_to_df()
+    def _create_table_from_df(self, df):
         self._create_header(df.columns)
         for series in df.itertuples(index=False):
-            print(series)
             self._create_row(content=list(series))
         self.table_state = True
+
+    def _read_row(self) -> pd.Series:
+        row = pd.Series()
+        return row
+
+    def _save_changes_to_df(self) -> pd.DataFrame:
+        df = pd.DataFrame()
+        return df
+
 
 
 

@@ -6,7 +6,7 @@ from param_view_frame import ParamViewFrame
 from src.bayakm.parameters import build_param_list
 
 
-class MainFrame(ctk.CTkFrame):
+class MenuFrame(ctk.CTkFrame):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master)
 
@@ -25,7 +25,6 @@ class MainFrame(ctk.CTkFrame):
     def _create_subwindows(self):
         btn_config = (
             {"name": "New campaign"},
-            {"name": "New recommendation"},
             {"name": "View parameters", "params": self.params_list},
             {"name": "Help"}
         )
@@ -61,6 +60,8 @@ class MainFrame(ctk.CTkFrame):
         subwindow.frame = frame_class(master=subwindow, **kwargs)
         subwindow.frame.grid(row=0, column=0, sticky="nsew")
 
+    def _get_new_recommendation(self):
+        print("test")
 
 def test_func():
     print("Test.")
