@@ -4,10 +4,10 @@ from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
 
 class ParamViewFrame(ctk.CTkFrame):
-    def __init__(self, master=None):
+    def __init__(self, params, master=None):
         super().__init__(master)
 
-        parameter_list = build_param_list()
+        parameter_list = params
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=1)

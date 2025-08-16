@@ -1,5 +1,5 @@
 import customtkinter as ctk
-
+from time import time
 from src.bayakm.menu_frame import MainFrame
 from src.bayakm.table_frame import TableFrame
 # ctk.set_default_color_theme("dark-blue")
@@ -55,9 +55,7 @@ class App(ctk.CTk):
         self.info_frame.grid(row=2, column=0, columnspan=3, pady=5, padx=10, sticky="ew")
 
 
-
 def main():
-
     app = App()
     app.mainloop()
 

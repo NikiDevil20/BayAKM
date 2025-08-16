@@ -1,6 +1,6 @@
 import yaml
 import sys
-
+from time import time
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
 from src.bayakm.dir_paths import DirPaths
@@ -16,6 +16,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
         FileNotFoundError: If parameters.yaml is not found.
     """
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
+
     dirs = DirPaths()
 
     try:
@@ -30,6 +31,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
 
     if "Substance Parameters" in yaml_dict.keys():
         all_subst_dict: dict[str, dict[str, SMILES]] = yaml_dict["Substance Parameters"]
+
         for key in all_subst_dict.keys():
             parameter_list.append(
                 SubstanceParameter(

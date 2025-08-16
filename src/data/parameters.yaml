@@ -6,12 +6,12 @@ Substance Parameters:
 #   Pentane: "CCCCC"
 
   Solvents:
-    Water: "O"
+    Pentane: "CCCCC"
     Hexane: "CCCCCC"
 
   Ligands:
     Ethane: "CC"
-    PropanePropanePropanePropanePropanePropanePropanePropanePropanePropanePropane: "CCC"
+    Butane: "CCCC"
 
 Numerical Discrete Parameters:
 

@@ -1,7 +1,9 @@
 import customtkinter as ctk
+from time import time
 from help_frame import HelpFrame
 from new_campaign_frame import NewCampaignFrame
 from param_view_frame import ParamViewFrame
+from src.bayakm.parameters import build_param_list
 
 
 class MainFrame(ctk.CTkFrame):
@@ -17,20 +19,21 @@ class MainFrame(ctk.CTkFrame):
         #     fg_color="grey",
         #     corner_radius=10,
         # )
+        self.params_list = build_param_list()
         self._create_subwindows()
 
     def _create_subwindows(self):
-        btn_config = [
-            ("New campaign", lambda: self._create_subwindow(name="New campaign")),
-            ("New recommendation", lambda: test_func()),
-            ("View Parameters", lambda: self._create_subwindow(name="View parameters")),
-            ("Help", lambda: self._create_subwindow(name="Help"))
-        ]
-        for i, (text, command) in enumerate(btn_config):
+        btn_config = (
+            {"name": "New campaign"},
+            {"name": "New recommendation"},
+            {"name": "View parameters", "params": self.params_list},
+            {"name": "Help"}
+        )
+        for i, arguments in enumerate(btn_config):
             button = ctk.CTkButton(
                 master=self,
-                text=text,
-                command=command,
+                text=arguments["name"],
+                command=lambda args=arguments: self._commands_subwindow(**args),
                 font=("Arial", 18),
                 text_color="black",
                 height=40,
@@ -39,7 +42,7 @@ class MainFrame(ctk.CTkFrame):
             )
             button.grid(row=i, column=0, pady=5, padx=10)
 
-    def _create_subwindow(self, name: str):
+    def _commands_subwindow(self, name: str, **kwargs):
         match name:
             case "Help":
                 frame_class = HelpFrame
@@ -55,8 +58,9 @@ class MainFrame(ctk.CTkFrame):
         subwindow.focus_set()
         subwindow.columnconfigure(0, weight=1)
         subwindow.rowconfigure(0, weight=1)
-        subwindow.frame = frame_class(subwindow)
+        subwindow.frame = frame_class(master=subwindow, **kwargs)
         subwindow.frame.grid(row=0, column=0, sticky="nsew")
+
 
 def test_func():
     print("Test.")
