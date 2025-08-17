@@ -3,6 +3,7 @@ import customtkinter as ctk
 from src.bayakm.param_view_frame import create_full_table
 from src.bayakm.parameters import build_param_list
 from src.bayakm.add_numerical_frame import AddNumericalFrame
+from src.bayakm.remove_parameter_frame import RemoveParameterFrame
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -87,7 +88,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
             ("Add Substance", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
-            ("Remove", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
+            ("Remove", {"master": self, "title": "Add numerical parameter", "frameclass": RemoveParameterFrame}),
         )
         for i, (text, kwargs) in enumerate(btn_config):
             button = ctk.CTkButton(
@@ -105,11 +106,6 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.parameter_list = build_param_list()
         self.parameter_frame.destroy()
         self._build_parameters()
-
-
-
-    def _remove_parameter(self):
-        pass
 
     def _save_and_get_recommendation(self):
         pass

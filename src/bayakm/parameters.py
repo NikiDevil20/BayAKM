@@ -17,17 +17,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     """
     parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
 
-    dirs = DirPaths()
-
-    try:
-        with open(dirs.param_path, "r") as f:
-            yaml_string: str = f.read()
-    except FileNotFoundError:
-        print(f"Could not locate parameters.yaml at {dirs.param_path}.")
-        sys.exit(1)
-
-    yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
-        = yaml.safe_load(yaml_string)
+    yaml_dict = load_yaml()
 
     if "Substance Parameters" in yaml_dict.keys():
         all_subst_dict: dict[str, dict[str, SMILES]] = yaml_dict["Substance Parameters"]
@@ -63,7 +53,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
     return parameter_list
 
 
-def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: tuple[float | dict[str, SMILES]]):
+def load_yaml() -> dict:
     dirs = DirPaths()
     try:
         with open(dirs.param_path, "r") as f:
@@ -72,13 +62,33 @@ def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: t
         print(f"Could not locate parameters.yaml at {dirs.param_path}.")
         sys.exit(1)
 
-    yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
-        = yaml.safe_load(yaml_string)
+    return yaml.safe_load(yaml_string)
+
+
+def save_yaml(yaml_dict: dict):
+    dirs = DirPaths()
+    with open(dirs.param_path, "w") as f:
+        yaml.dump(yaml_dict, f)
+
+
+def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: tuple[float | dict[str, SMILES]]):
+    yaml_dict = load_yaml()
 
     if mode == "numerical":
         yaml_dict["Numerical Discrete Parameters"][parameter_name] = parameter_values
 
     elif mode == "substance":
         yaml_dict["Substance Parameters"][parameter_name] = parameter_values
-    with open(dirs.param_path, "w") as f:
-        yaml.dump(yaml_dict, f)
+
+    save_yaml(yaml_dict)
+
+
+def remove_parameters(parameter_names: list[str]):
+    yaml_dict = load_yaml()
+
+    for key in yaml_dict:
+        yaml_dict[key] = {k: v for k, v in yaml_dict[key].items() if k not in parameter_names}
+
+    save_yaml(yaml_dict)
+
+
