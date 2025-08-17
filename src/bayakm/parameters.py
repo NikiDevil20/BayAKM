@@ -61,3 +61,24 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
               "check for spelling errors.")
 
     return parameter_list
+
+
+def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: tuple[float | dict[str, SMILES]]):
+    dirs = DirPaths()
+    try:
+        with open(dirs.param_path, "r") as f:
+            yaml_string: str = f.read()
+    except FileNotFoundError:
+        print(f"Could not locate parameters.yaml at {dirs.param_path}.")
+        sys.exit(1)
+
+    yaml_dict: dict[str, dict[str, dict[str, SMILES] | tuple[float]]] \
+        = yaml.safe_load(yaml_string)
+
+    if mode == "numerical":
+        yaml_dict["Numerical Discrete Parameters"][parameter_name] = parameter_values
+
+    elif mode == "substance":
+        yaml_dict["Substance Parameters"][parameter_name] = parameter_values
+    with open(dirs.param_path, "w") as f:
+        yaml.dump(yaml_dict, f)

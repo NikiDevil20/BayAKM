@@ -10,6 +10,7 @@ from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
 from src.bayakm.probability_of_improvement import print_pi
+from src.bayakm.new_campaign_tabview import NewCampaignTabview
 
 
 class MenuFrame(ctk.CTkFrame):
@@ -49,7 +50,7 @@ class MenuFrame(ctk.CTkFrame):
 
     def _create_subwindows(self):
         btn_config = (
-            {"name": "New campaign"},
+            {"name": "New campaign", "parameter_list": self.params_list},
             {"name": "View parameters", "parameter_list": self.params_list},
             {"name": "Help"}
         )
@@ -71,7 +72,7 @@ class MenuFrame(ctk.CTkFrame):
             case "Help":
                 frame_class = HelpFrame
             case "New campaign":
-                frame_class = NewCampaignFrame
+                frame_class = NewCampaignTabview
             case "View parameters":
                 frame_class = ParamViewFrame
             case _:
