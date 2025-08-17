@@ -71,15 +71,15 @@ class NewCampaignTabview(ctk.CTkTabview):
             widget.grid(row=i+1, column=1, pady=2, padx=10)
 
     def _setup_parameters_frame(self):
-        setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
-        setup_frame.pack(pady=5, padx=10)
+        self.setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
+        self.setup_frame.pack(pady=5, padx=10)
 
         for row in range(2):
-            setup_frame.rowconfigure(row, weight=1)
+            self.setup_frame.rowconfigure(row, weight=1)
         for col, _ in enumerate(self.parameter_list):
-            setup_frame.columnconfigure(col, weight=1)
+            self.setup_frame.columnconfigure(col, weight=1)
 
-        create_full_table(setup_frame, self.parameter_list)
+        self._build_parameters()
 
         button_frame = ctk.CTkFrame(master=self.tab("Parameters"))
         button_frame.pack(side="left", pady=5, padx=10)
@@ -94,6 +94,18 @@ class NewCampaignTabview(ctk.CTkTabview):
                 master=button_frame, text=text, width=50, text_color="black",
                 command=lambda arguments=kwargs: create_subwindow(**arguments))
             button.grid(row=0, column=i, pady=2, padx=5)
+
+    def _build_parameters(self):
+        self.parameter_frame = ctk.CTkFrame(master=self.setup_frame)
+        self.parameter_frame.grid(row=0, column=0)
+
+        create_full_table(self.parameter_frame, self.parameter_list)
+
+    def _refresh_parameters(self):
+        self.parameter_list = build_param_list()
+        self.parameter_frame.destroy()
+        self._build_parameters()
+
 
 
     def _remove_parameter(self):

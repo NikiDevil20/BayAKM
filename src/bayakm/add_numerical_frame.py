@@ -39,6 +39,8 @@ class AddNumericalFrame(ctk.CTkFrame):
         for value in content_string.split(", "):
             parameter_list.append(float(value))
         write_to_parameters_file(mode="numerical", parameter_name=parameter_name, parameter_values=parameter_list)
+        self.master.master._refresh_parameters()
+        self.master.destroy()
 
 
 
