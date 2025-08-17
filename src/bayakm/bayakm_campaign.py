@@ -26,10 +26,10 @@ class BayAKMCampaign(Campaign):
     change it insided the DirPaths Class.
     """
 
-    def __init__(self):
+    def __init__(self, parameter_list=None):
         info_string("Campaign", "Initializing campaign...")
         if not check_path(dirs.campaign_path):
-            self.campaign = create_campaign()
+            self.campaign = create_campaign(parameter_list)
             self.save_campaign()
         else:
             self.campaign = load_campaign()
@@ -76,15 +76,16 @@ class BayAKMCampaign(Campaign):
             yaml.dump(campaign_dict, f)
 
 
-def create_campaign() -> Campaign:
+def create_campaign(parameter_list=None) -> Campaign:
     """Create a new campaign based on the parameters from
     the parameters in the parameters.yaml file.
     Returns:
         campaign (Campaign): The campaign object.
     """
-    param_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
+    if parameter_list is None:
+        parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
     searchspace = SearchSpace.from_product(
-        parameters=param_list,
+        parameters=parameter_list,
         constraints=[]
     )
     objective = SingleTargetObjective(

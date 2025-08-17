@@ -1,31 +1,56 @@
 import customtkinter as ctk
-from time import time
+import pandas as pd
+
 from help_frame import HelpFrame
 from new_campaign_frame import NewCampaignFrame
 from param_view_frame import ParamViewFrame
+from src.bayakm.bayakm_campaign import BayAKMCampaign
+from src.bayakm.config_loader import Config
+from src.bayakm.dir_paths import DirPaths
+from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
+from src.bayakm.probability_of_improvement import print_pi
 
 
 class MenuFrame(ctk.CTkFrame):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master)
 
-        for row in range(3):
-            self.rowconfigure(row, weight=0)
-        for column in range(3):
-            self.columnconfigure(column, weight=0)
+        self.dirs = DirPaths()
+        self.cfg = Config()
+        self.campaign = None
 
-        # self.configure(
-        #     fg_color="grey",
-        #     corner_radius=10,
-        # )
+        for row in range(3):
+            self.rowconfigure(row, weight=1)
+        for col in range(3):
+            self.columnconfigure(col, weight=1)
+
         self.params_list = build_param_list()
+        self._initialize_campaign(self.params_list)
+
+        if check_path(self.dirs.output_path):
+            self.table: pd.DataFrame = import_output_to_df()
+            self._create_recommendation_button()
+
         self._create_subwindows()
+
+    def _create_recommendation_button(self):
+        reco_btn = ctk.CTkButton(
+            master=self,
+            text="New recommendation",
+            command=lambda: self._get_new_recommendation(),
+            font=("Arial", 18),
+            text_color="black",
+            height=40,
+            width=200,
+            fg_color="light blue"
+        )
+        reco_btn.grid(row=0, column=0, pady=5, padx=10)
 
     def _create_subwindows(self):
         btn_config = (
             {"name": "New campaign"},
-            {"name": "View parameters", "params": self.params_list},
+            {"name": "View parameters", "parameter_list": self.params_list},
             {"name": "Help"}
         )
         for i, arguments in enumerate(btn_config):
@@ -39,7 +64,7 @@ class MenuFrame(ctk.CTkFrame):
                 width=200,
                 fg_color="light blue"
             )
-            button.grid(row=i, column=0, pady=5, padx=10)
+            button.grid(row=i+1, column=0, pady=5, padx=10)
 
     def _commands_subwindow(self, name: str, **kwargs):
         match name:
@@ -62,6 +87,12 @@ class MenuFrame(ctk.CTkFrame):
 
     def _get_new_recommendation(self):
         print("test")
+
+    def _initialize_campaign(self, parameter_list):
+        campaign = BayAKMCampaign(parameter_list)
+        if self.cfg.pi:
+            campaign.attach_hook([print_pi])
+        self.campaign = campaign
 
 def test_func():
     print("Test.")
