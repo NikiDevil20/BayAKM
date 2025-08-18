@@ -6,22 +6,18 @@ class AddSubstanceFrame(ctk.CTkFrame):
     def __init__(self, master=None):
         super().__init__(master)
 
+        self.row_list = []
         header_frame = ctk.CTkFrame(master=self)
         header_frame.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
         header = ctk.CTkLabel(master=header_frame, text="Add new substance parameter", font=("Arial", 24))
         header.pack(pady=10, padx=30)
 
-        content_frame = ctk.CTkFrame(master=self)
-        content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
+        self._create_content_frame()
 
-        self.name_entry = ctk.CTkEntry(master=content_frame, placeholder_text="Parameter name")
-        self.name_entry.grid(row=1, column=0, pady=5, padx=10)
-
-        self.content_entry = ctk.CTkEntry(master=content_frame, placeholder_text="Values")
-        self.content_entry.grid(row=1, column=1, pady=5, padx=10)
-
-        safe_button = ctk.CTkButton(master=content_frame, text="Save", width=20, command=lambda: self._save_parameter())
-        safe_button.grid(row=1, column=2, pady=5, padx=10)
+        save_button = ctk.CTkButton(
+            master=self.content_frame, text="Save",
+            width=20, command=lambda: self._save_parameter())
+        save_button.grid(row=0, column=1, pady=5, padx=10)
 
         bottom_frame = ctk.CTkFrame(master=self)
         bottom_frame.grid(row=2, column=0, pady=5, padx=10, sticky="ew")
@@ -31,6 +27,36 @@ class AddSubstanceFrame(ctk.CTkFrame):
             text="Enter parameter name on the left and parameter \n values, separated by comma, on the right."
         )
         bottom_label.pack(pady=5, padx=10)
+
+
+
+    def _create_content_frame(self):
+        self.content_frame = ctk.CTkFrame(master=self)
+        self.content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
+
+        self.name_entry = ctk.CTkEntry(
+            master=self.content_frame,
+            placeholder_text="Parameter name")
+        self.name_entry.grid(row=0, column=0, pady=5, padx=10)
+
+        self._create_row()
+
+
+    def _create_row(self):
+        i = len(self.row_list) + 1
+        row = ctk.CTkFrame(master=self.content_frame)
+        row.grid(row=i, column=0, pady=5, padx=10, sticky="ew")
+
+        substance_name_entry = ctk.CTkEntry(master=row)
+        smiles_entry = ctk.CTkEntry(master=row)
+        substance_name_entry.pack(side="left", pady=5, padx=10)
+        smiles_entry.pack(side="right", pady=5, padx=10)
+        self.row_list.append(row)
+
+    def _remove_row(self):
+        pass
+
+
 
     def _save_parameter(self):
         parameter_name = self.name_entry.get()

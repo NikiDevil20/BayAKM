@@ -4,6 +4,7 @@ from src.bayakm.param_view_frame import create_full_table
 from src.bayakm.parameters import build_param_list
 from src.bayakm.add_numerical_frame import AddNumericalFrame
 from src.bayakm.remove_parameter_frame import RemoveParameterFrame
+from src.bayakm.add_substance_frame import AddSubstanceFrame
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -38,6 +39,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.widget_frame.grid(row=0, column=0, pady=10, padx=30)
 
     def _create_widgets(self):
+        self.widget_list = []
         widget_config = (
             ("Choose acquisition function", ctk.CTkOptionMenu, None, {"values": ("qLogEI", "UCB", "qPI")}),
             ("Batchsize", ctk.CTkEntry, 1, {}),
@@ -56,6 +58,7 @@ class NewCampaignTabview(ctk.CTkTabview):
                 text_color="black",
                 width=150
             )
+            self.widget_list.append(widget)
             if isinstance(widget, ctk.CTkEntry):
                 widget.insert(0, widget_default)
             if isinstance(widget, ctk.CTkCheckBox):
@@ -87,7 +90,7 @@ class NewCampaignTabview(ctk.CTkTabview):
 
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
-            ("Add Substance", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
+            ("Add Substance", {"master": self, "title": "Add numerical parameter", "frameclass": AddSubstanceFrame}),
             ("Remove", {"master": self, "title": "Add numerical parameter", "frameclass": RemoveParameterFrame}),
         )
         for i, (text, kwargs) in enumerate(btn_config):
