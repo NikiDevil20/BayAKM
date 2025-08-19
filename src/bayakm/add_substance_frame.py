@@ -14,10 +14,7 @@ class AddSubstanceFrame(ctk.CTkFrame):
 
         self._create_content_frame()
 
-        save_button = ctk.CTkButton(
-            master=self.content_frame, text="Save",
-            width=20, command=lambda: self._save_parameter())
-        save_button.grid(row=0, column=1, pady=5, padx=10)
+
 
         bottom_frame = ctk.CTkFrame(master=self)
         bottom_frame.grid(row=2, column=0, pady=5, padx=10, sticky="ew")
@@ -41,17 +38,37 @@ class AddSubstanceFrame(ctk.CTkFrame):
 
         self._create_row()
 
+        save_button = ctk.CTkButton(
+            master=self.content_frame, text="Save",
+            width=20, command=lambda: self._save_parameter())
+        save_button.grid(row=0, column=1, pady=5, padx=10)
+
 
     def _create_row(self):
         i = len(self.row_list) + 1
         row = ctk.CTkFrame(master=self.content_frame)
         row.grid(row=i, column=0, pady=5, padx=10, sticky="ew")
 
-        substance_name_entry = ctk.CTkEntry(master=row)
-        smiles_entry = ctk.CTkEntry(master=row)
-        substance_name_entry.pack(side="left", pady=5, padx=10)
-        smiles_entry.pack(side="right", pady=5, padx=10)
-        self.row_list.append(row)
+        substance_name_entry = ctk.CTkEntry(master=row, placeholder_text="Substance name")
+        smiles_entry = ctk.CTkEntry(master=row, placeholder_text="SMILES string")
+        substance_name_entry.grid(row=0, column=0, pady=5, padx=10)
+        smiles_entry.grid(row=0, column=1, pady=5, padx=10)
+        self._add_and_remove_button(row)
+        self.row_list.append((substance_name_entry, smiles_entry))
+
+    def _add_and_remove_button(self, master):
+        add_button = ctk.CTkButton(
+            master=master,
+            text="-",
+            command=lambda: self._create_row()
+        )
+        add_button.grid(row=0, column=2)
+        # remove_button = ctk.CTkButton(
+        #     master=master,
+        #     text="-",
+        #     command=lambda
+        # )
+
 
     def _remove_row(self):
         pass
