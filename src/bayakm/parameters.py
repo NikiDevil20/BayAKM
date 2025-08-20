@@ -8,8 +8,8 @@ from src.bayakm.dir_paths import DirPaths
 SMILES = str
 
 
-def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
-    """Builds the parameters list from the parameters.yaml file.
+def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter | None]:
+    """Builds the parameter list from the parameters.yaml file.
     Returns:
         A list of parameters.
     Raises:
@@ -49,18 +49,17 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter]:
         print("No Numerical Parameters detected. \n"
               "If you wanted to include Numerical Parameters,"
               "check for spelling errors.")
-
     return parameter_list
 
 
-def load_yaml() -> dict:
+def load_yaml() -> dict | None:
     dirs = DirPaths()
     try:
         with open(dirs.param_path, "r") as f:
             yaml_string: str = f.read()
     except FileNotFoundError:
         print(f"Could not locate parameters.yaml at {dirs.param_path}.")
-        sys.exit(1)
+        return {}
 
     return yaml.safe_load(yaml_string)
 
@@ -75,11 +74,16 @@ def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: l
     yaml_dict = load_yaml()
 
     if mode == "numerical":
-        yaml_dict["Numerical Discrete Parameters"][parameter_name] = parameter_values
+        if not "Numerical Discrete Parameters" in yaml_dict.keys():
+            yaml_dict["Numerical Discrete Parameters"] = {parameter_name: parameter_values}
+        else:
+            yaml_dict["Numerical Discrete Parameters"][parameter_name] = parameter_values
 
     elif mode == "substance":
-        yaml_dict["Substance Parameters"][parameter_name] = parameter_values
-
+        if not "Substance Parameters" in yaml_dict.keys():
+            yaml_dict["Substance Parameters"] = {parameter_name: parameter_values}
+        else:
+            yaml_dict["Substance Parameters"][parameter_name] = parameter_values
     save_yaml(yaml_dict)
 
 

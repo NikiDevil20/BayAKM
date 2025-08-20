@@ -7,24 +7,29 @@ class ParamViewFrame(ctk.CTkFrame):
     def __init__(self, parameter_list, master=None):
         super().__init__(master)
 
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
+        if len(parameter_list) == 0:
+            no_parameter_label = ctk.CTkLabel(
+                master=self,
+                text="Start a campaign to display parameters.",
+                font=("Arial", 20)
+            )
+            no_parameter_label.grid(column=0, row=0, pady=50, padx=50)
 
-        for i, _ in enumerate(parameter_list):
-            self.columnconfigure(i, weight=1)
+        else:
+            for i, _ in enumerate(parameter_list):
+                self.columnconfigure(i, weight=1)
 
-        create_full_table(self, parameter_list)
+            create_full_table(self, parameter_list)
 
-        label = ctk.CTkLabel(master=self, text="View parameters", font=("Arial", 24))
-        label.grid(column=0, row=0, columnspan=len(parameter_list), padx=10, pady=10)
+            label = ctk.CTkLabel(master=self, text="View parameters", font=("Arial", 24))
+            label.grid(column=0, row=0, columnspan=len(parameter_list), padx=10, pady=10)
 
-        info_text = ctk.CTkLabel(
-            master=self,
-            text="Parameters can only be changed by starting a new campaign.",
-            font=("Arial", 14)
-        )
-        info_text.grid(column=0, row=2, columnspan=len(parameter_list), padx=10, pady=5)
+            info_text = ctk.CTkLabel(
+                master=self,
+                text="Parameters can only be changed by starting a new campaign.",
+                font=("Arial", 14)
+            )
+            info_text.grid(column=0, row=2, columnspan=len(parameter_list), padx=10, pady=5)
 
 
 def create_full_table(

@@ -5,6 +5,7 @@ from src.bayakm.parameters import build_param_list
 from src.bayakm.add_numerical_frame import AddNumericalFrame
 from src.bayakm.remove_parameter_frame import RemoveParameterFrame
 from src.bayakm.add_substance_frame import AddSubstanceFrame
+from src.bayakm.bayakm_campaign import BayAKMCampaign
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -12,6 +13,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         super().__init__(master)
 
         self.parameter_list = parameter_list
+
 
         self._segmented_button.configure(font=ctk.CTkFont(family="Arial", size=12, weight="bold"))
         self.configure(
@@ -78,12 +80,14 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
         self.setup_frame.pack(pady=5, padx=10)
 
-        for row in range(2):
-            self.setup_frame.rowconfigure(row, weight=1)
-        for col, _ in enumerate(self.parameter_list):
-            self.setup_frame.columnconfigure(col, weight=1)
-
         self._build_parameters()
+
+        if not self.parameter_list:
+            no_parameters_label = ctk.CTkLabel(
+                master=self.parameter_frame,
+                text="Use the buttons below to add some parameters."
+            )
+            no_parameters_label.pack()
 
         button_frame = ctk.CTkFrame(master=self.tab("Parameters"))
         button_frame.pack(side="left", pady=5, padx=10)
@@ -115,6 +119,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         self._build_parameters()
 
     def _save_and_get_recommendation(self):
+        campaign = BayAKMCampaign()
         pass
 
 
