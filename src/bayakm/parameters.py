@@ -71,7 +71,7 @@ def save_yaml(yaml_dict: dict):
         yaml.dump(yaml_dict, f)
 
 
-def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: tuple[float | dict[str, SMILES]]):
+def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: list[float] | dict[str, SMILES]):
     yaml_dict = load_yaml()
 
     if mode == "numerical":
@@ -83,7 +83,7 @@ def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: t
     save_yaml(yaml_dict)
 
 
-def remove_parameters(parameter_names: list[str]):
+def delete_parameter(parameter_names: list[str]):
     yaml_dict = load_yaml()
 
     for key in yaml_dict:

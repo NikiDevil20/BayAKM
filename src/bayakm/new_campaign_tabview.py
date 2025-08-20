@@ -100,12 +100,16 @@ class NewCampaignTabview(ctk.CTkTabview):
             button.grid(row=0, column=i, pady=2, padx=5)
 
     def _build_parameters(self):
-        self.parameter_frame = ctk.CTkFrame(master=self.setup_frame)
+        self.parameter_frame = ctk.CTkScrollableFrame(
+            master=self.setup_frame,
+            width=400,
+            orientation="horizontal"
+        )
         self.parameter_frame.grid(row=0, column=0)
 
         create_full_table(self.parameter_frame, self.parameter_list)
 
-    def _refresh_parameters(self):
+    def refresh_parameters(self):
         self.parameter_list = build_param_list()
         self.parameter_frame.destroy()
         self._build_parameters()

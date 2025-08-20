@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import pandas as pd
 
-from help_frame import HelpFrame
+from help import HelpFrame
 from new_campaign_frame import NewCampaignFrame
 from param_view_frame import ParamViewFrame
 from src.bayakm.bayakm_campaign import BayAKMCampaign

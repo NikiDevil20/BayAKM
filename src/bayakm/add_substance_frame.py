@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from src.bayakm.parameters import write_to_parameters_file
+from src.bayakm.help import error_subwindow
 
 
 class AddSubstanceFrame(ctk.CTkFrame):
@@ -13,22 +14,13 @@ class AddSubstanceFrame(ctk.CTkFrame):
         header.pack(pady=10, padx=30)
 
         self._create_content_frame()
-
-
-
-        bottom_frame = ctk.CTkFrame(master=self)
-        bottom_frame.grid(row=2, column=0, pady=5, padx=10, sticky="ew")
-
-        bottom_label = ctk.CTkLabel(
-            master=bottom_frame,
-            text="Enter parameter name on the left and parameter \n values, separated by comma, on the right."
-        )
-        bottom_label.pack(pady=5, padx=10)
-
-
+        self._create_bottom_frame()
 
     def _create_content_frame(self):
-        self.content_frame = ctk.CTkFrame(master=self)
+        self.content_frame = ctk.CTkScrollableFrame(
+            master=self,
+            height=200,
+        )
         self.content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
 
         self.name_entry = ctk.CTkEntry(
@@ -37,50 +29,64 @@ class AddSubstanceFrame(ctk.CTkFrame):
         self.name_entry.grid(row=0, column=0, pady=5, padx=10)
 
         self._create_row()
-
-        save_button = ctk.CTkButton(
-            master=self.content_frame, text="Save",
-            width=20, command=lambda: self._save_parameter())
-        save_button.grid(row=0, column=1, pady=5, padx=10)
-
+        self._create_row()
 
     def _create_row(self):
         i = len(self.row_list) + 1
         row = ctk.CTkFrame(master=self.content_frame)
-        row.grid(row=i, column=0, pady=5, padx=10, sticky="ew")
+        row.grid(row=i, column=0, pady=5, padx=10, sticky="ew", columnspan=2)
 
         substance_name_entry = ctk.CTkEntry(master=row, placeholder_text="Substance name")
         smiles_entry = ctk.CTkEntry(master=row, placeholder_text="SMILES string")
+
         substance_name_entry.grid(row=0, column=0, pady=5, padx=10)
         smiles_entry.grid(row=0, column=1, pady=5, padx=10)
-        self._add_and_remove_button(row)
+
+        self._remove_button(row)
         self.row_list.append((substance_name_entry, smiles_entry))
 
-    def _add_and_remove_button(self, master):
+    @staticmethod
+    def _remove_button(master):
         add_button = ctk.CTkButton(
             master=master,
             text="-",
-            command=lambda: self._create_row()
+            command=lambda: master.destroy(),
+            width=10
         )
-        add_button.grid(row=0, column=2)
-        # remove_button = ctk.CTkButton(
-        #     master=master,
-        #     text="-",
-        #     command=lambda
-        # )
+        add_button.grid(row=0, column=2, pady=5, padx=10)
 
+    def _create_bottom_frame(self):
+        bottom_frame = ctk.CTkFrame(master=self)
+        bottom_frame.grid(row=2, column=0, pady=5, padx=10, sticky="ew")
 
-    def _remove_row(self):
-        pass
-
-
+        save_button = ctk.CTkButton(
+            master=bottom_frame, text="Save",
+            width=20, command=lambda: self._save_parameter())
+        save_button.grid(row=0, column=1, pady=5, padx=10)
+        add_button = ctk.CTkButton(
+            master=bottom_frame,
+            text="+",
+            command=lambda: self._create_row(),
+            width=10
+        )
+        add_button.grid(row=0, column=0, pady=5, padx=10)
 
     def _save_parameter(self):
-        parameter_name = self.name_entry.get()
-        content_string = self.content_entry.get()
-        parameter_list: list[float] = []
-        for value in content_string.split(", "):
-            parameter_list.append(float(value))
-        write_to_parameters_file(mode="numerical", parameter_name=parameter_name, parameter_values=parameter_list)
-        self.master.master._refresh_parameters()
+
+        if self.name_entry.get() == "":
+            error_subwindow(self, "Parameter name cannot be empty.")
+            return
+        substance_dict: dict[str, str] = {}
+
+        for (substance_name_entry, smiles_entry) in self.row_list:
+            if substance_name_entry.get() == "" or smiles_entry.get() == "":
+                continue
+            substance_dict[substance_name_entry.get()] = smiles_entry.get()
+
+        if len(substance_dict.keys()) < 2:
+            error_subwindow(self, "You must add at least two values to a parameter.")
+            return
+
+        write_to_parameters_file(mode="substance", parameter_name=self.name_entry.get(), parameter_values=substance_dict)
+        self.master.master.refresh_parameters()
         self.master.destroy()
