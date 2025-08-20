@@ -81,6 +81,8 @@ class BayAKMCampaign(Campaign):
     def get_recommendation(self, initial: bool, measurements=None, pending=None):
         if isinstance(measurements, pd.DataFrame):
             self.campaign.add_measurements(measurements)
+        if pending.empty:
+            pending = None
         recommendation = self.campaign.recommend(
             batch_size=3,  # TODO
             pending_experiments=pending

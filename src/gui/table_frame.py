@@ -11,6 +11,8 @@ class TableFrame(ctk.CTkFrame):
         super().__init__(master)
 
         self.dirs = DirPaths()
+
+
         if not isinstance(data, pd.DataFrame):
             label = ctk.CTkLabel(
                 master=self,
@@ -28,13 +30,13 @@ class TableFrame(ctk.CTkFrame):
             header_frame.columnconfigure(col, weight=1)
             headline = ctk.CTkLabel(master=header_frame, text=categories[col], width=100)
             headline.grid(row=0, column=col)
-        header_frame.grid(row=0, column=0, pady=5, padx=10)
+        header_frame.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
 
-    def _create_row(self, content: list[int | float | str]):
+    def _create_row(self, content: list[int | float | str], color):
         entry_list_per_row = []
         background_frame = ctk.CTkFrame(master=self.content_frame)
         for col, _ in enumerate(content):
-            entry = ctk.CTkEntry(master=background_frame, width=100,)
+            entry = ctk.CTkEntry(master=background_frame, width=100, fg_color=color)
             entry.insert(0, content[col])
             entry.grid(row=0, column=col, pady=2, padx=2)
             entry_list_per_row.append(entry)
@@ -45,10 +47,15 @@ class TableFrame(ctk.CTkFrame):
         self.df = df
         self._create_header(df.columns)
         self.full_entry_list = []
-        self.content_frame = ctk.CTkFrame(master=self)
-        self.content_frame.grid(row=1, column=0, pady=5, padx=10)
-        for series in df.itertuples(index=False):
-            entry_list_per_row = self._create_row(content=list(series))
+        self.content_frame = ctk.CTkScrollableFrame(master=self, width=105 * len(df.columns))
+        self.content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
+        self.columnconfigure(0, weight=1)
+        for i, series in enumerate(df.itertuples(index=False)):
+            if i % 2 == 0:
+                color = "light blue"
+            else:
+                color = "white"
+            entry_list_per_row = self._create_row(content=list(series), color=color)
             self.full_entry_list.append(entry_list_per_row)
 
     def _read_table(self):
@@ -61,10 +68,9 @@ class TableFrame(ctk.CTkFrame):
         create_output(df)
         self.master.refresh_content()
 
-
     def _create_bottom_frame(self):
         self.bottom_frame = ctk.CTkFrame(master=self)
-        self.bottom_frame.grid(row=3, column=0, pady=5, padx=10)
+        self.bottom_frame.grid(row=3, column=0, pady=5, padx=10, sticky="ew")
 
         save_button = ctk.CTkButton(
             master=self.bottom_frame,
