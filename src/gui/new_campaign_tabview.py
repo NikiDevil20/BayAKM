@@ -128,8 +128,9 @@ class NewCampaignTabview(ctk.CTkTabview):
         recommendation_button.pack()
 
     def _save_and_get_recommendation(self):
-        campaign = BayAKMCampaign()
-        campaign.get_recommendation(initial=True)
+        self.master.master.master.campaign = BayAKMCampaign()
+        self.master.master.master.campaign.get_recommendation(initial=True)
+        self.master.master.master.campaign.save_campaign()
         self.master.master.master.refresh_content()
 
 

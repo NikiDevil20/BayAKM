@@ -24,24 +24,7 @@ class MenuFrame(ctk.CTkFrame):
         if check_path(self.dirs.campaign_path):
             self._initialize_campaign(self.params_list)
 
-        if check_path(self.dirs.output_path):
-            self.table: pd.DataFrame = import_output_to_df()
-            self._create_recommendation_button()
-
         self._create_subwindows()
-
-    def _create_recommendation_button(self):
-        reco_btn = ctk.CTkButton(
-            master=self,
-            text="New recommendation",
-            command=lambda: self._get_new_recommendation(),
-            font=("Arial", 18),
-            text_color="black",
-            height=40,
-            width=200,
-            fg_color="light blue"
-        )
-        reco_btn.grid(row=0, column=0, pady=5, padx=10)
 
     def _create_subwindows(self):
         btn_config = (

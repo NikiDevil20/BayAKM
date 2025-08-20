@@ -33,7 +33,7 @@ def create_output(df: pd.DataFrame) -> None:
     df.to_csv(
         dirs.output_path,
         sep=";",
-        decimal=",",
+        decimal=".",
         header=True,
         mode="w",
         index=False
@@ -50,7 +50,7 @@ def append_to_output(df: pd.DataFrame) -> None:
     df.to_csv(
         dirs.output_path,
         sep=";",
-        decimal=",",
+        decimal=".",
         header=False,
         mode="a",
         index=False
@@ -65,8 +65,8 @@ def import_output_to_df() -> pd.DataFrame:
         without the "Journal number" column.
     """
     info_string("Measurements", "Reading results.csv...")
-    df = pd.read_csv(filepath_or_buffer=dirs.output_path, sep=";", decimal=",")
-    return df.drop("Journal number", axis=1)
+    df = pd.read_csv(filepath_or_buffer=dirs.output_path, sep=";", decimal=".")
+    return df
 
 
 def split_import_df(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:

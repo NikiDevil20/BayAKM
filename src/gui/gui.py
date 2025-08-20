@@ -3,6 +3,10 @@ from src.gui.menu_frame import MenuFrame
 from src.gui.table_frame import TableFrame
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.dir_paths import DirPaths
+from src.bayakm.bayakm_campaign import BayAKMCampaign
+from src.bayakm.parameters import build_param_list
+from src.bayakm.probability_of_improvement import print_pi
+from src.bayakm.config_loader import Config
 # ctk.set_default_color_theme("dark-blue")
 
 
@@ -12,8 +16,11 @@ class App(ctk.CTk):
         self.table_frame = None
         self.menu_frame = None
         self.dirs = DirPaths()
+        self.cfg = Config()
+        self.campaign = None
 
         self._initialize_geometry()
+        self._initialize_campaign()
         self._create_header()
         self._display_recommendation()
         self._create_menu_frame()
@@ -41,11 +48,11 @@ class App(ctk.CTk):
 
     def _display_recommendation(self):
         if check_path(self.dirs.output_path):
-            content = import_output_to_df()
+            data = import_output_to_df()
         else:
-            content = None
+            data = None
 
-        self.table_frame = TableFrame(master=self, content=content)
+        self.table_frame = TableFrame(master=self, data=data)
         self.table_frame.grid(row=1, column=1, pady=5, padx=10)
 
     def _create_info_frame(self):
@@ -61,6 +68,15 @@ class App(ctk.CTk):
         self._create_menu_frame()
         self.table_frame.destroy()
         self._display_recommendation()
+
+    def _initialize_campaign(self):
+        if check_path(self.dirs.param_path):
+            self.parameter_list = build_param_list()
+            if check_path(self.dirs.campaign_path):
+                self.campaign = BayAKMCampaign(self.parameter_list)
+                if self.cfg.pi:
+                    self.campaign.attach_hook([print_pi])
+
 
 
 

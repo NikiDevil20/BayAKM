@@ -1,6 +1,7 @@
 from types import MethodType
 from typing import Callable
 import numpy as np
+import pandas as pd
 import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
@@ -77,8 +78,13 @@ class BayAKMCampaign(Campaign):
         with open(dirs.campaign_path, "w") as f:
             yaml.dump(campaign_dict, f)
 
-    def get_recommendation(self, initial: bool):
-        recommendation = self.campaign.recommend(batch_size=3)  # TODO
+    def get_recommendation(self, initial: bool, measurements=None, pending=None):
+        if isinstance(measurements, pd.DataFrame):
+            self.campaign.add_measurements(measurements)
+        recommendation = self.campaign.recommend(
+            batch_size=3,  # TODO
+            pending_experiments=pending
+        )
         recommendation["Journal number"] = cfg.prefix
         recommendation["Yield"] = np.nan
         if initial:
