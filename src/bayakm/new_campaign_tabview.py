@@ -1,11 +1,14 @@
 import customtkinter as ctk
+import numpy as np
 
+from src.bayakm.config_loader import Config
 from src.bayakm.param_view_frame import create_full_table
 from src.bayakm.parameters import build_param_list
 from src.bayakm.add_numerical_frame import AddNumericalFrame
 from src.bayakm.remove_parameter_frame import RemoveParameterFrame
 from src.bayakm.add_substance_frame import AddSubstanceFrame
 from src.bayakm.bayakm_campaign import BayAKMCampaign
+from src.bayakm.output import create_output
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -13,7 +16,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         super().__init__(master)
 
         self.parameter_list = parameter_list
-
+        self.cfg = Config()
 
         self._segmented_button.configure(font=ctk.CTkFont(family="Arial", size=12, weight="bold"))
         self.configure(
@@ -27,17 +30,13 @@ class NewCampaignTabview(ctk.CTkTabview):
         self._create_widget_frame()
         self._create_widgets()
         self._setup_parameters_frame()
+        self._create_recommendation_frame()
 
     def _create_widget_frame(self):
         self.widget_frame = ctk.CTkFrame(
             master=self.tab("Configuration"),
             fg_color="dark grey"
         )
-
-        for row in range(6):
-            self.widget_frame.rowconfigure(row, weight=1)
-        for col in range(6):
-            self.widget_frame.columnconfigure(col, weight=1)
         self.widget_frame.grid(row=0, column=0, pady=10, padx=30)
 
     def _create_widgets(self):
@@ -118,8 +117,22 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.parameter_frame.destroy()
         self._build_parameters()
 
+    def _create_recommendation_frame(self):
+        recommendation_frame = ctk.CTkFrame(master=self.tab("Get recommendation"))
+        recommendation_frame.pack(pady=5, padx=10)
+        recommendation_button = ctk.CTkButton(
+            master=recommendation_frame,
+            text="Get first recommendation",
+            width=100,
+            height=70,
+            command=lambda: self._save_and_get_recommendation()
+        )
+        recommendation_button.pack()
+
     def _save_and_get_recommendation(self):
         campaign = BayAKMCampaign()
+        campaign.get_recommendation(initial=True)
+        self.master.master.master.refresh_content()
         pass
 
 

@@ -2,7 +2,6 @@ import customtkinter as ctk
 import pandas as pd
 
 from help import HelpFrame
-from new_campaign_frame import NewCampaignFrame
 from param_view_frame import ParamViewFrame
 from src.bayakm.bayakm_campaign import BayAKMCampaign
 from src.bayakm.config_loader import Config
@@ -21,13 +20,9 @@ class MenuFrame(ctk.CTkFrame):
         self.cfg = Config()
         self.campaign = None
 
-        for row in range(3):
-            self.rowconfigure(row, weight=1)
-        for col in range(3):
-            self.columnconfigure(col, weight=1)
-
         self.params_list = build_param_list()
-        self._initialize_campaign(self.params_list)
+        if check_path(self.dirs.campaign_path):
+            self._initialize_campaign(self.params_list)
 
         if check_path(self.dirs.output_path):
             self.table: pd.DataFrame = import_output_to_df()

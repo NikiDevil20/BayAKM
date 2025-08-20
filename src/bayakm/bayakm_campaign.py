@@ -1,6 +1,6 @@
 from types import MethodType
 from typing import Callable
-
+import numpy as np
 import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
@@ -12,10 +12,12 @@ from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
 from src.bayakm.dir_paths import DirPaths
-from src.bayakm.output import check_path, info_string
+from src.bayakm.output import check_path, info_string, create_output, append_to_output
 from src.bayakm.parameters import build_param_list
+from src.bayakm.config_loader import Config
 
 dirs = DirPaths()
+cfg = Config()
 
 
 class BayAKMCampaign(Campaign):
@@ -23,7 +25,7 @@ class BayAKMCampaign(Campaign):
     that automatically handles creation of the
     campaign and adds further functionality.
     To change the campaign.yaml file location,
-    change it insided the DirPaths Class.
+    change it inside the DirPaths Class.
     """
 
     def __init__(self, parameter_list=None):
@@ -74,6 +76,15 @@ class BayAKMCampaign(Campaign):
         campaign_dict = self.campaign.to_dict()
         with open(dirs.campaign_path, "w") as f:
             yaml.dump(campaign_dict, f)
+
+    def get_recommendation(self, initial: bool):
+        recommendation = self.campaign.recommend(batch_size=3)  # TODO
+        recommendation["Journal number"] = cfg.prefix
+        recommendation["Yield"] = np.nan
+        if initial:
+            create_output(recommendation)
+        else:
+            append_to_output(recommendation)
 
 
 def create_campaign(parameter_list=None) -> Campaign:

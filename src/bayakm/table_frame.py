@@ -8,7 +8,7 @@ class TableFrame(ctk.CTkFrame):
     def __init__(self, master=None, content=None):
         super().__init__(master)
 
-        if not content:
+        if not isinstance(content, pd.DataFrame):
             label = ctk.CTkLabel(
                 master=self,
                 text="Create a new campaign \n to display table.",

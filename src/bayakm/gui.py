@@ -14,11 +14,6 @@ class App(ctk.CTk):
         self.menu_frame = None
         self.dirs = DirPaths()
 
-        for row in range(3):
-            self.rowconfigure(row, weight=1)
-        for col in range(3):
-            self.columnconfigure(col, weight=1)
-
         self._initialize_geometry()
         self._create_header()
         self._display_recommendation()
@@ -61,6 +56,13 @@ class App(ctk.CTk):
             text="Hier könnte ein Infotext stehen.")
         label.pack(padx=5, pady=5)
         self.info_frame.grid(row=2, column=0, columnspan=3, pady=5, padx=10, sticky="ew")
+
+    def refresh_content(self):
+        self.menu_frame.destroy()
+        self._create_menu_frame()
+        self.table_frame.destroy()
+        self._display_recommendation()
+
 
 
 def main():
