@@ -13,23 +13,37 @@ class ParamViewFrame(ctk.CTkFrame):
                 text="Start a campaign to display parameters.",
                 font=("Arial", 20)
             )
-            no_parameter_label.grid(column=0, row=0, pady=50, padx=50)
-
+            no_parameter_label.grid(
+                column=0, row=0,
+                pady=50, padx=50
+            )
         else:
             for i, _ in enumerate(parameter_list):
                 self.columnconfigure(i, weight=1)
 
             create_full_table(self, parameter_list)
 
-            label = ctk.CTkLabel(master=self, text="View parameters", font=("Arial", 24))
-            label.grid(column=0, row=0, columnspan=len(parameter_list), padx=10, pady=10)
+            label = ctk.CTkLabel(
+                master=self,
+                text="View parameters",
+                font=("Arial", 24)
+            )
+            label.grid(
+                column=0, row=0,
+                padx=10, pady=10,
+                columnspan=len(parameter_list)
+            )
 
             info_text = ctk.CTkLabel(
                 master=self,
                 text="Parameters can only be changed by starting a new campaign.",
                 font=("Arial", 14)
             )
-            info_text.grid(column=0, row=2, columnspan=len(parameter_list), padx=10, pady=5)
+            info_text.grid(
+                column=0, row=2,
+                padx=10, pady=5,
+                columnspan=len(parameter_list)
+            )
 
 
 def create_full_table(
@@ -50,17 +64,31 @@ def create_block(
 
     for row in range(len(parameter.values)+1):
         block.rowconfigure(row, weight=1)
-    label = ctk.CTkLabel(master=block, text=parameter.name, font=("Arial", 20))
-    label.grid(row=0, column=0, pady=4, padx=10)
+
+    label = ctk.CTkLabel(
+        master=block,
+        text=parameter.name,
+        font=("Arial", 20)
+    )
+    label.grid(
+        row=0, column=0,
+        pady=4, padx=10
+    )
     for row in range(len(parameter.values)):
         value = ctk.CTkLabel(
             master=block,
             text=display_parameter_name(parameter.values[row])
         )
-        value.grid(row=row+1, column=0, pady=1, padx=10)
+        value.grid(
+            row=row+1, column=0,
+            pady=1, padx=10
+        )
 
-    block.grid(row=1, column=column, pady=5, padx=10, sticky="n")
-
+    block.grid(
+        row=1, column=column,
+        pady=5, padx=10,
+        sticky="n"
+    )
 
 def display_parameter_name(value: str | float) -> str:
     if isinstance(value, float):

@@ -13,11 +13,12 @@ from src.bayakm.config_loader import Config
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
+
         self.table_frame = None
         self.menu_frame = None
+        self.campaign = None
         self.dirs = DirPaths()
         self.cfg = Config()
-        self.campaign = None
 
         self._initialize_geometry()
         self._initialize_campaign()
@@ -40,11 +41,18 @@ class App(ctk.CTk):
             font=("Arial", 24),
         )
         header.pack(pady=20, padx=40)
-        self.header_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10, sticky="ew")
+        self.header_frame.grid(
+            row=0, column=0,
+            pady=10, padx=10,
+            sticky="ew", columnspan=3
+        )
 
     def _create_menu_frame(self):
         self.menu_frame = MenuFrame(master=self)
-        self.menu_frame.grid(row=1, column=0, pady=5, padx=10)
+        self.menu_frame.grid(
+            row=1, column=0,
+            pady=5, padx=10
+        )
 
     def _display_recommendation(self):
         if check_path(self.dirs.output_path):
@@ -53,7 +61,10 @@ class App(ctk.CTk):
             data = None
 
         self.table_frame = TableFrame(master=self, data=data)
-        self.table_frame.grid(row=1, column=1, pady=5, padx=10)
+        self.table_frame.grid(
+            row=1, column=1,
+            pady=5, padx=10
+        )
 
     def _create_info_frame(self):
         self.info_frame = ctk.CTkFrame(master=self)
@@ -61,23 +72,31 @@ class App(ctk.CTk):
             master=self.info_frame,
             text="Hier könnte ein Infotext stehen.")
         label.pack(padx=5, pady=5)
-        self.info_frame.grid(row=2, column=0, columnspan=3, pady=5, padx=10, sticky="ew")
+        self.info_frame.grid(
+            row=2, column=0,
+            pady=5, padx=10,
+            sticky="ew", columnspan=3
+        )
 
     def refresh_content(self):
         self.menu_frame.destroy()
         self._create_menu_frame()
+
         self.table_frame.destroy()
         self._display_recommendation()
 
     def _initialize_campaign(self):
-        if check_path(self.dirs.param_path):
-            self.parameter_list = build_param_list()
-            if check_path(self.dirs.campaign_path):
-                self.campaign = BayAKMCampaign(self.parameter_list)
-                if self.cfg.pi:
-                    self.campaign.attach_hook([print_pi])
+        self.parameter_list = build_param_list()
+        if check_path(self.dirs.campaign_path):
+            self.campaign = BayAKMCampaign(self.parameter_list)
+            if self.cfg.pi:
+                self.campaign.attach_hook([print_pi])
 
-
+    def command_save_campaign_and_get_first_recommendation(self):
+        self.campaign = BayAKMCampaign()
+        self.campaign.get_recommendation(initial=True)
+        self.campaign.save_campaign()
+        self.refresh_content()
 
 
 def main():

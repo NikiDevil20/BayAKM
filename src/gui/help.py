@@ -1,10 +1,14 @@
 import customtkinter as ctk
 
+
 class HelpFrame(ctk.CTkFrame):
     def __init__(self, master=None):
         super().__init__(master)
 
-        label = ctk.CTkLabel(master=self, text="Help")
+        label = ctk.CTkLabel(
+            master=self,
+            text="Help"
+        )
         label.pack()
 
 def error_subwindow(master, message: str):
@@ -17,4 +21,6 @@ def error_subwindow(master, message: str):
         text=message,
         font=("Arial", 20)
     )
-    subwindow.label.pack(pady=50, padx=50)
+    subwindow.label.pack(
+        pady=50, padx=50
+    )

@@ -16,7 +16,13 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.parameter_list = parameter_list
         self.cfg = Config()
 
-        self._segmented_button.configure(font=ctk.CTkFont(family="Arial", size=12, weight="bold"))
+        self._segmented_button.configure(
+            font=ctk.CTkFont(
+                family="Arial",
+                size=12,
+                weight="bold"
+            )
+        )
         self.configure(
             text_color="black",
             anchor="nw"
@@ -35,7 +41,10 @@ class NewCampaignTabview(ctk.CTkTabview):
             master=self.tab("Configuration"),
             fg_color="dark grey"
         )
-        self.widget_frame.grid(row=0, column=0, pady=10, padx=30)
+        self.widget_frame.grid(
+            row=0, column=0,
+            pady=10, padx=30
+        )
 
     def _create_widgets(self):
         self.widget_list = []
@@ -58,8 +67,10 @@ class NewCampaignTabview(ctk.CTkTabview):
                 width=150
             )
             self.widget_list.append(widget)
+
             if isinstance(widget, ctk.CTkEntry):
                 widget.insert(0, widget_default)
+
             if isinstance(widget, ctk.CTkCheckBox):
                 widget.configure(
                     text=""
@@ -68,10 +79,18 @@ class NewCampaignTabview(ctk.CTkTabview):
                     widget.select()
                 else:
                     widget.deselect()
+
             if isinstance(widget, ctk.CTkOptionMenu):
                 widget.set(widget_default)
-            label.grid(row=i+1, column=0, pady=2, padx=10)
-            widget.grid(row=i+1, column=1, pady=2, padx=10)
+
+            label.grid(
+                row=i+1, column=0,
+                pady=2, padx=10
+            )
+            widget.grid(
+                row=i+1, column=1,
+                pady=2, padx=10
+            )
 
     def _setup_parameters_frame(self):
         self.setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
@@ -87,7 +106,10 @@ class NewCampaignTabview(ctk.CTkTabview):
             no_parameters_label.pack()
 
         button_frame = ctk.CTkFrame(master=self.tab("Parameters"))
-        button_frame.pack(side="left", pady=5, padx=10)
+        button_frame.pack(
+            side="left",
+            pady=5, padx=10
+        )
 
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
@@ -96,9 +118,15 @@ class NewCampaignTabview(ctk.CTkTabview):
         )
         for i, (text, kwargs) in enumerate(btn_config):
             button = ctk.CTkButton(
-                master=button_frame, text=text, width=50, text_color="black",
+                master=button_frame,
+                text=text,
+                width=50,
+                text_color="black",
                 command=lambda arguments=kwargs: create_subwindow(**arguments))
-            button.grid(row=0, column=i, pady=2, padx=5)
+            button.grid(
+                row=0, column=i,
+                pady=2, padx=5
+            )
 
     def _build_parameters(self):
         self.parameter_frame = ctk.CTkScrollableFrame(
@@ -128,13 +156,14 @@ class NewCampaignTabview(ctk.CTkTabview):
         recommendation_button.pack()
 
     def _save_and_get_recommendation(self):
-        self.master.master.master.campaign = BayAKMCampaign()
-        self.master.master.master.campaign.get_recommendation(initial=True)
-        self.master.master.master.campaign.save_campaign()
-        self.master.master.master.refresh_content()
+        self.master.master.master.command_save_campaign_and_get_first_recommendation()
 
 
-def create_subwindow(master, title, frameclass):
+def create_subwindow(
+        master,
+        title,
+        frameclass
+):
     subwindow = ctk.CTkToplevel(master)
     subwindow.title(title)
     subwindow.grab_set()
@@ -142,5 +171,8 @@ def create_subwindow(master, title, frameclass):
     subwindow.columnconfigure(0, weight=1)
     subwindow.rowconfigure(0, weight=1)
     subwindow.frame = frameclass(master=subwindow)
-    subwindow.frame.grid(row=0, column=0, sticky="nsew")
+    subwindow.frame.grid(
+        row=0, column=0,
+        sticky="nsew"
+    )
     return subwindow

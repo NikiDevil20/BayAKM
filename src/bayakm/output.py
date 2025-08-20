@@ -65,7 +65,11 @@ def import_output_to_df() -> pd.DataFrame:
         without the "Journal number" column.
     """
     info_string("Measurements", "Reading results.csv...")
-    df = pd.read_csv(filepath_or_buffer=dirs.output_path, sep=";", decimal=".")
+    df = pd.read_csv(
+        filepath_or_buffer=dirs.output_path,
+        sep=";",
+        decimal="."
+    )
     return df
 
 

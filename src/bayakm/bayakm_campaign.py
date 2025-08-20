@@ -31,6 +31,7 @@ class BayAKMCampaign(Campaign):
 
     def __init__(self, parameter_list=None):
         info_string("Campaign", "Initializing campaign...")
+
         if not check_path(dirs.campaign_path):
             self.campaign = create_campaign(parameter_list)
             self.save_campaign()
@@ -78,17 +79,27 @@ class BayAKMCampaign(Campaign):
         with open(dirs.campaign_path, "w") as f:
             yaml.dump(campaign_dict, f)
 
-    def get_recommendation(self, initial: bool, measurements=None, pending=None):
+    def get_recommendation(
+            self,
+            initial: bool,
+            measurements=None,
+            pending=None
+    ):
         if isinstance(measurements, pd.DataFrame):
             self.campaign.add_measurements(measurements)
-        if pending.empty:
-            pending = None
+
+        if isinstance(pending, pd.DataFrame):
+            if pending.empty:
+                pending = None
+
         recommendation = self.campaign.recommend(
             batch_size=3,  # TODO
             pending_experiments=pending
         )
+
         recommendation["Journal number"] = cfg.prefix
         recommendation["Yield"] = np.nan
+
         if initial:
             create_output(recommendation)
         else:
@@ -103,10 +114,12 @@ def create_campaign(parameter_list=None) -> Campaign:
     """
     if parameter_list is None:
         parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
+
     searchspace = SearchSpace.from_product(
         parameters=parameter_list,
         constraints=[]
     )
+
     objective = SingleTargetObjective(
         target=NumericalTarget(
             mode="MAX",  # type: ignore
@@ -129,7 +142,6 @@ def create_campaign(parameter_list=None) -> Campaign:
         recommender=recommender
     )
     return campaign
-
 
 def load_campaign() -> Campaign:
     """Loads the campaign from its path defined

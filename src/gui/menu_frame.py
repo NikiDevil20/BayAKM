@@ -20,16 +20,12 @@ class MenuFrame(ctk.CTkFrame):
         self.cfg = Config()
         self.campaign = None
 
-        self.params_list = build_param_list()
-        if check_path(self.dirs.campaign_path):
-            self._initialize_campaign(self.params_list)
-
         self._create_subwindows()
 
     def _create_subwindows(self):
         btn_config = (
-            {"name": "New campaign", "parameter_list": self.params_list},
-            {"name": "View parameters", "parameter_list": self.params_list},
+            {"name": "New campaign", "parameter_list": self.master.parameter_list},
+            {"name": "View parameters", "parameter_list": self.master.parameter_list},
             {"name": "Help"}
         )
         for i, arguments in enumerate(btn_config):
@@ -43,9 +39,16 @@ class MenuFrame(ctk.CTkFrame):
                 width=200,
                 fg_color="light blue"
             )
-            button.grid(row=i+1, column=0, pady=5, padx=10)
+            button.grid(
+                row=i+1, column=0,
+                pady=5, padx=10
+            )
 
-    def _commands_subwindow(self, name: str, **kwargs):
+    def _commands_subwindow(
+            self,
+            name: str,
+            **kwargs
+    ):
         match name:
             case "Help":
                 frame_class = HelpFrame
@@ -61,19 +64,11 @@ class MenuFrame(ctk.CTkFrame):
         subwindow.focus_set()
         subwindow.columnconfigure(0, weight=1)
         subwindow.rowconfigure(0, weight=1)
-        subwindow.frame = frame_class(master=subwindow, **kwargs)
-        subwindow.frame.grid(row=0, column=0, sticky="nsew")
-
-    def _get_new_recommendation(self):
-        print("test")
-
-    def _initialize_campaign(self, parameter_list):
-        campaign = BayAKMCampaign(parameter_list)
-        if self.cfg.pi:
-            campaign.attach_hook([print_pi])
-        self.campaign = campaign
-
-def test_func():
-    print("Test.")
-
-
+        subwindow.frame = frame_class(
+            master=subwindow,
+            **kwargs
+        )
+        subwindow.frame.grid(
+            row=0, column=0,
+            sticky="nsew"
+        )
