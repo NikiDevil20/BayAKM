@@ -1,7 +1,6 @@
 import customtkinter as ctk
-from time import time
-from src.bayakm.menu_frame import MenuFrame
-from src.bayakm.table_frame import TableFrame
+from src.gui.menu_frame import MenuFrame
+from src.gui.table_frame import TableFrame
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.dir_paths import DirPaths
 # ctk.set_default_color_theme("dark-blue")

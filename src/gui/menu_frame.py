@@ -9,7 +9,7 @@ from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
 from src.bayakm.probability_of_improvement import print_pi
-from src.bayakm.new_campaign_tabview import NewCampaignTabview
+from src.gui.new_campaign_tabview import NewCampaignTabview
 
 
 class MenuFrame(ctk.CTkFrame):

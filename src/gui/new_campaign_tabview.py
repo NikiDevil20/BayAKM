@@ -1,14 +1,12 @@
 import customtkinter as ctk
-import numpy as np
 
 from src.bayakm.config_loader import Config
-from src.bayakm.param_view_frame import create_full_table
+from src.gui.param_view_frame import create_full_table
 from src.bayakm.parameters import build_param_list
-from src.bayakm.add_numerical_frame import AddNumericalFrame
-from src.bayakm.remove_parameter_frame import RemoveParameterFrame
-from src.bayakm.add_substance_frame import AddSubstanceFrame
+from src.gui.add_numerical_frame import AddNumericalFrame
+from src.gui.remove_parameter_frame import RemoveParameterFrame
+from src.gui.add_substance_frame import AddSubstanceFrame
 from src.bayakm.bayakm_campaign import BayAKMCampaign
-from src.bayakm.output import create_output
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -133,7 +131,6 @@ class NewCampaignTabview(ctk.CTkTabview):
         campaign = BayAKMCampaign()
         campaign.get_recommendation(initial=True)
         self.master.master.master.refresh_content()
-        pass
 
 
 def create_subwindow(master, title, frameclass):
