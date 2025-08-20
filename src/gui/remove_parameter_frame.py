@@ -1,4 +1,5 @@
 import customtkinter as ctk
+
 from src.bayakm.parameters import delete_parameter, build_param_list
 
 

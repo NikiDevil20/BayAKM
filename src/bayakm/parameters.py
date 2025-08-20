@@ -1,6 +1,4 @@
 import yaml
-import sys
-from time import time
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
 from src.bayakm.dir_paths import DirPaths

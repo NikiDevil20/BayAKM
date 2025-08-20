@@ -6,8 +6,8 @@ from time import time
 
 import pandas as pd
 
-from src.bayakm.dir_paths import DirPaths
 from src.bayakm.config_loader import Config
+from src.bayakm.dir_paths import DirPaths
 
 dirs = DirPaths()
 cfg = Config()

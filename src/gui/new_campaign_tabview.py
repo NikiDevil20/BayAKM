@@ -1,12 +1,11 @@
 import customtkinter as ctk
 
 from src.bayakm.config_loader import Config
-from src.gui.param_view_frame import create_full_table
 from src.bayakm.parameters import build_param_list
 from src.gui.add_numerical_frame import AddNumericalFrame
-from src.gui.remove_parameter_frame import RemoveParameterFrame
 from src.gui.add_substance_frame import AddSubstanceFrame
-from src.bayakm.bayakm_campaign import BayAKMCampaign
+from src.gui.param_view_frame import create_full_table
+from src.gui.remove_parameter_frame import RemoveParameterFrame
 
 
 class NewCampaignTabview(ctk.CTkTabview):

@@ -1,5 +1,6 @@
 from types import MethodType
 from typing import Callable
+
 import numpy as np
 import pandas as pd
 import yaml
@@ -12,10 +13,10 @@ from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
+from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path, info_string, create_output, append_to_output
 from src.bayakm.parameters import build_param_list
-from src.bayakm.config_loader import Config
 
 dirs = DirPaths()
 cfg = Config()

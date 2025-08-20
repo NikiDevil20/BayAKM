@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from src.bayakm.parameters import build_param_list
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
 
