@@ -1,4 +1,4 @@
 @echo off
 cd /d %~dp0
-python -m src.gui.gui
-pause
+start "" /B /MIN pythonw -m src.gui.gui
+exit

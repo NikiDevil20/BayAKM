@@ -1,4 +1,6 @@
 import customtkinter as ctk
+import threading
+import time
 
 from src.bayakm.bayakm_campaign import BayAKMCampaign
 from src.bayakm.config_loader import Config
@@ -8,6 +10,7 @@ from src.bayakm.parameters import build_param_list
 from src.bayakm.probability_of_improvement import print_pi
 from src.gui.menu_frame import MenuFrame
 from src.gui.table_frame import TableFrame
+from src.gui.loading_screen import LoadingScreen
 
 
 # ctk.set_default_color_theme("dark-blue")
@@ -101,11 +104,9 @@ class App(ctk.CTk):
         self.campaign.save_campaign()
         self.refresh_content()
 
-
 def main():
     app = App()
     app.mainloop()
-
 
 if __name__ == "__main__":
     main()
