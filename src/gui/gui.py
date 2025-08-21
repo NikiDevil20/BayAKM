@@ -1,6 +1,4 @@
 import customtkinter as ctk
-import threading
-import time
 
 from src.bayakm.bayakm_campaign import BayAKMCampaign
 from src.bayakm.config_loader import Config
@@ -8,9 +6,9 @@ from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
 from src.bayakm.probability_of_improvement import print_pi
+from src.gui.gui_constants import HEADER, STANDARD
 from src.gui.menu_frame import MenuFrame
 from src.gui.table_frame import TableFrame
-from src.gui.gui_constants import HEADER, STANDARD, SUBHEADER
 
 
 # ctk.set_default_color_theme("dark-blue")
@@ -54,7 +52,7 @@ class App(ctk.CTk):
         )
         subheader = ctk.CTkLabel(
             master=self.header_frame,
-            text="A convenient gui-based tool for reaction optimization",
+            text="A convenient gui based tool for bayesian reaction optimization",
             font=STANDARD
         )
         subheader.grid(
@@ -124,9 +122,11 @@ class App(ctk.CTk):
         self.campaign.save_campaign()
         self.refresh_content()
 
+
 def main():
     app = App()
     app.mainloop()
+
 
 if __name__ == "__main__":
     main()

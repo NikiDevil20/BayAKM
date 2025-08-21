@@ -113,12 +113,16 @@ class NewCampaignTabview(ctk.CTkTabview):
                 master=self.parameter_frame,
                 text="Use the buttons below to add some parameters."
             )
-            no_parameters_label.pack()
+            no_parameters_label.grid(
+                row=0, column=0,
+                pady=5, padx=10
+            )
 
-        button_frame = ctk.CTkFrame(master=self.tab("Parameters"))
-        button_frame.pack(
-            side="left",
-            pady=5, padx=10
+        button_frame = ctk.CTkFrame(master=self.setup_frame)
+        button_frame.grid(
+            row=1, column=0,
+            pady=5, padx=10,
+            sticky="ew"
         )
 
         btn_config = (
@@ -140,7 +144,7 @@ class NewCampaignTabview(ctk.CTkTabview):
             )
             button.grid(
                 row=0, column=i,
-                pady=2, padx=5
+                pady=5, padx=10
             )
 
     def _build_parameters(self):
@@ -155,8 +159,10 @@ class NewCampaignTabview(ctk.CTkTabview):
 
     def refresh_parameters(self):
         self.parameter_list = build_param_list()
-        self.parameter_frame.destroy()
-        self._build_parameters()
+        # self.parameter_frame.destroy()
+        # self._build_parameters()
+        self.setup_frame.destroy()
+        self._setup_parameters_frame()
 
     def _create_recommendation_frame(self):
         recommendation_frame = ctk.CTkFrame(master=self.tab("Get recommendation"))
