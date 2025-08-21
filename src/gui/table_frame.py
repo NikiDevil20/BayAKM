@@ -3,6 +3,7 @@ import pandas as pd
 
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
+from src.gui.gui_constants import SUBHEADER
 
 
 class TableFrame(ctk.CTkFrame):
@@ -15,8 +16,8 @@ class TableFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 master=self,
                 text="Create a new campaign \n to display table.",
-                pady=5, padx=5,
-                corner_radius=15
+                pady=20, padx=20,
+                font=SUBHEADER
             )
             label.pack()
         else:

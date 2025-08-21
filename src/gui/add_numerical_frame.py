@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from src.bayakm.parameters import write_to_parameters_file
 from src.gui.help import error_subwindow
-from src.gui.gui_constants import HEADER
+from src.gui.gui_constants import HEADER, STANDARD
 
 
 class AddNumericalFrame(ctk.CTkFrame):
@@ -17,7 +17,7 @@ class AddNumericalFrame(ctk.CTkFrame):
     def _create_header(self):
         """Building the frame's header.
         """
-        header_frame = ctk.CTkFrame(master=self)
+        header_frame = ctk.CTkFrame(master=self, fg_color="light blue")
         header_frame.grid(
             row=0, column=0,
             pady=5, padx=10,
@@ -25,7 +25,7 @@ class AddNumericalFrame(ctk.CTkFrame):
         )
         header = ctk.CTkLabel(
             master=header_frame,
-            text="Add new numerical parameter",
+            text="Add numerical parameter",
             font=HEADER
         )
         header.pack(pady=10, padx=30)
@@ -42,7 +42,8 @@ class AddNumericalFrame(ctk.CTkFrame):
         # Entry for parameter name.
         self.name_entry = ctk.CTkEntry(
             master=content_frame,
-            placeholder_text="Parameter name"
+            placeholder_text="Parameter name",
+            font=STANDARD
         )
         self.name_entry.grid(
             row=1, column=0,
@@ -52,7 +53,8 @@ class AddNumericalFrame(ctk.CTkFrame):
         # Entry for parameter values.
         self.content_entry = ctk.CTkEntry(
             master=content_frame,
-            placeholder_text="Values"
+            placeholder_text="Values",
+            font=STANDARD
         )
         self.content_entry.grid(
             row=1, column=1,
@@ -62,7 +64,8 @@ class AddNumericalFrame(ctk.CTkFrame):
         # Button to save the new parameter.
         save_button = ctk.CTkButton(
             master=content_frame, text="Save", width=20,
-            command=lambda: self._command_save_parameter()
+            command=lambda: self._command_save_parameter(),
+            font=STANDARD, text_color="black", fg_color="light blue"
         )
         save_button.grid(
             row=1, column=2,
@@ -83,7 +86,8 @@ class AddNumericalFrame(ctk.CTkFrame):
         bottom_label = ctk.CTkLabel(
             master=bottom_frame,
             text=("Enter parameter name on the left and parameter"
-                  "\n values, separated by comma, on the right.")
+                  "\n values, separated by comma, on the right."),
+            font=STANDARD
         )
         bottom_label.pack(pady=5, padx=10)
 

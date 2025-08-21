@@ -4,6 +4,7 @@ from src.bayakm.config_loader import Config
 from src.bayakm.parameters import build_param_list
 from src.gui.add_numerical_frame import AddNumericalFrame
 from src.gui.add_substance_frame import AddSubstanceFrame
+from src.gui.gui_constants import STANDARD, SUBHEADER
 from src.gui.param_view_frame import create_full_table
 from src.gui.remove_parameter_frame import RemoveParameterFrame
 
@@ -17,14 +18,19 @@ class NewCampaignTabview(ctk.CTkTabview):
 
         self._segmented_button.configure(
             font=ctk.CTkFont(
-                family="Arial",
-                size=12,
-                weight="bold"
-            )
+                family="Inter",
+                size=16,
+                # weight="bold"
+            ),
+            fg_color="light grey",
+            corner_radius=10
         )
         self.configure(
             text_color="black",
-            anchor="nw"
+            anchor="nw",
+            height=20,
+            segmented_button_selected_color="light blue",
+            segmented_button_unselected_color="light grey"
         )
         self.add("Configuration")
         self.add("Parameters")
@@ -38,7 +44,7 @@ class NewCampaignTabview(ctk.CTkTabview):
     def _create_widget_frame(self):
         self.widget_frame = ctk.CTkFrame(
             master=self.tab("Configuration"),
-            fg_color="dark grey"
+            fg_color="light grey"
         )
         self.widget_frame.grid(
             row=0, column=0,
@@ -48,11 +54,11 @@ class NewCampaignTabview(ctk.CTkTabview):
     def _create_widgets(self):
         self.widget_list = []
         widget_config = (
-            ("Choose acquisition function", ctk.CTkOptionMenu, None, {"values": ("qLogEI", "UCB", "qPI")}),
-            ("Batchsize", ctk.CTkEntry, 1, {}),
-            ("Show probability of improvement", ctk.CTkCheckBox, True, {})
+            ("Choose acquisition function", ctk.CTkOptionMenu, None, {"values": ("qLogEI", "UCB", "qPI")}, "light blue"),
+            ("Batchsize", ctk.CTkEntry, 1, {}, "white"),
+            ("Show probability of improvement", ctk.CTkCheckBox, True, {}, "dark grey")
         )
-        for i, (widget_name, widget_type, widget_default, widget_kwargs) in enumerate(widget_config):
+        for i, (widget_name, widget_type, widget_default, widget_kwargs, fg_color) in enumerate(widget_config):
             label = ctk.CTkLabel(
                 master=self.widget_frame,
                 text=widget_name,
@@ -63,7 +69,8 @@ class NewCampaignTabview(ctk.CTkTabview):
                 master=self.widget_frame,
                 **widget_kwargs,
                 text_color="black",
-                width=150
+                width=150,
+                fg_color=fg_color
             )
             self.widget_list.append(widget)
 
@@ -81,6 +88,7 @@ class NewCampaignTabview(ctk.CTkTabview):
 
             if isinstance(widget, ctk.CTkOptionMenu):
                 widget.set(widget_default)
+                # widget.configure(button_color="dark grey")
 
             label.grid(
                 row=i+1, column=0,
@@ -121,7 +129,10 @@ class NewCampaignTabview(ctk.CTkTabview):
                 text=text,
                 width=50,
                 text_color="black",
-                command=lambda arguments=kwargs: create_subwindow(**arguments))
+                command=lambda arguments=kwargs: create_subwindow(**arguments),
+                fg_color="light blue",
+                font=STANDARD
+            )
             button.grid(
                 row=0, column=i,
                 pady=2, padx=5
@@ -150,7 +161,10 @@ class NewCampaignTabview(ctk.CTkTabview):
             text="Get first recommendation",
             width=100,
             height=70,
-            command=lambda: self._save_and_get_recommendation()
+            command=lambda: self._save_and_get_recommendation(),
+            font=SUBHEADER,
+            fg_color="light blue",
+            text_color="black"
         )
         recommendation_button.pack()
 

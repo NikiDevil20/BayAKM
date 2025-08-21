@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from src.bayakm.parameters import write_to_parameters_file
 from src.gui.help import error_subwindow
-from src.gui.gui_constants import HEADER
+from src.gui.gui_constants import HEADER, STANDARD
 
 
 class AddSubstanceFrame(ctk.CTkFrame):
@@ -18,15 +18,15 @@ class AddSubstanceFrame(ctk.CTkFrame):
 
     def _create_header_frame(self):
         """Creating the header frame, which contains the header."""
-        header_frame = ctk.CTkFrame(master=self)
+        header_frame = ctk.CTkFrame(master=self, fg_color="light blue")
         header_frame.grid(
             row=0, column=0,
             pady=5, padx=10,
-            sticky="ew"
+            sticky="ew",
         )
         header = ctk.CTkLabel(
             master=header_frame,
-            text="Add new substance parameter",
+            text="Add substance parameter",
             font=HEADER
         )
         header.pack(pady=10, padx=30)
@@ -47,11 +47,13 @@ class AddSubstanceFrame(ctk.CTkFrame):
 
         self.name_entry = ctk.CTkEntry(
             master=self.content_frame,
-            placeholder_text="Parameter name"
+            placeholder_text="Parameter name",
+            font=STANDARD
         )
         self.name_entry.grid(
             row=0, column=0,
-            pady=5, padx=10
+            pady=5, padx=20,
+            sticky="ew"
         )
 
         # Initially creating two rows, because we
@@ -72,11 +74,13 @@ class AddSubstanceFrame(ctk.CTkFrame):
 
         substance_name_entry = ctk.CTkEntry(
             master=row,
-            placeholder_text="Substance name"
+            placeholder_text="Substance name",
+            font=STANDARD
         )
         smiles_entry = ctk.CTkEntry(
             master=row,
-            placeholder_text="SMILES string"
+            placeholder_text="SMILES string",
+            font=STANDARD
         )
 
         substance_name_entry.grid(
@@ -94,7 +98,9 @@ class AddSubstanceFrame(ctk.CTkFrame):
             master=row,
             text="-",
             command=lambda: row.destroy(),
-            width=10
+            width=10,
+            fg_color="light blue",
+            text_color="black"
         )
         remove_button.grid(
             row=0, column=2,
@@ -118,7 +124,9 @@ class AddSubstanceFrame(ctk.CTkFrame):
             master=bottom_frame,
             text="Save",
             width=20,
-            command=lambda: self._command_save_parameter()
+            command=lambda: self._command_save_parameter(),
+            text_color="black",
+            fg_color="light blue"
         )
         save_button.grid(
             row=0, column=1,
@@ -126,9 +134,11 @@ class AddSubstanceFrame(ctk.CTkFrame):
         )
         add_button = ctk.CTkButton(
             master=bottom_frame,
-            text="+",
+            text="Add row",
             command=lambda: self._create_row(),
-            width=10
+            width=10,
+            text_color="black",
+            fg_color="light blue"
         )
         add_button.grid(
             row=0, column=0,

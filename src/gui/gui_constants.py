@@ -2,6 +2,7 @@ std_text_color = "black"
 fg_color = "light blue"
 bg_color = "light grey"
 
-HEADER = ("Arial", 24)
-STANDARD = ("Arial", 14)
-SMALL = ("Arial", 10)
+HEADER = ("Inter", 28, "bold")
+SUBHEADER = ("Inter", 20)
+STANDARD = ("Inter", 14)
+SMALL = ("Inter", 10)

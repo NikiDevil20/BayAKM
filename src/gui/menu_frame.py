@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from src.gui.gui_constants import SUBHEADER
 from src.gui.param_view_frame import ParamViewFrame
 from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
@@ -28,7 +29,7 @@ class MenuFrame(ctk.CTkFrame):
                 master=self,
                 text=arguments["name"],
                 command=lambda args=arguments: self._commands_subwindow(**args),
-                font=("Arial", 18),
+                font=SUBHEADER,
                 text_color="black",
                 height=40,
                 width=200,

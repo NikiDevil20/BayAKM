@@ -10,7 +10,7 @@ from src.bayakm.parameters import build_param_list
 from src.bayakm.probability_of_improvement import print_pi
 from src.gui.menu_frame import MenuFrame
 from src.gui.table_frame import TableFrame
-from src.gui.loading_screen import LoadingScreen
+from src.gui.gui_constants import HEADER, STANDARD, SUBHEADER
 
 
 # ctk.set_default_color_theme("dark-blue")
@@ -26,6 +26,7 @@ class App(ctk.CTk):
         self.dirs = DirPaths()
         self.cfg = Config()
 
+        # Initializing content
         self._initialize_geometry()
         self._initialize_campaign()
         self._create_header()
@@ -43,10 +44,24 @@ class App(ctk.CTk):
         )
         header = ctk.CTkLabel(
             master=self.header_frame,
-            text="Dies ist ein Titel.",
-            font=("Arial", 24),
+            text="BayAKM",
+            font=HEADER,
         )
-        header.pack(pady=20, padx=40)
+        header.grid(
+            row=0, column=0,
+            pady=20, padx=50,
+            sticky="w"
+        )
+        subheader = ctk.CTkLabel(
+            master=self.header_frame,
+            text="A convenient gui-based tool for reaction optimization",
+            font=STANDARD
+        )
+        subheader.grid(
+            row=0, column=1,
+            pady=5, padx=40,
+            sticky="w"
+        )
         self.header_frame.grid(
             row=0, column=0,
             pady=10, padx=10,
@@ -57,7 +72,8 @@ class App(ctk.CTk):
         self.menu_frame = MenuFrame(master=self)
         self.menu_frame.grid(
             row=1, column=0,
-            pady=5, padx=10
+            pady=5, padx=10,
+            sticky="nw"
         )
 
     def _display_recommendation(self):
@@ -66,6 +82,8 @@ class App(ctk.CTk):
         else:
             data = None
 
+        # TableFrame is always constructed, but if no real data
+        # can be displayed, a message is shown.
         self.table_frame = TableFrame(master=self, data=data)
         self.table_frame.grid(
             row=1, column=1,
@@ -74,15 +92,17 @@ class App(ctk.CTk):
 
     def _create_info_frame(self):
         self.info_frame = ctk.CTkFrame(master=self)
-        label = ctk.CTkLabel(
-            master=self.info_frame,
-            text="Hier könnte ein Infotext stehen.")
-        label.pack(padx=5, pady=5)
         self.info_frame.grid(
             row=2, column=0,
             pady=5, padx=10,
             sticky="ew", columnspan=3
         )
+
+        # Placeholder
+        label = ctk.CTkLabel(
+            master=self.info_frame,
+            text="Hier könnte ein Infotext stehen.")
+        label.pack(padx=5, pady=5)
 
     def refresh_content(self):
         self.menu_frame.destroy()

@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from src.gui.gui_constants import SUBHEADER
+
 
 class HelpFrame(ctk.CTkFrame):
     def __init__(self, master=None):
@@ -11,6 +13,7 @@ class HelpFrame(ctk.CTkFrame):
         )
         label.pack()
 
+
 def error_subwindow(master, message: str):
     subwindow = ctk.CTkToplevel(master)
     subwindow.title("Error")
@@ -19,7 +22,7 @@ def error_subwindow(master, message: str):
     subwindow.label = ctk.CTkLabel(
         master=subwindow,
         text=message,
-        font=("Arial", 20)
+        font=SUBHEADER
     )
     subwindow.label.pack(
         pady=50, padx=50
