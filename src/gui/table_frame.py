@@ -122,6 +122,10 @@ class TableFrame(ctk.CTkFrame):
         if check_path(self.dirs.output_path):
             full_input: pd.DataFrame = import_output_to_df()
             measurements, pending = split_import_df(full_input)
+            if measurements.empty:
+                measurements = None
+            if pending.empty:
+                pending = None
         else:
             measurements, pending = None, None
         self.master.campaign.get_recommendation(
