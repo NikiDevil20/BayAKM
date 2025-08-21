@@ -1,12 +1,14 @@
 import customtkinter as ctk
 
 from src.bayakm.config_loader import Config
+from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
 from src.gui.add_numerical_frame import AddNumericalFrame
 from src.gui.add_substance_frame import AddSubstanceFrame
 from src.gui.gui_constants import STANDARD, SUBHEADER
 from src.gui.param_view_frame import create_full_table
 from src.gui.remove_parameter_frame import RemoveParameterFrame
+from src.bayakm.dir_paths import DirPaths
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -15,6 +17,7 @@ class NewCampaignTabview(ctk.CTkTabview):
 
         self.parameter_list = parameter_list
         self.cfg = Config()
+        self.dirs = DirPaths()
 
         self._segmented_button.configure(
             font=ctk.CTkFont(
@@ -124,6 +127,8 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Remove", {"master": self, "title": "Add numerical parameter", "frameclass": RemoveParameterFrame}),
         )
         for i, (text, kwargs) in enumerate(btn_config):
+            if i == 2 and not check_path(self.dirs.param_path):
+                return
             button = ctk.CTkButton(
                 master=button_frame,
                 text=text,

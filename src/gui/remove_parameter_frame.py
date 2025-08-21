@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from src.bayakm.parameters import delete_parameter, build_param_list
+from src.gui.gui_constants import STANDARD
 
 
 class RemoveParameterFrame(ctk.CTkFrame):
@@ -15,7 +16,8 @@ class RemoveParameterFrame(ctk.CTkFrame):
         for i, parameter in enumerate(self.parameter_list):
             checkbox = ctk.CTkCheckBox(
                 master=content_frame,
-                text=parameter.name
+                text=parameter.name,
+                font=STANDARD
             )
             checkbox.grid(
                 row=i, column=0,
@@ -29,7 +31,9 @@ class RemoveParameterFrame(ctk.CTkFrame):
             text="Remove",
             width=30,
             command=lambda: self._remove_parameter(),
-            text_color="black"
+            text_color="black",
+            font=STANDARD,
+            fg_color="light blue"
         )
         remove_button.pack(pady=10, padx=10)
 
