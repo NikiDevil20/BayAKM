@@ -33,11 +33,11 @@ def print_pi(
     Raises:
         TypeError: If the PI threshold is not a float.
     """
-    try:
-        pi_threshold = float(cfg.pi_threshold)
-    except TypeError:
-        print(f"Failed to convert entry {cfg.pi_threshold} to float.")
-        sys.exit(1)
+    # try:
+    #     pi_threshold = float(cfg.pi_threshold)
+    # except TypeError:
+    #     print(f"Failed to convert entry {cfg.pi_threshold} to float.")
+    #     sys.exit(1)
 
     candidates, _ = searchspace.discrete.get_candidates()
     acqf = ProbabilityOfImprovement()
@@ -49,10 +49,10 @@ def print_pi(
         acquisition_function=acqf
     )
 
-    n_pis_over = (pi > pi_threshold).sum()
+    n_pis_over = (pi > 0.01).sum()
     pi_fraction = n_pis_over / len(pi)
 
     info_string(
         "Recommendation",
         f"{pi_fraction:.0%} of candidates "
-        f"have a PI > {pi_threshold:.0%}.")
+        f"have a PI > 0.01.")

@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from numba.typed.dictobject import new_dict
 
 from src.bayakm.config_loader import Config
 from src.bayakm.output import check_path
@@ -18,6 +19,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.parameter_list = parameter_list
         self.cfg = Config()
         self.dirs = DirPaths()
+        self.widgets_dict = {}
 
         self._segmented_button.configure(
             font=ctk.CTkFont(
@@ -40,7 +42,6 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.add("Get recommendation")
 
         self._create_widget_frame()
-        self._create_widgets()
         self._setup_parameters_frame()
         self._create_recommendation_frame()
 
@@ -53,15 +54,30 @@ class NewCampaignTabview(ctk.CTkTabview):
             row=0, column=0,
             pady=10, padx=30
         )
+        self._create_widgets()
+
+        save_button = ctk.CTkButton(
+            master=self.widget_frame,
+            command=lambda: self._save_config(),
+            text="Save config",
+            text_color="black",
+        )
+        save_button.grid(
+            row=len(self.widgets_dict.keys())+1, column=0,
+            pady=5, padx=10,
+            columnspan=2, sticky="ew"
+        )
 
     def _create_widgets(self):
         self.widget_list = []
         widget_config = (
-            ("Choose acquisition function", ctk.CTkOptionMenu, None, {"values": ("qLogEI", "UCB", "qPI")}, "light blue"),
-            ("Batchsize", ctk.CTkEntry, 1, {}, "white"),
-            ("Show probability of improvement", ctk.CTkCheckBox, True, {}, "dark grey")
+            ("Journal prefix", ctk.CTkEntry, self.cfg.dict["Journal prefix"], {}),
+            ("Batchsize", ctk.CTkEntry, self.cfg.dict["Batchsize"], {}),
+            ("Initial recommender", ctk.CTkOptionMenu, self.cfg.dict["Initial recommender"],
+             {"values": ("FPS", "Random")}),
+            ("Acquisition function", ctk.CTkOptionMenu, self.cfg.dict["Acquisition function"], {"values": ("qLogEI", "UCB", "qPI")}),
         )
-        for i, (widget_name, widget_type, widget_default, widget_kwargs, fg_color) in enumerate(widget_config):
+        for i, (widget_name, widget_type, widget_default, widget_kwargs) in enumerate(widget_config):
             label = ctk.CTkLabel(
                 master=self.widget_frame,
                 text=widget_name,
@@ -73,11 +89,12 @@ class NewCampaignTabview(ctk.CTkTabview):
                 **widget_kwargs,
                 text_color="black",
                 width=150,
-                fg_color=fg_color
             )
-            self.widget_list.append(widget)
+
+            # self.widget_list.append(widget)
 
             if isinstance(widget, ctk.CTkEntry):
+                widget.configure(fg_color="white")
                 widget.insert(0, widget_default)
 
             if isinstance(widget, ctk.CTkCheckBox):
@@ -90,8 +107,11 @@ class NewCampaignTabview(ctk.CTkTabview):
                     widget.deselect()
 
             if isinstance(widget, ctk.CTkOptionMenu):
+                widget.configure(fg_color="light blue")
                 widget.set(widget_default)
                 # widget.configure(button_color="dark grey")
+
+            self.widgets_dict[widget_name] = widget
 
             label.grid(
                 row=i+1, column=0,
@@ -101,6 +121,12 @@ class NewCampaignTabview(ctk.CTkTabview):
                 row=i+1, column=1,
                 pady=2, padx=10
             )
+
+    def _save_config(self):
+        _new_dict = {}
+        for key in self.widgets_dict.keys():
+            _new_dict[key] = self.widgets_dict[key].get()
+        self.cfg.save_to_yaml(_new_dict)
 
     def _setup_parameters_frame(self):
         self.setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
@@ -127,8 +153,8 @@ class NewCampaignTabview(ctk.CTkTabview):
 
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
-            ("Add Substance", {"master": self, "title": "Add numerical parameter", "frameclass": AddSubstanceFrame}),
-            ("Remove", {"master": self, "title": "Add numerical parameter", "frameclass": RemoveParameterFrame}),
+            ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": AddSubstanceFrame}),
+            ("Remove", {"master": self, "title": "Remove parameter", "frameclass": RemoveParameterFrame}),
         )
         for i, (text, kwargs) in enumerate(btn_config):
             if i == 2 and not check_path(self.dirs.param_path):
@@ -159,8 +185,6 @@ class NewCampaignTabview(ctk.CTkTabview):
 
     def refresh_parameters(self):
         self.parameter_list = build_param_list()
-        # self.parameter_frame.destroy()
-        # self._build_parameters()
         self.setup_frame.destroy()
         self._setup_parameters_frame()
 
@@ -180,6 +204,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         recommendation_button.pack()
 
     def _save_and_get_recommendation(self):
+        self._save_config()
         self.master.master.master.command_save_campaign_and_get_first_recommendation()
 
 

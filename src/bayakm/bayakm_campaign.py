@@ -144,6 +144,7 @@ def create_campaign(parameter_list=None) -> Campaign:
     )
     return campaign
 
+
 def load_campaign() -> Campaign:
     """Loads the campaign from its path defined
     in the DirPaths class and returns it.

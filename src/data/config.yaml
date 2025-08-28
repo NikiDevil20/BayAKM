@@ -1,5 +1,4 @@
-config:
-  print_pi: True
-  pi_threshold: 0.01
-  journal_prefix: NA
-  
+Acquisition function: qLogEI
+Batchsize: '3'
+Initial recommender: FPS
+Journal prefix: NA
