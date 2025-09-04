@@ -7,9 +7,11 @@ from src.bayakm.parameters import build_param_list
 from src.gui.add_numerical_frame import AddNumericalFrame
 from src.gui.add_substance_frame import AddSubstanceFrame
 from src.gui.gui_constants import STANDARD, SUBHEADER
+from src.gui.new_page_factory import BaseFrame
 from src.gui.param_view_frame import create_full_table
 from src.gui.remove_parameter_frame import RemoveParameterFrame
 from src.bayakm.dir_paths import DirPaths
+from src.gui.new_substance_frame import NewSubstanceParameterFrame
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -153,7 +155,7 @@ class NewCampaignTabview(ctk.CTkTabview):
 
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
-            ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": AddSubstanceFrame}),
+            ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": RemoveParameterFrame}),
         )
         for i, (text, kwargs) in enumerate(btn_config):
@@ -217,11 +219,18 @@ def create_subwindow(
     subwindow.title(title)
     subwindow.grab_set()
     subwindow.focus_set()
-    subwindow.columnconfigure(0, weight=1)
-    subwindow.rowconfigure(0, weight=1)
-    subwindow.frame = frameclass(master=subwindow)
-    subwindow.frame.grid(
-        row=0, column=0,
-        sticky="nsew"
-    )
+
+    subwindow.frame = frame_factory(subwindow, frameclass)
+
+    subwindow.frame.grid(row=0, column=0, sticky="nsew")
     return subwindow
+
+
+def frame_factory(master, child):
+    if child == "substance":
+        frame = NewSubstanceParameterFrame(master)
+    else:
+        raise ValueError("Unknown frame type")
+
+    frame.fill_content()
+    return frame

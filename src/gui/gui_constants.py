@@ -1,6 +1,10 @@
-std_text_color = "black"
-fg_color = "light blue"
-bg_color = "light grey"
+TEXTCOLOR = "black"
+FGCOLOR = "light blue"
+BGCOLOR = "light grey"
+
+CONTENTFRAMECOLOR = "light grey"
+BOTTOMFRAMECOLOR = "light grey"
+ROWFGCOLOR = "grey"
 
 HEADER = ("Inter", 28, "bold")
 SUBHEADER = ("Inter", 20)
