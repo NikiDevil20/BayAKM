@@ -5,9 +5,9 @@ from src.gui.help import error_subwindow
 from src.gui.gui_constants import STANDARD, FGCOLOR, TEXTCOLOR, ROWFGCOLOR
 
 HEADER_TEXT = "New Substance Parameter"
-PARAMNAMEPLACEHOLDER = "Parameter name"
-SMILESPLACEHOLDER = "Smiles string"
-SUBSTNAMEPLACEHOLDER = "Substance name"
+PARAMNAME_PLACEHOLDER = "Parameter name"
+SMILES_PLACEHOLDER = "Smiles string"
+SUBSTNAME_PLACEHOLDER = "Substance name"
 
 
 class NewSubstanceParameterFrame(BaseFrame):
@@ -29,12 +29,12 @@ class NewSubstanceParameterFrame(BaseFrame):
 
         substance_name_entry = ctk.CTkEntry(
             master=row,
-            placeholder_text=SUBSTNAMEPLACEHOLDER,
+            placeholder_text=SUBSTNAME_PLACEHOLDER,
             font=STANDARD
         )
         smiles_entry = ctk.CTkEntry(
             master=row,
-            placeholder_text=SMILESPLACEHOLDER,
+            placeholder_text=SMILES_PLACEHOLDER,
             font=STANDARD
         )
 
@@ -103,7 +103,7 @@ class NewSubstanceParameterFrame(BaseFrame):
 
         self.name_entry = ctk.CTkEntry(
             master=self.content_frame,
-            placeholder_text=PARAMNAMEPLACEHOLDER,
+            placeholder_text=PARAMNAME_PLACEHOLDER,
             font=STANDARD
         )
         self.name_entry.grid(row=0, column=0, pady=5, padx=20, sticky="ew")
@@ -129,5 +129,3 @@ class NewSubstanceParameterFrame(BaseFrame):
             fg_color="light blue"
         )
         add_button.grid(row=0, column=0, pady=5, padx=10)
-
-

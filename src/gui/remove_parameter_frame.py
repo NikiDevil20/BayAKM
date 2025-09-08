@@ -1,41 +1,47 @@
 import customtkinter as ctk
 
 from src.bayakm.parameters import delete_parameter, build_param_list
-from src.gui.gui_constants import STANDARD
+from src.gui.gui_constants import STANDARD, TEXTCOLOR, FGCOLOR
+from src.gui.new_page_factory import BaseFrame
+
+HEADER_TEXT = "Remove parameters"
+BUTTON_TEXT = "Remove"
 
 
-class RemoveParameterFrame(ctk.CTkFrame):
-    def __init__(self, master=None):
+class RemoveParameterFrame(BaseFrame):
+    def __init__(self, master):
         super().__init__(master)
-
-        content_frame = ctk.CTkFrame(master=self)
-        content_frame.pack(pady=5, padx=10)
 
         self.parameter_list = build_param_list()
         self.checkbox_list = []
+
+    def fill_content(self):
+        self.header = HEADER_TEXT
+        self.build_frames()
+
+        self._display_parameter_checkboxes()
+
+        remove_button = ctk.CTkButton(
+            master=self.bottom_frame,
+            text=BUTTON_TEXT,
+            width=30,
+            command=lambda: self._remove_parameter(),
+            text_color=TEXTCOLOR,
+            font=STANDARD,
+            fg_color=FGCOLOR
+        )
+        remove_button.grid(row=0, column=0, pady=5, padx=10)
+
+    def _display_parameter_checkboxes(self):
         for i, parameter in enumerate(self.parameter_list):
             checkbox = ctk.CTkCheckBox(
-                master=content_frame,
+                master=self.content_frame,
                 text=parameter.name,
                 font=STANDARD
             )
-            checkbox.grid(
-                row=i, column=0,
-                pady=2, padx=10,
-                sticky="w"
-            )
-            self.checkbox_list.append((checkbox, parameter.name))
+            checkbox.grid(row=i, column=0, pady=2, padx=10, sticky="w")
 
-        remove_button = ctk.CTkButton(
-            master=self,
-            text="Remove",
-            width=30,
-            command=lambda: self._remove_parameter(),
-            text_color="black",
-            font=STANDARD,
-            fg_color="light blue"
-        )
-        remove_button.pack(pady=10, padx=10)
+            self.checkbox_list.append((checkbox, parameter.name))
 
     def _remove_parameter(self):
         parameters_list = [name for (checkbox, name) in self.checkbox_list if checkbox.get()]

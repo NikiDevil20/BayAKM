@@ -66,8 +66,3 @@ class BaseFrame(ctk.CTkFrame, ABC):
     @abstractmethod
     def fill_content(self):
         pass
-
-
-def frame_factory(master, frame_name):
-    if frame_name == "Substance":
-        pass

@@ -7,6 +7,7 @@ from src.bayakm.parameters import build_param_list
 from src.gui.add_numerical_frame import AddNumericalFrame
 from src.gui.add_substance_frame import AddSubstanceFrame
 from src.gui.gui_constants import STANDARD, SUBHEADER
+from src.gui.new_numerical_frame import NewNumericalParameterFrame
 from src.gui.new_page_factory import BaseFrame
 from src.gui.param_view_frame import create_full_table
 from src.gui.remove_parameter_frame import RemoveParameterFrame
@@ -154,9 +155,9 @@ class NewCampaignTabview(ctk.CTkTabview):
         )
 
         btn_config = (
-            ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": AddNumericalFrame}),
+            ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
-            ("Remove", {"master": self, "title": "Remove parameter", "frameclass": RemoveParameterFrame}),
+            ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"}),
         )
         for i, (text, kwargs) in enumerate(btn_config):
             if i == 2 and not check_path(self.dirs.param_path):
@@ -229,6 +230,10 @@ def create_subwindow(
 def frame_factory(master, child):
     if child == "substance":
         frame = NewSubstanceParameterFrame(master)
+    elif child == "numerical":
+        frame = NewNumericalParameterFrame(master)
+    elif child == "remove":
+        frame = RemoveParameterFrame(master)
     else:
         raise ValueError("Unknown frame type")
 
