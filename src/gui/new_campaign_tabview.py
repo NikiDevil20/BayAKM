@@ -1,18 +1,14 @@
 import customtkinter as ctk
-from numba.typed.dictobject import new_dict
 
 from src.bayakm.config_loader import Config
+from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
-from src.gui.add_numerical_frame import AddNumericalFrame
-from src.gui.add_substance_frame import AddSubstanceFrame
 from src.gui.gui_constants import STANDARD, SUBHEADER
 from src.gui.new_numerical_frame import NewNumericalParameterFrame
-from src.gui.new_page_factory import BaseFrame
+from src.gui.new_substance_frame import NewSubstanceParameterFrame
 from src.gui.param_view_frame import create_full_table
 from src.gui.remove_parameter_frame import RemoveParameterFrame
-from src.bayakm.dir_paths import DirPaths
-from src.gui.new_substance_frame import NewSubstanceParameterFrame
 
 
 class NewCampaignTabview(ctk.CTkTabview):

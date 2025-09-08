@@ -1,8 +1,9 @@
 import customtkinter as ctk
-from src.gui.new_page_factory import BaseFrame
+
 from src.bayakm.parameters import write_to_parameters_file
-from src.gui.help import error_subwindow
 from src.gui.gui_constants import STANDARD, FGCOLOR, TEXTCOLOR, ROWFGCOLOR
+from src.gui.help import error_subwindow
+from src.gui.new_page_factory import BaseFrame
 
 HEADER_TEXT = "New Substance Parameter"
 PARAMNAME_PLACEHOLDER = "Parameter name"

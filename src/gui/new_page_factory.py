@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 import customtkinter as ctk
 
 from src.gui.gui_constants import FGCOLOR, HEADER, CONTENTFRAMECOLOR, BOTTOMFRAMECOLOR
