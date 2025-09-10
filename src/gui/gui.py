@@ -113,8 +113,8 @@ class App(ctk.CTk):
         self.parameter_list = build_param_list()
         if check_path(self.dirs.campaign_path):
             self.campaign = BayAKMCampaign(self.parameter_list)
-            if self.cfg.pi:
-                self.campaign.attach_hook([print_pi])
+            # if self.cfg.dict["pi"]:
+            #     self.campaign.attach_hook([print_pi])  # TODO
 
     def command_save_campaign_and_get_first_recommendation(self):
         self.campaign = BayAKMCampaign()

@@ -98,7 +98,7 @@ class BayAKMCampaign(Campaign):
             pending_experiments=pending
         )
 
-        recommendation["Journal number"] = cfg.prefix
+        recommendation["Journal number"] = cfg.dict["Journal prefix"]
         recommendation["Yield"] = np.nan
 
         if initial:

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import customtkinter as ctk
 
-from src.gui.gui_constants import FGCOLOR, HEADER, CONTENTFRAMECOLOR, BOTTOMFRAMECOLOR
+from src.gui.gui_constants import FGCOLOR, HEADER, CONTENTFRAMECOLOR, BOTTOMFRAMECOLOR, TEXTCOLOR, STANDARD
 
 
 class BaseFrame(ctk.CTkFrame, ABC):
@@ -45,11 +45,7 @@ class BaseFrame(ctk.CTkFrame, ABC):
             master=self,
             fg_color=fg_color
         )
-        frame.grid(
-            pady=10, padx=20,
-            row=row, column=column,
-            sticky="ew"
-        )
+        frame.grid(pady=10, padx=20, row=row, column=column, sticky="ew")
         return frame
 
     @staticmethod
@@ -59,10 +55,21 @@ class BaseFrame(ctk.CTkFrame, ABC):
             text=text,
             font=font,
         )
-        label.pack(
-            pady=5, padx=10
-        )
+        label.pack(pady=5, padx=10)
         return label
+
+    @staticmethod
+    def create_generic_button(master, command, row=0, column=0, text=None):
+        button = ctk.CTkButton(
+            master=master,
+            text_color=TEXTCOLOR,
+            fg_color=FGCOLOR,
+            font=STANDARD,
+            command=command,
+            text=text
+        )
+        button.grid(row=row, column=column, pady=5, padx=10)
+        return button
 
     @abstractmethod
     def fill_content(self):

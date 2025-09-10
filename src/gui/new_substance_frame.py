@@ -16,12 +16,13 @@ class NewSubstanceParameterFrame(BaseFrame):
         super().__init__(master)
         self.row_list = []
         self.name_entry = None
+        self.row_frame = None
 
     def _create_row(self):
         """Creates a row with two entries for substance name and SMILES string.
         Rows can be added and removed via button press.
         """
-        row = ctk.CTkFrame(master=self.content_frame, fg_color=ROWFGCOLOR)
+        row = ctk.CTkFrame(master=self.row_frame, fg_color=ROWFGCOLOR)
         row.grid(
             row=len(self.row_list) + 1, column=0,
             pady=5, padx=10,
@@ -108,6 +109,9 @@ class NewSubstanceParameterFrame(BaseFrame):
             font=STANDARD
         )
         self.name_entry.grid(row=0, column=0, pady=5, padx=20, sticky="ew")
+
+        self.row_frame = ctk.CTkScrollableFrame(master=self.content_frame)
+        self.row_frame.grid(row=1, column=0, pady=5, padx=5)
 
         self._create_row()
         self._create_row()

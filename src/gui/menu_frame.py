@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from src.gui.gui_constants import SUBHEADER
+from src.gui.insights_frame import InsightsFrame
 from src.gui.param_view_frame import ParamViewFrame
 from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
@@ -22,6 +23,7 @@ class MenuFrame(ctk.CTkFrame):
         btn_config = (
             {"name": "New campaign", "parameter_list": self.master.parameter_list},
             {"name": "View parameters", "parameter_list": self.master.parameter_list},
+            {"name": "Get insights"},
             {"name": "Help"}
         )
         for i, arguments in enumerate(btn_config):
@@ -52,19 +54,18 @@ class MenuFrame(ctk.CTkFrame):
                 frame_class = NewCampaignTabview
             case "View parameters":
                 frame_class = ParamViewFrame
+            case "Get insights":
+                frame_class = InsightsFrame
+
             case _:
                 raise ValueError("Tippfehler?")
+
         subwindow = ctk.CTkToplevel(self)
         subwindow.title(name)
         subwindow.grab_set()
         subwindow.focus_set()
-        subwindow.columnconfigure(0, weight=1)
-        subwindow.rowconfigure(0, weight=1)
         subwindow.frame = frame_class(
             master=subwindow,
             **kwargs
         )
-        subwindow.frame.grid(
-            row=0, column=0,
-            sticky="nsew"
-        )
+        subwindow.frame.grid(row=0, column=0, sticky="nsew")
