@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from src.gui.gui_constants import SUBHEADER
 from src.gui.insights_frame import InsightsFrame
-from src.gui.param_view_frame import ParamViewFrame
+from src.gui.parameter_frames.param_view_frame import ParamViewFrame
 from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
 from src.gui.help import HelpFrame

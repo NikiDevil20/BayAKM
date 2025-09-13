@@ -1,5 +1,7 @@
 import customtkinter as ctk
-from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+
+from src.gui.gui_constants import SUBHEADER
 
 
 class ParamViewFrame(ctk.CTkFrame):
@@ -56,38 +58,38 @@ def create_full_table(
 def create_block(
         master,
         column: int,
-        parameter: NumericalDiscreteParameter | SubstanceParameter
+        parameter: NumericalDiscreteParameter | SubstanceParameter | NumericalContinuousParameter
 ):
     block = ctk.CTkFrame(master=master)
     block.columnconfigure(0, weight=1)
 
-    for row in range(len(parameter.values)+1):
-        block.rowconfigure(row, weight=1)
+
+    # for row in range(len(parameter.values)+1):
+    #     block.rowconfigure(row, weight=1)
 
     label = ctk.CTkLabel(
         master=block,
         text=parameter.name,
-        font=("Arial", 20)
+        font=SUBHEADER
     )
-    label.grid(
-        row=0, column=0,
-        pady=4, padx=10
-    )
-    for row in range(len(parameter.values)):
+    label.grid(row=0, column=0, pady=5, padx=10)
+
+    if not isinstance(parameter, NumericalContinuousParameter):
+        for row in range(len(parameter.values)):
+            value = ctk.CTkLabel(
+                master=block,
+                text=display_parameter_name(parameter.values[row])
+            )
+            value.grid(row=row+1, column=0, pady=1, padx=10)
+    else:
         value = ctk.CTkLabel(
             master=block,
-            text=display_parameter_name(parameter.values[row])
+            text=f"{parameter.bounds.lower} - {parameter.bounds.upper}"
         )
-        value.grid(
-            row=row+1, column=0,
-            pady=1, padx=10
-        )
+        value.grid(row=1, column=0, pady=1, padx=10)
 
-    block.grid(
-        row=1, column=column,
-        pady=5, padx=10,
-        sticky="n"
-    )
+    block.grid(row=1, column=column, pady=5, padx=10, sticky="n")
+
 
 def display_parameter_name(value: str | float) -> str:
     if isinstance(value, float):

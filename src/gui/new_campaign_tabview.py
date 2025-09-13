@@ -5,10 +5,11 @@ from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
 from src.gui.gui_constants import STANDARD, SUBHEADER
-from src.gui.new_numerical_frame import NewNumericalParameterFrame
-from src.gui.new_substance_frame import NewSubstanceParameterFrame
-from src.gui.param_view_frame import create_full_table
-from src.gui.remove_parameter_frame import RemoveParameterFrame
+from src.gui.parameter_frames.new_continuous_frame import NewContinuousParameterFrame
+from src.gui.parameter_frames.new_numerical_frame import NewNumericalParameterFrame
+from src.gui.parameter_frames.new_substance_frame import NewSubstanceParameterFrame
+from src.gui.parameter_frames.param_view_frame import create_full_table
+from src.gui.parameter_frames.remove_parameter_frame import RemoveParameterFrame
 
 
 class NewCampaignTabview(ctk.CTkTabview):
@@ -74,7 +75,8 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Batchsize", ctk.CTkEntry, self.cfg.dict["Batchsize"], {}),
             ("Initial recommender", ctk.CTkOptionMenu, self.cfg.dict["Initial recommender"],
              {"values": ("FPS", "Random")}),
-            ("Acquisition function", ctk.CTkOptionMenu, self.cfg.dict["Acquisition function"], {"values": ("qLogEI", "UCB", "qPI")}),
+            ("Acquisition function", ctk.CTkOptionMenu, self.cfg.dict["Acquisition function"],
+             {"values": ("qLogEI", "UCB", "qPI")}),
         )
         for i, (widget_name, widget_type, widget_default, widget_kwargs) in enumerate(widget_config):
             label = ctk.CTkLabel(
@@ -89,8 +91,6 @@ class NewCampaignTabview(ctk.CTkTabview):
                 text_color="black",
                 width=150,
             )
-
-            # self.widget_list.append(widget)
 
             if isinstance(widget, ctk.CTkEntry):
                 widget.configure(fg_color="white")
@@ -108,7 +108,6 @@ class NewCampaignTabview(ctk.CTkTabview):
             if isinstance(widget, ctk.CTkOptionMenu):
                 widget.configure(fg_color="light blue")
                 widget.set(widget_default)
-                # widget.configure(button_color="dark grey")
 
             self.widgets_dict[widget_name] = widget
 
@@ -153,7 +152,8 @@ class NewCampaignTabview(ctk.CTkTabview):
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
-            ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"}),
+            ("Add Continuous", {"master": self, "title": "Add continous parameter", "frameclass": "continuous"}),
+            ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
         for i, (text, kwargs) in enumerate(btn_config):
             if i == 2 and not check_path(self.dirs.param_path):
@@ -230,6 +230,8 @@ def frame_factory(master, child):
         frame = NewNumericalParameterFrame(master)
     elif child == "remove":
         frame = RemoveParameterFrame(master)
+    elif child == "continuous":
+        frame = NewContinuousParameterFrame(master)
     else:
         raise ValueError("Unknown frame type")
 

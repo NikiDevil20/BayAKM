@@ -1,19 +1,20 @@
 import yaml
-from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+from baybe.utils.interval import Interval
 
 from src.bayakm.dir_paths import DirPaths
 
 SMILES = str
 
 
-def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter | None]:
+def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter | NumericalContinuousParameter]:
     """Builds the parameter list from the parameters.yaml file.
     Returns:
         A list of parameters.
     Raises:
         FileNotFoundError: If parameters.yaml is not found.
     """
-    parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = []
+    parameter_list: list[SubstanceParameter | NumericalDiscreteParameter | NumericalContinuousParameter] = []
 
     yaml_dict = load_yaml()
 
@@ -47,6 +48,21 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
         print("No Numerical Parameters detected. \n"
               "If you wanted to include Numerical Parameters,"
               "check for spelling errors.")
+
+    if "Numerical Continuous Parameters" in yaml_dict.keys():
+        all_cont_dict: dict[str, tuple[float, float]] = yaml_dict["Numerical Continuous Parameters"]
+        for key in all_cont_dict.keys():
+            parameter_list.append(
+                NumericalContinuousParameter(
+                    name=key,
+                    bounds=Interval(all_cont_dict[key][0], all_cont_dict[key][1])
+                )
+            )
+    else:
+        print("No Continuous Parameters detected. \n"
+              "If you wanted to include Continuous Parameters,"
+              "check for spelling errors.")
+
     return parameter_list
 
 
@@ -68,20 +84,30 @@ def save_yaml(yaml_dict: dict):
         yaml.dump(yaml_dict, f)
 
 
-def write_to_parameters_file(mode: str, parameter_name: str, parameter_values: list[float] | dict[str, SMILES]):
+def write_to_parameters_file(
+        mode: str, parameter_name: str,
+        parameter_values: list[float] | dict[str, SMILES] | tuple[float, float]
+):
     yaml_dict = load_yaml()
 
     if mode == "numerical":
-        if not "Numerical Discrete Parameters" in yaml_dict.keys():
+        if "Numerical Discrete Parameters" not in yaml_dict.keys():
             yaml_dict["Numerical Discrete Parameters"] = {parameter_name: parameter_values}
         else:
             yaml_dict["Numerical Discrete Parameters"][parameter_name] = parameter_values
 
     elif mode == "substance":
-        if not "Substance Parameters" in yaml_dict.keys():
+        if "Substance Parameters" not in yaml_dict.keys():
             yaml_dict["Substance Parameters"] = {parameter_name: parameter_values}
         else:
             yaml_dict["Substance Parameters"][parameter_name] = parameter_values
+
+    elif mode == "continuous":
+        if "Numerical Continuous Parameters" not in yaml_dict.keys():
+            yaml_dict["Numerical Continuous Parameters"] = {parameter_name: parameter_values}
+        else:
+            yaml_dict["Numerical Continuous Parameters"][parameter_name] = parameter_values
+
     save_yaml(yaml_dict)
 
 
