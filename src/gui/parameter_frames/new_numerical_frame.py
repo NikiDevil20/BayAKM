@@ -1,9 +1,9 @@
 import customtkinter as ctk
 
 from src.bayakm.parameters import write_to_parameters_file
-from src.gui.gui_constants import STANDARD
+from src.gui.main_gui.gui_constants import STANDARD
 from src.gui.help import error_subwindow
-from src.gui.new_page_factory import BaseFrame
+from src.gui.main_gui.new_page_factory import BaseFrame
 
 HEADER_PLACEHOLDER = "Add numerical parameter"
 PARAMETER_NAME_PLACEHOLDER = "Parameter name"

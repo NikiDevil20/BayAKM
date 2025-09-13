@@ -3,7 +3,7 @@ import pandas as pd
 
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
-from src.gui.gui_constants import SUBHEADER
+from src.gui.main_gui.gui_constants import SUBHEADER
 
 
 class TableFrame(ctk.CTkFrame):

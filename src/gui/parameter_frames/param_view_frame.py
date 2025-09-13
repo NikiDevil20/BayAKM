@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 
-from src.gui.gui_constants import SUBHEADER
+from src.gui.main_gui.gui_constants import SUBHEADER
 
 
 class ParamViewFrame(ctk.CTkFrame):

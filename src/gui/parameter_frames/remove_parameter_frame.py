@@ -1,8 +1,8 @@
 import customtkinter as ctk
 
 from src.bayakm.parameters import delete_parameter, build_param_list
-from src.gui.gui_constants import STANDARD, TEXTCOLOR, FGCOLOR
-from src.gui.new_page_factory import BaseFrame
+from src.gui.main_gui.gui_constants import STANDARD, TEXTCOLOR, FGCOLOR
+from src.gui.main_gui.new_page_factory import BaseFrame
 
 HEADER_TEXT = "Remove parameters"
 BUTTON_TEXT = "Remove"

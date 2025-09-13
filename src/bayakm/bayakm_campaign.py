@@ -6,12 +6,14 @@ import pandas as pd
 import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
-from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
+from baybe.utils.interval import Interval
+from baybe.utils.dataframe import add_fake_measurements
 
 from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
@@ -19,7 +21,6 @@ from src.bayakm.output import check_path, info_string, create_output, append_to_
 from src.bayakm.parameters import build_param_list
 
 dirs = DirPaths()
-cfg = Config()
 
 
 class BayAKMCampaign(Campaign):
@@ -32,6 +33,8 @@ class BayAKMCampaign(Campaign):
 
     def __init__(self, parameter_list=None):
         info_string("Campaign", "Initializing campaign...")
+
+        self.cfg = Config()
 
         if not check_path(dirs.campaign_path):
             self.campaign = create_campaign(parameter_list)
@@ -94,12 +97,21 @@ class BayAKMCampaign(Campaign):
                 pending = None
 
         recommendation = self.campaign.recommend(
-            batch_size=3,  # TODO
+            batch_size=int(self.cfg.dict["Batchsize"]),
             pending_experiments=pending
         )
 
-        recommendation["Journal number"] = cfg.dict["Journal prefix"]
-        recommendation["Yield"] = np.nan
+        recommendation["Journal number"] = self.cfg.dict["Journal prefix"]
+        if self.cfg.dict["Simulate results"]:
+            target = NumericalTarget(
+                mode="MAX",  # type: ignore
+                name="Yield",
+                transformation=None,
+                bounds=Interval(lower=0, upper=100)
+            )
+            recommendation = add_fake_measurements(recommendation, targets=[target])
+        else:
+            recommendation["Yield"] = np.nan
 
         if initial:
             create_output(recommendation)
@@ -113,8 +125,9 @@ def create_campaign(parameter_list=None) -> Campaign:
     Returns:
         campaign (Campaign): The campaign object.
     """
+    cfg = Config()
     if parameter_list is None:
-        parameter_list: list[SubstanceParameter | NumericalDiscreteParameter] = build_param_list()
+        parameter_list: list[SubstanceParameter | NumericalDiscreteParameter | NumericalContinuousParameter] = build_param_list()
 
     searchspace = SearchSpace.from_product(
         parameters=parameter_list,
@@ -126,13 +139,13 @@ def create_campaign(parameter_list=None) -> Campaign:
             mode="MAX",  # type: ignore
             name="Yield",
             transformation=None,
-            bounds=[0, 100]
+            bounds=Interval(lower=0, upper=100)
         )
     )
     recommender = TwoPhaseMetaRecommender(
         initial_recommender=FPSRecommender(),
         recommender=BotorchRecommender(
-            acquisition_function="qLogEI"  # type: ignore
+            acquisition_function=cfg.dict["Acquisition function"]
         ),
         switch_after=1,
         remain_switched=True

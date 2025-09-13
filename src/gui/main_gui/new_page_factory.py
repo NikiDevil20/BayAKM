@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import customtkinter as ctk
 
-from src.gui.gui_constants import FGCOLOR, HEADER, CONTENTFRAMECOLOR, BOTTOMFRAMECOLOR, TEXTCOLOR, STANDARD
+from src.gui.main_gui.gui_constants import FGCOLOR, HEADER, CONTENTFRAMECOLOR, BOTTOMFRAMECOLOR, TEXTCOLOR, STANDARD
 
 
 class BaseFrame(ctk.CTkFrame, ABC):

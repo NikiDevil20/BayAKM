@@ -5,10 +5,9 @@ from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
-from src.bayakm.probability_of_improvement import print_pi
-from src.gui.gui_constants import HEADER, STANDARD
-from src.gui.menu_frame import MenuFrame
-from src.gui.table_frame import TableFrame
+from src.gui.main_gui.gui_constants import HEADER, STANDARD
+from src.gui.main_gui.menu_frame import MenuFrame
+from src.gui.main_gui.table_frame import TableFrame
 
 
 # ctk.set_default_color_theme("dark-blue")

@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from src.bayakm.bayakm_campaign import load_campaign
-from src.gui.gui_constants import TEXTCOLOR, FGCOLOR, STANDARD
-from src.gui.new_page_factory import BaseFrame
+from src.gui.main_gui.gui_constants import TEXTCOLOR, FGCOLOR, STANDARD
+from src.gui.main_gui.new_page_factory import BaseFrame
 
 HEADER = "Get insights"
 PLOTTYPE: Literal["bar", "beeswarm", "force", "heatmap", "waterfall"] = "bar"

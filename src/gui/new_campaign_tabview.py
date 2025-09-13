@@ -4,7 +4,8 @@ from src.bayakm.config_loader import Config
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
-from src.gui.gui_constants import STANDARD, SUBHEADER
+from src.gui.main_gui.gui_constants import STANDARD, SUBHEADER
+from src.gui.help import error_subwindow
 from src.gui.parameter_frames.new_continuous_frame import NewContinuousParameterFrame
 from src.gui.parameter_frames.new_numerical_frame import NewNumericalParameterFrame
 from src.gui.parameter_frames.new_substance_frame import NewSubstanceParameterFrame
@@ -76,7 +77,8 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Initial recommender", ctk.CTkOptionMenu, self.cfg.dict["Initial recommender"],
              {"values": ("FPS", "Random")}),
             ("Acquisition function", ctk.CTkOptionMenu, self.cfg.dict["Acquisition function"],
-             {"values": ("qLogEI", "UCB", "qPI")}),
+             {"values": ("qLogEI", "UCB", "qPI", "qNIPV")}),
+            ("Simulate results", ctk.CTkCheckBox, self.cfg.dict["Simulate results"], {})
         )
         for i, (widget_name, widget_type, widget_default, widget_kwargs) in enumerate(widget_config):
             label = ctk.CTkLabel(
@@ -111,17 +113,17 @@ class NewCampaignTabview(ctk.CTkTabview):
 
             self.widgets_dict[widget_name] = widget
 
-            label.grid(
-                row=i+1, column=0,
-                pady=2, padx=10
-            )
-            widget.grid(
-                row=i+1, column=1,
-                pady=2, padx=10
-            )
+            label.grid(row=i+1, column=0, pady=2, padx=10, sticky="w")
+            widget.grid(row=i+1, column=1, pady=2, padx=10)
 
     def _save_config(self):
         _new_dict = {}
+
+        try:
+            int(self.widgets_dict["Batchsize"].get())
+        except TypeError:
+            error_subwindow(self, "Cannont convert batchsize to int")
+
         for key in self.widgets_dict.keys():
             _new_dict[key] = self.widgets_dict[key].get()
         self.cfg.save_to_yaml(_new_dict)
