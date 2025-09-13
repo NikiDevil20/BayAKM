@@ -1,5 +1,5 @@
-Acquisition function: qLogEI
-Batchsize: '3'
+Acquisition function: qNIPV
+Batchsize: '2'
 Initial recommender: FPS
 Journal prefix: NHP
-Simulate results: 0
+Simulate results: 1

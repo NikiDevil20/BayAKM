@@ -9,7 +9,7 @@ from src.gui.help import error_subwindow
 from src.gui.parameter_frames.new_continuous_frame import NewContinuousParameterFrame
 from src.gui.parameter_frames.new_numerical_frame import NewNumericalParameterFrame
 from src.gui.parameter_frames.new_substance_frame import NewSubstanceParameterFrame
-from src.gui.parameter_frames.param_view_frame import create_full_table
+from src.gui.param_view_frame import create_full_table
 from src.gui.parameter_frames.remove_parameter_frame import RemoveParameterFrame
 
 
@@ -158,7 +158,7 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
         for i, (text, kwargs) in enumerate(btn_config):
-            if i == 2 and not check_path(self.dirs.param_path):
+            if i == 3 and not check_path(self.dirs.param_path):
                 return
             button = ctk.CTkButton(
                 master=button_frame,

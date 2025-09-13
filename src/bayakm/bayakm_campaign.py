@@ -7,7 +7,7 @@ import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
-from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender
+from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, NaiveHybridSpaceRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
@@ -142,13 +142,20 @@ def create_campaign(parameter_list=None) -> Campaign:
             bounds=Interval(lower=0, upper=100)
         )
     )
+    # recommender = TwoPhaseMetaRecommender(
+    #     initial_recommender=FPSRecommender(),
+    #     recommender=BotorchRecommender(
+    #         acquisition_function=cfg.dict["Acquisition function"],
+    #         hybrid_sampler="FPS",  # Zufällige Auswahl der diskreten Kombinationen
+    #     ),
+    #     switch_after=1,
+    #     remain_switched=True
+    # )
     recommender = TwoPhaseMetaRecommender(
-        initial_recommender=FPSRecommender(),
         recommender=BotorchRecommender(
-            acquisition_function=cfg.dict["Acquisition function"]
+            acquisition_function=cfg.dict["Acquisition function"],
+            hybrid_sampler="FPS"
         ),
-        switch_after=1,
-        remain_switched=True
     )
     campaign = Campaign(
         searchspace=searchspace,

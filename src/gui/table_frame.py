@@ -3,7 +3,7 @@ import pandas as pd
 
 from src.bayakm.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
-from src.gui.main_gui.gui_constants import SUBHEADER
+from src.gui.main_gui.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
 
 
 class TableFrame(ctk.CTkFrame):
@@ -56,7 +56,10 @@ class TableFrame(ctk.CTkFrame):
                 width=100,
                 fg_color=color
             )
-            entry.insert(0, content[col])
+            value = content[col]
+            if isinstance(value, float):
+                value = f"{value:.1f}"
+            entry.insert(0, value)
             entry.grid(
                 row=0, column=col,
                 pady=2, padx=2
@@ -100,21 +103,21 @@ class TableFrame(ctk.CTkFrame):
         save_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Save",
-            command=lambda: self._read_table()
+            command=lambda: self._read_table(),
+            text_color=TEXTCOLOR,
+            font=STANDARD,
+            fg_color=FGCOLOR
         )
-        save_button.grid(
-            row=0, column=0,
-            pady=5, padx=10
-        )
+        save_button.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
         new_reco_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="New recommendation",
-            command=lambda: self._get_new_recommendation()
+            command=lambda: self._get_new_recommendation(),
+            text_color=TEXTCOLOR,
+            font=STANDARD,
+            fg_color=FGCOLOR
         )
-        new_reco_button.grid(
-            row=0, column=1,
-            pady=5, padx=10
-        )
+        new_reco_button.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
 
     def _get_new_recommendation(self):
         self._read_table()
