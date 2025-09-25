@@ -6,6 +6,7 @@ from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
 from src.gui.main_gui.gui_constants import STANDARD, SUBHEADER
 from src.gui.help import error_subwindow
+from src.gui.parameter_frames.constraints import ConstraintsFrame
 from src.gui.parameter_frames.new_continuous_frame import NewContinuousParameterFrame
 from src.gui.parameter_frames.new_numerical_frame import NewNumericalParameterFrame
 from src.gui.parameter_frames.new_substance_frame import NewSubstanceParameterFrame
@@ -155,6 +156,7 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
             ("Add Continuous", {"master": self, "title": "Add continous parameter", "frameclass": "continuous"}),
+            ("Add Constraint", {"master": self, "title": "Add constraint", "frameclass": "constraint"}),
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
         for i, (text, kwargs) in enumerate(btn_config):
@@ -234,6 +236,8 @@ def frame_factory(master, child):
         frame = RemoveParameterFrame(master)
     elif child == "continuous":
         frame = NewContinuousParameterFrame(master)
+    elif child == "constraint":
+        frame = ConstraintsFrame(master)
     else:
         raise ValueError("Unknown frame type")
 
