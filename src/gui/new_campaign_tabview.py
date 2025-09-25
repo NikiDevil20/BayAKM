@@ -156,7 +156,7 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
             ("Add Continuous", {"master": self, "title": "Add continous parameter", "frameclass": "continuous"}),
-            ("Add Constraint", {"master": self, "title": "Add constraint", "frameclass": "constraint"}),
+            # ("Add Constraint", {"master": self, "title": "Add constraint", "frameclass": "constraint"}),
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
         for i, (text, kwargs) in enumerate(btn_config):
