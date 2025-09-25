@@ -9,9 +9,10 @@ class HelpFrame(ctk.CTkFrame):
 
         label = ctk.CTkLabel(
             master=self,
-            text="Help"
+            text="Es gibt (noch) keine Hilfe :(",
+            font=SUBHEADER
         )
-        label.pack()
+        label.pack(pady=50, padx=100)
 
 
 def error_subwindow(master, message: str):
