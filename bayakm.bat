@@ -1,4 +1,4 @@
 @echo off
 cd /d %~dp0
-python -m src.bayakm.main
-pause
+start "" /B /MIN pythonw -m src.gui.main_gui.gui
+exit
