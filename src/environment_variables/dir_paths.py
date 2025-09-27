@@ -24,6 +24,8 @@ class DirPaths:
         # self.data_dir = os.path.join(bayakm_dir, "data")
 
     def build_campaign_folder(self, campaign_name):
+        if os.path.exists(self.environ):
+            os.remove(self.environ)
         self.folder_path = os.path.join(
             self.data,
             cleanup_folder_name(campaign_name)
