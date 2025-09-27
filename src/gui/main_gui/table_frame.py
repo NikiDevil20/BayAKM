@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import pandas as pd
 
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
 from src.gui.main_gui.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
 
@@ -122,7 +122,7 @@ class TableFrame(ctk.CTkFrame):
     def _get_new_recommendation(self):
         self._read_table()
 
-        if check_path(self.dirs.output_path):
+        if check_path(self.dirs.return_file_path("output")):
             full_input: pd.DataFrame = import_output_to_df()
             measurements, pending = split_import_df(full_input)
             if measurements.empty:

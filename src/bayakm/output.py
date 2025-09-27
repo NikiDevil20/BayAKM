@@ -7,7 +7,7 @@ from time import time
 import pandas as pd
 
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 
 dirs = DirPaths()
 cfg = Config()
@@ -31,7 +31,7 @@ def create_output(df: pd.DataFrame) -> None:
         None
     """
     df.to_csv(
-        dirs.output_path,
+        dirs.return_file_path("output"),
         sep=";",
         decimal=".",
         header=True,
@@ -48,7 +48,7 @@ def append_to_output(df: pd.DataFrame) -> None:
             None
         """
     df.to_csv(
-        dirs.output_path,
+        dirs.return_file_path("output"),
         sep=";",
         decimal=".",
         header=False,
@@ -66,7 +66,7 @@ def import_output_to_df() -> pd.DataFrame:
     """
     info_string("Measurements", "Reading results.csv...")
     df = pd.read_csv(
-        filepath_or_buffer=dirs.output_path,
+        filepath_or_buffer=dirs.return_file_path("output"),
         sep=";",
         decimal="."
     )

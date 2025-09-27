@@ -1,5 +1,3 @@
-import sys
-
 import pandas as pd
 from baybe.acquisition.acqfs import ProbabilityOfImprovement
 from baybe.objectives.base import Objective
@@ -7,7 +5,7 @@ from baybe.recommenders import BotorchRecommender
 from baybe.searchspace import SearchSpace
 
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import info_string
 
 dirs = DirPaths()

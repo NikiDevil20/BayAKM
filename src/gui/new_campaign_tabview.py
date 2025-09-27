@@ -1,10 +1,10 @@
 import customtkinter as ctk
 
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path
 from src.bayakm.parameters import build_param_list
-from src.gui.main_gui.gui_constants import STANDARD, SUBHEADER
+from src.gui.main_gui.gui_constants import STANDARD, SUBHEADER, FGCOLOR, TEXTCOLOR
 from src.gui.help import error_subwindow
 from src.gui.parameter_frames.constraints import ConstraintsFrame
 from src.gui.parameter_frames.new_continuous_frame import NewContinuousParameterFrame
@@ -62,7 +62,9 @@ class NewCampaignTabview(ctk.CTkTabview):
             master=self.widget_frame,
             command=lambda: self._save_config(),
             text="Save config",
-            text_color="black",
+            text_color=TEXTCOLOR,
+            fg_color=FGCOLOR,
+            font=STANDARD,
         )
         save_button.grid(
             row=len(self.widgets_dict.keys())+1, column=0,
@@ -73,6 +75,7 @@ class NewCampaignTabview(ctk.CTkTabview):
     def _create_widgets(self):
         self.widget_list = []
         widget_config = (
+            ("Campaign name", ctk.CTkEntry, self.cfg.dict["Campaign name"], {}),
             ("Journal prefix", ctk.CTkEntry, self.cfg.dict["Journal prefix"], {}),
             ("Batchsize", ctk.CTkEntry, self.cfg.dict["Batchsize"], {}),
             ("Initial recommender", ctk.CTkOptionMenu, self.cfg.dict["Initial recommender"],
@@ -160,7 +163,7 @@ class NewCampaignTabview(ctk.CTkTabview):
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
         for i, (text, kwargs) in enumerate(btn_config):
-            if i == 3 and not check_path(self.dirs.param_path):
+            if i == 3 and not check_path(self.dirs.environ):
                 return
             button = ctk.CTkButton(
                 master=button_frame,

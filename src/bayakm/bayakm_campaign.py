@@ -7,7 +7,7 @@ import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
-from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, NaiveHybridSpaceRecommender
+from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
@@ -16,7 +16,7 @@ from baybe.utils.interval import Interval
 from baybe.utils.dataframe import add_fake_measurements
 
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path, info_string, create_output, append_to_output
 from src.bayakm.parameters import build_param_list
 
@@ -36,11 +36,12 @@ class BayAKMCampaign(Campaign):
 
         self.cfg = Config()
 
-        if not check_path(dirs.campaign_path):
-            self.campaign = create_campaign(parameter_list)
-            self.save_campaign()
-        else:
-            self.campaign = load_campaign()
+        if check_path(dirs.environ):
+            if not check_path(dirs.return_file_path("campaign")):
+                self.campaign = create_campaign(parameter_list)
+                self.save_campaign()
+            else:
+                self.campaign = load_campaign()
 
     def attach_hook(
             self,
@@ -80,7 +81,7 @@ class BayAKMCampaign(Campaign):
         """
         info_string("Campaign", "Overwriting campaign savefile...")
         campaign_dict = self.campaign.to_dict()
-        with open(dirs.campaign_path, "w") as f:
+        with open(dirs.return_file_path("campaign"), "w") as f:
             yaml.dump(campaign_dict, f)
 
     def get_recommendation(
@@ -171,11 +172,13 @@ def load_campaign() -> Campaign:
     Returns:
         campaign (Campaign): The campaign as it was saved in the campaign.yaml file.
     """
-    if not check_path(dirs.campaign_path):
-        raise FileNotFoundError(f"Campaign save file not found at {dirs.campaign_path}")
-
-    with open(dirs.campaign_path, "r") as f:
-        yaml_string: str = f.read()
+    if not check_path(dirs.environ):
+        raise FileNotFoundError(f"Campaign save file not found at {dirs.return_file_path("campaign")}")
+    try:
+        with open(dirs.return_file_path("campaign"), "r") as f:
+            yaml_string: str = f.read()
+    except FileNotFoundError:
+        print(f"No file found at {dirs.return_file_path("campaign")}")
 
     campaign_dict = yaml.safe_load(yaml_string)
     return Campaign.from_dict(campaign_dict)

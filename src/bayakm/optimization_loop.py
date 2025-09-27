@@ -6,7 +6,7 @@ import pandas as pd
 
 from src.bayakm.bayakm_campaign import BayAKMCampaign
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import (
     check_path, create_output, append_to_output,
     import_output_to_df, split_import_df, welcome_string,

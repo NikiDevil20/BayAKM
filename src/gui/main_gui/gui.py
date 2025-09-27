@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from src.bayakm.bayakm_campaign import BayAKMCampaign
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
 from src.gui.main_gui.gui_constants import HEADER, STANDARD
@@ -74,10 +74,10 @@ class App(ctk.CTk):
         )
 
     def _display_recommendation(self):
-        if check_path(self.dirs.output_path):
-            data = import_output_to_df()
-        else:
-            data = None
+        data = None
+        if check_path(self.dirs.environ):
+            if check_path(self.dirs.return_file_path("output")):
+                data = import_output_to_df()
 
         # TableFrame is always constructed, but if no real data
         # can be displayed, a message is shown.
@@ -110,7 +110,7 @@ class App(ctk.CTk):
 
     def _initialize_campaign(self):
         self.parameter_list = build_param_list()
-        if check_path(self.dirs.campaign_path):
+        if check_path(self.dirs.environ):
             self.campaign = BayAKMCampaign(self.parameter_list)
             # if self.cfg.dict["pi"]:
             #     self.campaign.attach_hook([print_pi])  # TODO

@@ -4,7 +4,7 @@ from src.gui.main_gui.gui_constants import SUBHEADER
 from src.gui.insights_frame import InsightsFrame
 from src.gui.param_view_frame import ParamViewFrame
 from src.bayakm.config_loader import Config
-from src.bayakm.dir_paths import DirPaths
+from src.environment_variables.dir_paths import DirPaths
 from src.gui.help import HelpFrame
 from src.gui.new_campaign_tabview import NewCampaignTabview
 
