@@ -33,9 +33,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
                 )
             )
     else:
-        print("No Substance Parameters detected. \n"
-              "If you wanted to include Substance Parameters,"
-              "check for spelling errors.")
+        print("No Substance Parameters detected.")
 
     if "Numerical Discrete Parameters" in yaml_dict.keys():
         all_numeric_dict: dict[str, tuple[float]] = yaml_dict["Numerical Discrete Parameters"]
@@ -47,9 +45,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
                 )
             )
     else:
-        print("No Numerical Parameters detected. \n"
-              "If you wanted to include Numerical Parameters,"
-              "check for spelling errors.")
+        print("No Numerical Discrete Parameters detected.")
 
     if "Numerical Continuous Parameters" in yaml_dict.keys():
         all_cont_dict: dict[str, tuple[float, float]] = yaml_dict["Numerical Continuous Parameters"]
@@ -61,9 +57,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
                 )
             )
     else:
-        print("No Continuous Parameters detected. \n"
-              "If you wanted to include Continuous Parameters,"
-              "check for spelling errors.")
+        print("No Continuous Parameters detected.")
 
     return parameter_list
 
@@ -71,6 +65,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
 def load_yaml() -> dict | None:
     dirs = DirPaths()
     if os.path.exists(dirs.environ):
+
         try:
             with open(dirs.return_file_path("parameters"), "r") as f:
                 yaml_string: str = f.read()
@@ -80,6 +75,7 @@ def load_yaml() -> dict | None:
 
         return yaml.safe_load(yaml_string)
     else:
+        print(f"Save the config file before creating parameters.")
         return {}
 
 
