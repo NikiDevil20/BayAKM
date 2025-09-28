@@ -63,6 +63,11 @@ class NewContinuousParameterFrame(BaseFrame):
     def _command_save_parameter(self):
         lower = self.check_and_convert(self.lower_bound.get())
         upper = self.check_and_convert(self.upper_bound.get())
+
+        if abs(upper - lower) < 0.001:
+            error_subwindow(self, f"Lower ({lower}) and upper value ({upper}) must not be equal.")
+            return
+
         bounds = [lower, upper]
 
         # Appending list of parameter to the parameters.yaml file.

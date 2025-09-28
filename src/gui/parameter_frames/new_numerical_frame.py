@@ -76,6 +76,8 @@ class NewNumericalParameterFrame(BaseFrame):
             )
             return
 
+        parameter_list = list(set(parameter_list))
+
         if len(parameter_list) < 2:  # Call error subwindow if only one parameter is detected.
             error_subwindow(
                 self,
