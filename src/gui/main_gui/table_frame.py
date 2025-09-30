@@ -1,8 +1,11 @@
 import customtkinter as ctk
 import pandas as pd
+import yaml
+import math
 
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
+from src.gui.help import error_subwindow
 from src.gui.main_gui.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
 
 
@@ -85,12 +88,105 @@ class TableFrame(ctk.CTkFrame):
             for i, series in enumerate(df.itertuples(index=False))
         ]
 
+    def _build_param_name_and_value_list(self):
+        try:
+            with open(self.dirs.return_file_path("parameters"), "r") as f:
+                yaml_dict = yaml.safe_load(f)
+        except FileNotFoundError:
+            print(f"No file found at {self.dirs.return_file_path("parameters")}")
+
+        self.all_params_dict = {}
+
+        if "Numerical Discrete Parameters" in yaml_dict.keys():
+            numerical_dict = self._build_numerical_values(yaml_dict)
+            self.all_params_dict.update(numerical_dict)
+        if "Substance Parameters" in yaml_dict.keys():
+            substance_dict = self._build_substance_values(yaml_dict)
+            self.all_params_dict.update(substance_dict)
+        if "Numerical Continuous Parameters" in yaml_dict.keys():
+            continuous_dict = self._build_continuous_values(yaml_dict)
+            self.all_params_dict.update(continuous_dict)
+
+    @staticmethod
+    def _build_numerical_values(yaml_dict) -> dict[str, list[float]]:
+        # numerical_dict = yaml_dict["Numerical Discrete Parameters"]
+        # numerical_list = [(key, numerical_dict[key]) for key in numerical_dict.keys()]
+        # return numerical_list
+        numerical_dict = yaml_dict["Numerical Discrete Parameters"]
+        return numerical_dict
+
+    @staticmethod
+    def _build_substance_values(yaml_dict) -> dict[str, list[str]]:
+        substance_dict = yaml_dict["Substance Parameters"]
+        # substance_list = [(key, substance_dict[key].keys()) for key in substance_dict.keys()]
+        # for key in substance_dict.keys():
+        #     substance_list.append(
+        #         (key, substance_dict[key].keys())
+        #     )
+        return substance_dict
+
+    @staticmethod
+    def _build_continuous_values(yaml_dict) -> dict[str, tuple[int, int]]:
+        conti_dict = yaml_dict["Numerical Continuous Parameters"]
+        # conti_list = [(key, conti_dict[key]) for key in conti_dict.keys()]
+        return conti_dict
+
     def _read_table(self):
-        rows = [[entry.get() for entry in row_list] for row_list in self.full_entry_list]
+        self._build_param_name_and_value_list()
+        rows = []
         columns = self.df.columns
+        error_list = []
+
+        for row_index, row_list in enumerate(self.full_entry_list):
+            row = []
+            for column_index, entry in enumerate(row_list):
+                value, error = self._validate_entry(
+                    entry.get(),
+                    columns[column_index],
+                    row_index
+                )
+                if error:
+                    error_list.append(error)
+                row.append(value)
+            rows.append(row)
+
+        if error_list:
+            for error in error_list:
+                error_subwindow(self, error)
+            return
+
         df = pd.DataFrame(rows, columns=columns)
         create_output(df)
         self.master.refresh_content()
+
+    def _validate_entry(self, value, column, row_index):
+        # Validierung und Typkonvertierung je nach Spalte
+        try:
+            if column == "Yield":
+                value = float(value)
+                if not 0 <= value <= 100 and not math.isnan(value):
+                    return value, f"Yield '{value}' in row {row_index + 1} must be between 0 and 100."
+
+            elif column != "Journal number":
+                allowed_values = self.all_params_dict[column]
+
+                if len(allowed_values) == 2:
+                    lower, upper = allowed_values
+                    value = float(value)
+                    if not lower <= value <= upper:
+                        return value, f"Entered value '{value}' in column {column} must be between {lower} and {upper}."
+
+                else:
+                    ref_type = str if isinstance(allowed_values, dict) else type(allowed_values[0])
+                    if ref_type is float:
+                        value = float(value)
+                    elif ref_type is int:
+                        value = int(value)
+                    if value not in allowed_values:
+                        return value, f"Entered value '{value}' in column {column} not found in parameters."
+            return value, None
+        except TypeError:
+            return value, f"Entered value: {value} in column {column} is of invalid type."
 
     def _create_bottom_frame(self):
         self.bottom_frame = ctk.CTkFrame(master=self)
@@ -138,6 +234,3 @@ class TableFrame(ctk.CTkFrame):
         )
         self.master.campaign.save_campaign()
         self.master.refresh_content()
-
-
-
