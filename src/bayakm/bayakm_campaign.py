@@ -173,12 +173,12 @@ def load_campaign() -> Campaign:
         campaign (Campaign): The campaign as it was saved in the campaign.yaml file.
     """
     if not check_path(dirs.environ):
-        raise FileNotFoundError(f"Campaign save file not found at {dirs.return_file_path("campaign")}")
+        raise FileNotFoundError(f"Campaign save file not found at {dirs.return_file_path('campaign')}")
     try:
         with open(dirs.return_file_path("campaign"), "r") as f:
             yaml_string: str = f.read()
     except FileNotFoundError:
-        print(f"No file found at {dirs.return_file_path("campaign")}")
+        print(f"No file found at {dirs.return_file_path('campaign')}")
 
     campaign_dict = yaml.safe_load(yaml_string)
     return Campaign.from_dict(campaign_dict)
