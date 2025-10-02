@@ -41,7 +41,7 @@ class Config:
             with open(dirs.return_file_path("config"), "w") as f:
                 yaml.dump(config_dict, f)
         except FileNotFoundError:
-            print(f"Could not locate config.yaml at {dirs.return_file_path("config")}")
+            print(f"Could not locate config.yaml at {dirs.return_file_path('config')}")
             sys.exit(1)
 
     @staticmethod
@@ -50,6 +50,6 @@ class Config:
             with open(dirs.return_file_path("config"), "r") as f:
                 yaml_string = f.read()
         except FileNotFoundError:
-            print(f"Could not locate config.yaml at {dirs.return_file_path("config")}")
+            print(f"Could not locate config.yaml at {dirs.return_file_path('config')}")
             sys.exit(1)
         return yaml.safe_load(yaml_string)
