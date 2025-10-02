@@ -93,7 +93,7 @@ class TableFrame(ctk.CTkFrame):
             with open(self.dirs.return_file_path("parameters"), "r") as f:
                 yaml_dict = yaml.safe_load(f)
         except FileNotFoundError:
-            print(f"No file found at {self.dirs.return_file_path("parameters")}")
+            print(f"No file found at {self.dirs.return_file_path('parameters')}")
 
         self.all_params_dict = {}
 
