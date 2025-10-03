@@ -1,0 +1,18 @@
+[project]
+name = "BayAKM"
+version = "0.1.0"
+description = "Beispielprojekt"
+authors = [
+    { name = "Niklas Abe", email = "niklas.abe@hhu.de" }
+]
+dependencies = [
+    "customtkinter",
+    "baybe[chem,insight]",
+    "pyyaml",
+    "pandas",
+    "numpy"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
