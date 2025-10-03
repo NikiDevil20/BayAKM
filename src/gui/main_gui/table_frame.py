@@ -16,7 +16,7 @@ class TableFrame(ctk.CTkFrame):
         super().__init__(master)
 
         self.dirs = DirPaths()
-        self.param_dict = self.master.campaign.get_param_dict()
+        self.param_dict = None
 
         if not isinstance(data, pd.DataFrame):
             label = ctk.CTkLabel(
@@ -164,6 +164,7 @@ class TableFrame(ctk.CTkFrame):
 
     def _validate_entry(self, value, column, row_index):
         # Validierung und Typkonvertierung je nach Spalte
+        self.param_dict = self.master.campaign.get_param_dict()
         try:
             if column == "Yield":
                 value = float(value)
@@ -181,7 +182,10 @@ class TableFrame(ctk.CTkFrame):
                                 allowed_values = current_parameter.values
 
                                 if isinstance(current_parameter, NumericalDiscreteParameter):
+                                    # try:
                                     value = float(value)
+                                    # except ValueError:
+                                    #     return value, f"Value '{value}' in column {column} must be a number."
 
                                 if value not in allowed_values:
                                     return value, f"Value '{value}' in column {column} is not allowed. Allowed values: {allowed_values}"
@@ -194,7 +198,7 @@ class TableFrame(ctk.CTkFrame):
                                     return value, f"Value '{value}' in column {column} must be between {lower} and {upper}."
 
             return value, None
-        except TypeError:
+        except ValueError:
             return value, f"Entered value: {value} in column {column} is of invalid type."
 
     def _create_bottom_frame(self):
