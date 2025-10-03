@@ -155,6 +155,11 @@ class BayAKMCampaign(Campaign):
                 raise TypeError(f"Unknown parameter type: {type(parameter)}")
         return param_dict
 
+    def get_parameter_list(self):
+        """
+        :return: A list of all parameters in the campaign.
+        """
+        return self.campaign.parameters
 
 def create_campaign(parameter_list=None) -> Campaign:
     """Create a new campaign based on the parameters from
