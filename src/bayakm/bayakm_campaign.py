@@ -6,7 +6,8 @@ import pandas as pd
 import yaml
 from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
-from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
+    CategoricalParameter
 from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
@@ -90,6 +91,12 @@ class BayAKMCampaign(Campaign):
             measurements=None,
             pending=None
     ):
+        """
+
+        :param initial: Boolean indicating if this is the initial recommendation.
+        :param measurements: DataFrame containing new measurements to be added to the campaign.
+        :param pending: DataFrame containing pending experiments.
+        """
         if isinstance(measurements, pd.DataFrame):
             self.campaign.add_measurements(measurements)
 
@@ -118,6 +125,35 @@ class BayAKMCampaign(Campaign):
             create_output(recommendation)
         else:
             append_to_output(recommendation)
+
+    def get_param_dict(self) -> dict[str, list]:
+        """
+
+        :return: A dictionary with keys "substance", "numerical", "continuous", and "categorical",
+                 each containing a list of the corresponding parameter types from the campaign.
+        """
+        param_dict = {
+            "substance": [],
+            "numerical": [],
+            "continuous": [],
+            "categorical": []
+        }
+        for parameter in self.campaign.parameters:
+            if isinstance(parameter, SubstanceParameter):
+                param_dict["substance"].append(parameter)
+
+            elif isinstance(parameter, NumericalDiscreteParameter):
+                param_dict["numerical"].append(parameter)
+
+            elif isinstance(parameter, NumericalContinuousParameter):
+                param_dict["continuous"].append(parameter)
+
+            elif isinstance(parameter, CategoricalParameter):
+                param_dict["categorical"].append(parameter)
+
+            else:
+                raise TypeError(f"Unknown parameter type: {type(parameter)}")
+        return param_dict
 
 
 def create_campaign(parameter_list=None) -> Campaign:

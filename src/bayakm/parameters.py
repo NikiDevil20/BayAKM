@@ -1,7 +1,9 @@
 import os.path
 
 import yaml
-from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+from baybe import Campaign
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
+    CategoricalParameter
 from baybe.utils.interval import Interval
 
 from src.environment_variables.dir_paths import DirPaths

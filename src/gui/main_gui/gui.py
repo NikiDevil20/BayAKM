@@ -102,6 +102,10 @@ class App(ctk.CTk):
         label.pack(padx=5, pady=5)
 
     def refresh_content(self):
+        """
+        Refresh the content of the GUI, e.g. after a new recommendation
+        has been generated.
+        """
         self.menu_frame.destroy()
         self._create_menu_frame()
 
