@@ -99,8 +99,7 @@ class BayAKMCampaign(Campaign):
         """
         if isinstance(full_input_with_yield, pd.DataFrame):
             old_measurements = self.campaign.measurements
-            print("Old measurements:")
-            print(old_measurements)
+
             number_parameters = len(self.campaign.parameters)
             if not old_measurements.empty:
                 new_measurements = compare_input_df_with_measured(full_input_with_yield, old_measurements, number_parameters)
@@ -129,8 +128,6 @@ class BayAKMCampaign(Campaign):
             recommendation = add_fake_measurements(recommendation, targets=[target])
         else:
             recommendation["Yield"] = np.nan
-            print("Current measurements:")
-            print(self.campaign.measurements)
 
         if initial:
             create_output(recommendation)

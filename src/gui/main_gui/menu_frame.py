@@ -68,7 +68,7 @@ class MenuFrame(ctk.CTkFrame):
             master=subwindow,
             **kwargs
         )
-                if subwindow.frame is not None and hasattr(subwindow.frame, 'winfo_exists') and subwindow.frame.winfo_exists():
+        if subwindow.frame is not None and hasattr(subwindow.frame, 'winfo_exists') and subwindow.frame.winfo_exists():
             subwindow.frame.grid(row=0, column=0, sticky="nsew")
         else:
             subwindow.destroy()
