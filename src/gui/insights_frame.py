@@ -57,7 +57,6 @@ class InsightsFrame(BaseFrame):
             return False
         return True
 
-
     def fill_content(self):
         self.header = HEADER
         self.build_frames()

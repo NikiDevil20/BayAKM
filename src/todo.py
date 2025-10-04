@@ -6,3 +6,4 @@
 # Parameters must have unique names
 # Deleting a parameter only deletes the row
 # Searchspace hybrid check
+# Probability of improvement
