@@ -1,3 +1,4 @@
+import os.path
 import tkinter as tk
 from typing import Literal
 
@@ -7,6 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from src.bayakm.bayakm_campaign import load_campaign
+from src.environment_variables.dir_paths import DirPaths
+from src.gui.help import error_subwindow
 from src.gui.main_gui.gui_constants import TEXTCOLOR, FGCOLOR, STANDARD
 from src.gui.main_gui.new_page_factory import BaseFrame
 
@@ -25,19 +28,35 @@ INDEX_PLACEHOLDER = "e.g.: 3"
 class InsightsFrame(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
+        self.dirs = DirPaths()
 
-        self.plotstate: bool = False
-        self.settings_dict = settings_dict
-        self.radio_var = tk.IntVar(value=0)
-        self.button_frame = None
-        self.plot_frame = None
-        self.type_menu = None
-        self.canvas = None
-        self.campaign = load_campaign()
-        self.insights = SHAPInsight.from_campaign(self.campaign)
-        self.index_entry = None
+        if not self._check_measurements():
+            error_subwindow(self.master.master, "Cannot get insight before adding measurements.")
+            self.destroy()
 
-        self.fill_content()
+        else:
+            self.plotstate: bool = False
+            self.settings_dict = settings_dict
+            self.radio_var = tk.IntVar(value=0)
+            self.button_frame = None
+            self.plot_frame = None
+            self.type_menu = None
+            self.canvas = None
+            self.campaign = self.master.master.master.campaign.campaign
+            self.insights = SHAPInsight.from_campaign(self.campaign)
+            self.index_entry = None
+
+            self.fill_content()
+
+    def _check_measurements(self) -> bool:
+        if not os.path.exists(self.dirs.environ):
+            return False
+        if not os.path.exists(self.dirs.return_file_path("campaign")):
+            return False
+        if self.master.master.master.campaign.campaign.measurements.empty:
+            return False
+        return True
+
 
     def fill_content(self):
         self.header = HEADER

@@ -142,7 +142,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         if not self.parameter_list:
             no_parameters_label = ctk.CTkLabel(
                 master=self.parameter_frame,
-                text="Use the buttons below to add some parameters."
+                text="Use the buttons below to add parameters."
             )
             no_parameters_label.grid(
                 row=0, column=0,
