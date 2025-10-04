@@ -88,17 +88,26 @@ class BayAKMCampaign(Campaign):
     def get_recommendation(
             self,
             initial: bool,
-            measurements=None,
+            full_input_with_yield=None,
             pending=None
     ):
         """
 
         :param initial: Boolean indicating if this is the initial recommendation.
-        :param measurements: DataFrame containing new measurements to be added to the campaign.
+        :param full_input_with_yield: DataFrame containing new measurements to be added to the campaign.
         :param pending: DataFrame containing pending experiments.
         """
-        if isinstance(measurements, pd.DataFrame):
-            self.campaign.add_measurements(measurements)
+        if isinstance(full_input_with_yield, pd.DataFrame):
+            old_measurements = self.campaign.measurements
+            print("Old measurements:")
+            print(old_measurements)
+            number_parameters = len(self.campaign.parameters)
+            if not old_measurements.empty:
+                new_measurements = compare_input_df_with_measured(full_input_with_yield, old_measurements, number_parameters)
+            else:
+                new_measurements = full_input_with_yield
+            if not new_measurements.empty:
+                self.campaign.add_measurements(new_measurements)
 
         if isinstance(pending, pd.DataFrame):
             if pending.empty:
@@ -120,6 +129,8 @@ class BayAKMCampaign(Campaign):
             recommendation = add_fake_measurements(recommendation, targets=[target])
         else:
             recommendation["Yield"] = np.nan
+            print("Current measurements:")
+            print(self.campaign.measurements)
 
         if initial:
             create_output(recommendation)
@@ -160,6 +171,7 @@ class BayAKMCampaign(Campaign):
         :return: A list of all parameters in the campaign.
         """
         return self.campaign.parameters
+
 
 def create_campaign(parameter_list=None) -> Campaign:
     """Create a new campaign based on the parameters from
@@ -202,7 +214,7 @@ def create_campaign(parameter_list=None) -> Campaign:
     campaign = Campaign(
         searchspace=searchspace,
         objective=objective,
-        recommender=recommender
+        recommender=recommender,
     )
     return campaign
 
@@ -223,3 +235,26 @@ def load_campaign() -> Campaign:
 
     campaign_dict = yaml.safe_load(yaml_string)
     return Campaign.from_dict(campaign_dict)
+
+
+def compare_input_df_with_measured(
+        df: pd.DataFrame,
+        other_df: pd.DataFrame,
+        n: int
+) -> pd.DataFrame:
+    """
+    :param df: A DataFrame
+    :param other_df: Another DataFrame, which is used for filtering out rows in the first DataFrame
+    :param n: Number of rows to compare.
+    :return: The DataFrame containing only unique rows.
+    """
+    compare_cols = list(df.columns[:n]) + [df.columns[-1]]
+
+    missing_cols = [col for col in compare_cols if col not in other_df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing columns in other_df: {missing_cols}")
+    other_tuples = set(tuple(row) for row in other_df[compare_cols].values)
+    mask = df[compare_cols].apply(lambda row: tuple(row) not in other_tuples, axis=1)
+    return df[mask]
+
+

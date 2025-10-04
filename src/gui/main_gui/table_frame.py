@@ -242,8 +242,8 @@ class TableFrame(ctk.CTkFrame):
             measurements, pending = None, None
         self.master.campaign.get_recommendation(
             initial=False,
-            measurements=measurements,
-            pending=pending
+            pending=pending,
+            full_input_with_yield=measurements
         )
         self.master.campaign.save_campaign()
         self.master.refresh_content()

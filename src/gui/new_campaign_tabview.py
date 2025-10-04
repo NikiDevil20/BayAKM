@@ -2,7 +2,7 @@ import customtkinter as ctk
 
 from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
-from src.bayakm.output import check_path
+from src.bayakm.output import check_path, info_string
 from src.bayakm.parameters import build_param_list
 from src.gui.main_gui.gui_constants import STANDARD, SUBHEADER, FGCOLOR, TEXTCOLOR
 from src.gui.help import error_subwindow
@@ -126,11 +126,12 @@ class NewCampaignTabview(ctk.CTkTabview):
         try:
             int(self.widgets_dict["Batchsize"].get())
         except TypeError:
-            error_subwindow(self, "Cannont convert batchsize to int")
+                        error_subwindow(self, "Cannot convert batchsize to int")
 
         for key in self.widgets_dict.keys():
             _new_dict[key] = self.widgets_dict[key].get()
         self.cfg.save_to_yaml(_new_dict)
+        info_string("Config", "Configuration saved.")
 
     def _setup_parameters_frame(self):
         self.setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
@@ -158,7 +159,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
-            ("Add Continuous", {"master": self, "title": "Add continous parameter", "frameclass": "continuous"}),
+                        ("Add Continuous", {"master": self, "title": "Add continuous parameter", "frameclass": "continuous"}),
             # ("Add Constraint", {"master": self, "title": "Add constraint", "frameclass": "constraint"}),
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
@@ -190,6 +191,9 @@ class NewCampaignTabview(ctk.CTkTabview):
         create_full_table(self.parameter_frame, self.parameter_list)
 
     def refresh_parameters(self):
+        """
+        Refreshes the parameter preview in the new campaign tabview.
+        """
         self.parameter_list = build_param_list()
         self.setup_frame.destroy()
         self._setup_parameters_frame()
@@ -219,6 +223,12 @@ def create_subwindow(
         title,
         frameclass
 ):
+    """
+    Creates a new window with the given parameters.
+    :param master: Master of the subwindow
+    :param title: Title of the subwindow
+    :param frameclass: class of the subwindow
+    """
     subwindow = ctk.CTkToplevel(master)
     subwindow.title(title)
     subwindow.grab_set()
@@ -231,6 +241,11 @@ def create_subwindow(
 
 
 def frame_factory(master, child):
+    """
+    :param master: Master of the new frame.
+    :param child: String to decide which frameclass to return.
+    :return: A frameclass
+    """
     if child == "substance":
         frame = NewSubstanceParameterFrame(master)
     elif child == "numerical":
