@@ -20,6 +20,7 @@ class App(ctk.CTk):
         self.table_frame = None
         self.menu_frame = None
         self.campaign = None
+        self.parameter_list = None
         self.dirs = DirPaths()
         self.cfg = Config()
 
@@ -102,6 +103,10 @@ class App(ctk.CTk):
         label.pack(padx=5, pady=5)
 
     def refresh_content(self):
+        """
+        Refresh the content of the GUI, e.g. after a new recommendation
+        has been generated.
+        """
         self.menu_frame.destroy()
         self._create_menu_frame()
 
@@ -109,20 +114,34 @@ class App(ctk.CTk):
         self._display_recommendation()
 
     def _initialize_campaign(self):
-        self.parameter_list = build_param_list()
+
         if check_path(self.dirs.environ):
-            self.campaign = BayAKMCampaign(self.parameter_list)
+            if check_path(self.dirs.return_file_path("campaign")):
+                self.campaign = BayAKMCampaign()
+                self.parameter_list = self.campaign.get_parameter_list()
             # if self.cfg.dict["pi"]:
             #     self.campaign.attach_hook([print_pi])  # TODO
 
     def command_save_campaign_and_get_first_recommendation(self):
+        """
+        Method for getting the first recommendation. It will:
+        1. Create a Campaign object.
+        2. Generate a recommendation.
+        3. Save the campaign to the designated path.
+        4. Build the parameter list from the newly created campaign.
+        5. Refresh the content of the main window.
+        """
         self.campaign = BayAKMCampaign()
         self.campaign.get_recommendation(initial=True)
         self.campaign.save_campaign()
+        self.parameter_list = self.campaign.get_parameter_list()
         self.refresh_content()
 
 
 def main():
+    """
+    Initializes app.
+    """
     app = App()
     app.mainloop()
 

@@ -1,18 +1,18 @@
 import customtkinter as ctk
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 
-from src.gui.main_gui.gui_constants import SUBHEADER
+from src.gui.main_gui.gui_constants import SUBHEADER, HEADER, STANDARD
 
 
 class ParamViewFrame(ctk.CTkFrame):
     def __init__(self, parameter_list, master=None):
         super().__init__(master)
 
-        if len(parameter_list) == 0:
+        if parameter_list is None:
             no_parameter_label = ctk.CTkLabel(
                 master=self,
                 text="Start a campaign to display parameters.",
-                font=("Arial", 20)
+                font=HEADER
             )
             no_parameter_label.grid(
                 column=0, row=0,
@@ -27,7 +27,7 @@ class ParamViewFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 master=self,
                 text="View parameters",
-                font=("Arial", 24)
+                font=HEADER
             )
             label.grid(
                 column=0, row=0,
@@ -38,7 +38,7 @@ class ParamViewFrame(ctk.CTkFrame):
             info_text = ctk.CTkLabel(
                 master=self,
                 text="Parameters can only be changed by starting a new campaign.",
-                font=("Arial", 14)
+                font=STANDARD
             )
             info_text.grid(
                 column=0, row=2,
@@ -49,8 +49,10 @@ class ParamViewFrame(ctk.CTkFrame):
 
 def create_full_table(
         master,
-        parameter_list: list[NumericalDiscreteParameter | SubstanceParameter]
+        parameter_list: list[NumericalDiscreteParameter | SubstanceParameter | NumericalContinuousParameter]
 ):
+    if parameter_list is None:
+        return
     for i, param in enumerate(parameter_list):
         create_block(master, i, param)
 
@@ -62,7 +64,6 @@ def create_block(
 ):
     block = ctk.CTkFrame(master=master)
     block.columnconfigure(0, weight=1)
-
 
     # for row in range(len(parameter.values)+1):
     #     block.rowconfigure(row, weight=1)

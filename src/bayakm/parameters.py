@@ -1,9 +1,12 @@
 import os.path
 
 import yaml
-from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+from baybe import Campaign
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
+    CategoricalParameter
 from baybe.utils.interval import Interval
 
+from build.lib.bayakm.output import info_string
 from src.environment_variables.dir_paths import DirPaths
 
 SMILES = str
@@ -33,7 +36,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
                 )
             )
     else:
-        print("No Substance Parameters detected.")
+        info_string("Parameters", "No Substance Parameters detected.")
 
     if "Numerical Discrete Parameters" in yaml_dict.keys():
         all_numeric_dict: dict[str, tuple[float]] = yaml_dict["Numerical Discrete Parameters"]
@@ -45,7 +48,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
                 )
             )
     else:
-        print("No Numerical Discrete Parameters detected.")
+        info_string("Parameters", "No Numerical Discrete Parameters detected.")
 
     if "Numerical Continuous Parameters" in yaml_dict.keys():
         all_cont_dict: dict[str, tuple[float, float]] = yaml_dict["Numerical Continuous Parameters"]
@@ -57,7 +60,7 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
                 )
             )
     else:
-        print("No Continuous Parameters detected.")
+        info_string("Parameters", "No Numerical Continuous Parameters detected.")
 
     return parameter_list
 
@@ -65,28 +68,30 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
 def load_yaml() -> dict | None:
     dirs = DirPaths()
     if os.path.exists(dirs.environ):
-
-        try:
+        if os.path.exists(dirs.return_file_path("parameters")):
             with open(dirs.return_file_path("parameters"), "r") as f:
                 yaml_string: str = f.read()
-        except FileNotFoundError:
-            print(f"Could not locate parameters.yaml at {dirs.return_file_path('parameters')}.")
-            return {}
+        # except FileNotFoundError:
+        #     print(f"Could not locate parameters.yaml at {dirs.return_file_path('parameters')}.")
+        #     return {}
 
-        return yaml.safe_load(yaml_string)
+            return yaml.safe_load(yaml_string)
+        else:
+            info_string("Parameters", "Parameter file not found.")
+            info_string("Parameters", "If this is your first parameter, a new parameters.yaml file will be created.")
+            return {}
     else:
-        print(f"Save the config file before creating parameters.")
+        info_string("Parameters", "Save the config file before creating parameters.")
         return {}
 
 
 def save_yaml(yaml_dict: dict):
     dirs = DirPaths()
     if os.path.exists(dirs.environ):
-        try:
-            with open(dirs.return_file_path("parameters"), "w") as f:
-                yaml.dump(yaml_dict, f)
-        except FileNotFoundError:
-            print(f"Parameter file not found at {dirs.return_file_path('parameters')}")
+        with open(dirs.return_file_path("parameters"), "w") as f:
+            yaml.dump(yaml_dict, f)
+        # except FileNotFoundError:
+        #     print(f"Parameter file not found at {dirs.return_file_path('parameters')}")
 
 
 def write_to_parameters_file(

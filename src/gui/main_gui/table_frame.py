@@ -3,6 +3,8 @@ import pandas as pd
 import yaml
 import math
 
+from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
 from src.gui.help import error_subwindow
@@ -14,6 +16,7 @@ class TableFrame(ctk.CTkFrame):
         super().__init__(master)
 
         self.dirs = DirPaths()
+        self.param_dict = None
 
         if not isinstance(data, pd.DataFrame):
             label = ctk.CTkLabel(
@@ -132,7 +135,7 @@ class TableFrame(ctk.CTkFrame):
         return conti_dict
 
     def _read_table(self):
-        self._build_param_name_and_value_list()
+        # self._build_param_name_and_value_list()
         rows = []
         columns = self.df.columns
         error_list = []
@@ -161,6 +164,7 @@ class TableFrame(ctk.CTkFrame):
 
     def _validate_entry(self, value, column, row_index):
         # Validierung und Typkonvertierung je nach Spalte
+        self.param_dict = self.master.campaign.get_param_dict()
         try:
             if column == "Yield":
                 value = float(value)
@@ -168,24 +172,33 @@ class TableFrame(ctk.CTkFrame):
                     return value, f"Yield '{value}' in row {row_index + 1} must be between 0 and 100."
 
             elif column != "Journal number":
-                allowed_values = self.all_params_dict[column]
+                for param_class in self.param_dict.keys():
+                    for parameter in self.param_dict[param_class]:
 
-                if len(allowed_values) == 2:
-                    lower, upper = allowed_values
-                    value = float(value)
-                    if not lower <= value <= upper:
-                        return value, f"Entered value '{value}' in column {column} must be between {lower} and {upper}."
+                        if column == parameter.name:
+                            current_parameter = parameter
 
-                else:
-                    ref_type = str if isinstance(allowed_values, dict) else type(allowed_values[0])
-                    if ref_type is float:
-                        value = float(value)
-                    elif ref_type is int:
-                        value = int(value)
-                    if value not in allowed_values:
-                        return value, f"Entered value '{value}' in column {column} not found in parameters."
+                            if isinstance(current_parameter, (SubstanceParameter, NumericalDiscreteParameter)):
+                                allowed_values = current_parameter.values
+
+                                if isinstance(current_parameter, NumericalDiscreteParameter):
+                                    # try:
+                                    value = float(value)
+                                    # except ValueError:
+                                    #     return value, f"Value '{value}' in column {column} must be a number."
+
+                                if value not in allowed_values:
+                                    return value, f"Value '{value}' in column {column} is not allowed. Allowed values: {allowed_values}"
+
+                            elif isinstance(current_parameter, NumericalContinuousParameter):
+                                lower = current_parameter.bounds.lower
+                                upper = current_parameter.bounds.upper
+
+                                if not (lower <= float(value) <= upper):
+                                    return value, f"Value '{value}' in column {column} must be between {lower} and {upper}."
+
             return value, None
-        except TypeError:
+        except ValueError:
             return value, f"Entered value: {value} in column {column} is of invalid type."
 
     def _create_bottom_frame(self):
@@ -229,8 +242,9 @@ class TableFrame(ctk.CTkFrame):
             measurements, pending = None, None
         self.master.campaign.get_recommendation(
             initial=False,
-            measurements=measurements,
-            pending=pending
+            pending=pending,
+            full_input_with_yield=measurements
         )
         self.master.campaign.save_campaign()
         self.master.refresh_content()
+
