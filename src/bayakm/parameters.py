@@ -141,9 +141,14 @@ def write_to_parameters_file(
             yaml_dict["Numerical Continuous Parameters"][parameter_name] = parameter_values
 
     save_yaml(yaml_dict)
+    return None
 
 
 def delete_parameter(parameter_names: list[str]):
+    """
+    Removes a parameter from the parameters.yaml file.
+    :param parameter_names: A list of parameter names to be removed.
+    """
     yaml_dict = load_yaml()
 
     for key in yaml_dict:
