@@ -163,6 +163,6 @@ def check_name_exists(
     :return: True if the name exists, False otherwise.
     """
     for key in parameter_dict.keys():
-                if isinstance(parameter_dict[key], dict) and parameter_name in parameter_dict[key]:
+        if isinstance(parameter_dict[key], dict) and parameter_name in parameter_dict[key]:
             return True
     return False
