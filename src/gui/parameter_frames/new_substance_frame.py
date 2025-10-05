@@ -95,11 +95,14 @@ class NewSubstanceParameterFrame(BaseFrame):
             return
 
         # The new parameter is added to the parameters.yaml file.
-        write_to_parameters_file(
+        error_msg = write_to_parameters_file(
             mode="substance",
             parameter_name=self.name_entry.get(),
             parameter_values=substance_dict
         )
+        if error_msg is not None:
+                        error_subwindow(self, error_msg)
+            return
 
         self.master.master.refresh_parameters()
         self.master.destroy()
