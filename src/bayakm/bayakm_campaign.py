@@ -8,7 +8,8 @@ from baybe import Campaign
 from baybe.objectives import SingleTargetObjective
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
     CategoricalParameter
-from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender
+from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, RandomRecommender, \
+    KMeansClusteringRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
@@ -39,8 +40,11 @@ class BayAKMCampaign(Campaign):
 
         if check_path(dirs.environ):
             if not check_path(dirs.return_file_path("campaign")):
+                if parameter_list is None:
+                    parameter_list = build_param_list()
                 self.campaign = create_campaign(parameter_list)
                 self.save_campaign()
+                self.hybrid = is_hybrid(parameter_list)
             else:
                 self.campaign = load_campaign()
 
@@ -128,7 +132,6 @@ class BayAKMCampaign(Campaign):
             recommendation = add_fake_measurements(recommendation, targets=[target])
         else:
             recommendation["Yield"] = np.nan
-
         if initial:
             create_output(recommendation)
         else:
@@ -170,15 +173,13 @@ class BayAKMCampaign(Campaign):
         return self.campaign.parameters
 
 
-def create_campaign(parameter_list=None) -> Campaign:
+def create_campaign(parameter_list) -> Campaign:
     """Create a new campaign based on the parameters from
     the parameters in the parameters.yaml file.
     Returns:
         campaign (Campaign): The campaign object.
     """
     cfg = Config()
-    if parameter_list is None:
-        parameter_list: list[SubstanceParameter | NumericalDiscreteParameter | NumericalContinuousParameter] = build_param_list()
 
     searchspace = SearchSpace.from_product(
         parameters=parameter_list,
@@ -197,16 +198,25 @@ def create_campaign(parameter_list=None) -> Campaign:
     #     initial_recommender=FPSRecommender(),
     #     recommender=BotorchRecommender(
     #         acquisition_function=cfg.dict["Acquisition function"],
-    #         hybrid_sampler="FPS",  # Zufällige Auswahl der diskreten Kombinationen
+    #         hybrid_sampler="FPS",
     #     ),
     #     switch_after=1,
     #     remain_switched=True
     # )
+
+    initial_recommender = RandomRecommender()
+
+    if not is_hybrid(parameter_list):
+        initial_recommender = FPSRecommender()
+
     recommender = TwoPhaseMetaRecommender(
+        initial_recommender=initial_recommender,
         recommender=BotorchRecommender(
             acquisition_function=cfg.dict["Acquisition function"],
-            hybrid_sampler="FPS"
+            hybrid_sampler="FPS"  # Type: ignore
         ),
+        switch_after=1,
+        remain_switched=True
     )
     campaign = Campaign(
         searchspace=searchspace,
@@ -253,5 +263,18 @@ def compare_input_df_with_measured(
     other_tuples = set(tuple(row) for row in other_df[compare_cols].values)
     mask = df[compare_cols].apply(lambda row: tuple(row) not in other_tuples, axis=1)
     return df[mask]
+
+
+def is_hybrid(parameter_list) -> bool:
+    """
+    Flag that indicates if searchspace is hybrid.
+    :param parameter_list: List of all parameters.
+    :return: Bool, stating if searchspace is hybrid.
+    """
+    for parameter in parameter_list:
+        if isinstance(parameter, NumericalContinuousParameter):
+            return True
+    return False
+
 
 

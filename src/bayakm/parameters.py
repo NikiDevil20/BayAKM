@@ -6,7 +6,7 @@ from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, Num
     CategoricalParameter
 from baybe.utils.interval import Interval
 
-from build.lib.bayakm.output import info_string
+from src.bayakm.output import info_string
 from src.environment_variables.dir_paths import DirPaths
 
 SMILES = str
