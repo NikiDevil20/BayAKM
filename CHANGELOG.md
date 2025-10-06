@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Insight frame raises Error if opened without measurements in campaign.
 - Two parameters can no longer have duplicate values
-- Parameter display now get drawn from campaign object instead of creating a list from the parameters.yaml file
+- Parameter displays now get drawn from campaign object instead of creating a list from the parameters.yaml file
 
 
 
