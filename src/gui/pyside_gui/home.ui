@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>960</width>
+    <height>720</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>720</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: lightgrey</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(215, 255, 255)</string>
+   </property>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>961</width>
+      <height>681</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
+    </property>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>321</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: white</string>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:36pt; font-weight:700;&quot;&gt;BayAKM&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="AreaSubHeader">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>50</y>
+       <width>401</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+    </widget>
+    <widget class="QFrame" name="AreaStat">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>530</y>
+       <width>201</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+    </widget>
+    <widget class="QFrame" name="AreaNewRecoButton">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>600</y>
+       <width>201</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="textEdit">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>530</y>
+       <width>731</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: white</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="AreaTable">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>941</width>
+       <height>381</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>400</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>960</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuCampaign">
+    <property name="title">
+     <string>Campaign</string>
+    </property>
+    <addaction name="btn_new_campaign"/>
+    <addaction name="btn_save_campaign"/>
+    <addaction name="btn_switch_campaign"/>
+    <addaction name="btn_delete"/>
+    <addaction name="separator"/>
+    <addaction name="btn_get_insights"/>
+    <addaction name="separator"/>
+    <addaction name="btn_new_recommendation"/>
+   </widget>
+   <widget class="QMenu" name="menuParameters">
+    <property name="title">
+     <string>Parameters</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionWhat_is_Bayesian_Optimization"/>
+   </widget>
+   <addaction name="menuCampaign"/>
+   <addaction name="menuParameters"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="btn_new_campaign">
+   <property name="text">
+    <string>Create new</string>
+   </property>
+  </action>
+  <action name="btn_save_campaign">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="btn_delete">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="btn_switch_campaign">
+   <property name="text">
+    <string>Switch</string>
+   </property>
+  </action>
+  <action name="btn_get_insights">
+   <property name="text">
+    <string>Get Insight</string>
+   </property>
+  </action>
+  <action name="btn_new_recommendation">
+   <property name="text">
+    <string>New Recommendation</string>
+   </property>
+  </action>
+  <action name="actionWhat_is_Bayesian_Optimization">
+   <property name="text">
+    <string>What is Bayesian Optimization?</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
