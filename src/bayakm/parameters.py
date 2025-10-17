@@ -5,8 +5,9 @@ from baybe import Campaign
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
     CategoricalParameter
 from baybe.utils.interval import Interval
+from typing import Literal
 
-from build.lib.bayakm.output import info_string
+from src.bayakm.output import info_string
 from src.environment_variables.dir_paths import DirPaths
 
 SMILES = str
@@ -66,6 +67,11 @@ def build_param_list() -> list[SubstanceParameter | NumericalDiscreteParameter |
 
 
 def load_yaml() -> dict | None:
+    """
+    Reads the parameters.yaml file and returns its contents as a dictionary.
+    If the file does not exist, it returns an empty dictionary.
+    :return: A dictionary with all parameters.
+    """
     dirs = DirPaths()
     if os.path.exists(dirs.environ):
         if os.path.exists(dirs.return_file_path("parameters")):
@@ -86,6 +92,11 @@ def load_yaml() -> dict | None:
 
 
 def save_yaml(yaml_dict: dict):
+    """
+    Saves a given dictionary to the parameters.yaml file.
+    If the file does not exist, it creates a new one.
+    :param yaml_dict: A dictionary to be saved in the parameters.yaml file.
+    """
     dirs = DirPaths()
     if os.path.exists(dirs.environ):
         with open(dirs.return_file_path("parameters"), "w") as f:
@@ -95,10 +106,21 @@ def save_yaml(yaml_dict: dict):
 
 
 def write_to_parameters_file(
-        mode: str, parameter_name: str,
+        mode: Literal["numerical", "substance", "continuous"],
+        parameter_name: str,
         parameter_values: list[float] | dict[str, SMILES] | tuple[float, float]
-):
+) -> None | str:
+    """
+    Takes a new parameter's name and values and appends them to the parameters.yaml file.
+    If the file does not exist, it creates a new one.
+    :param mode:
+    :param parameter_name:
+    :param parameter_values:
+    """
     yaml_dict = load_yaml()
+
+    if check_name_exists(yaml_dict, parameter_name):
+        return "Name already exists."
 
     if mode == "numerical":
         if "Numerical Discrete Parameters" not in yaml_dict.keys():
@@ -119,9 +141,14 @@ def write_to_parameters_file(
             yaml_dict["Numerical Continuous Parameters"][parameter_name] = parameter_values
 
     save_yaml(yaml_dict)
+    return None
 
 
 def delete_parameter(parameter_names: list[str]):
+    """
+    Removes a parameter from the parameters.yaml file.
+    :param parameter_names: A list of parameter names to be removed.
+    """
     yaml_dict = load_yaml()
 
     for key in yaml_dict:
@@ -130,3 +157,17 @@ def delete_parameter(parameter_names: list[str]):
     save_yaml(yaml_dict)
 
 
+def check_name_exists(
+        parameter_dict: dict,
+        parameter_name: str
+) -> bool:
+    """
+    Checks if a parameter name already exists in a given dictionary.
+    :param parameter_dict: A dictionary containing parameters.
+    :param parameter_name: The name of the parameter to be checked.
+    :return: True if the name exists, False otherwise.
+    """
+    for key in parameter_dict.keys():
+        if isinstance(parameter_dict[key], dict) and parameter_name in parameter_dict[key]:
+            return True
+    return False

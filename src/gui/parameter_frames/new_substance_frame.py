@@ -50,7 +50,7 @@ class NewSubstanceParameterFrame(BaseFrame):
         remove_button = ctk.CTkButton(
             master=row,
             text="-",
-            command=lambda: row.destroy(),
+            command=lambda: self._delete_row(row, (substance_name_entry, smiles_entry)),
             width=10,
             fg_color=FGCOLOR,
             text_color=TEXTCOLOR
@@ -60,6 +60,10 @@ class NewSubstanceParameterFrame(BaseFrame):
         # Row's entries are placed in a list,
         # so their values can be retrieved.
         self.row_list.append((substance_name_entry, smiles_entry))
+
+    def _delete_row(self, row, entry_tuple):
+        row.destroy()
+        self.row_list.remove(entry_tuple)
 
     def _command_save_parameter(self):
         """Method for saving the parameter's name and values.
@@ -91,11 +95,14 @@ class NewSubstanceParameterFrame(BaseFrame):
             return
 
         # The new parameter is added to the parameters.yaml file.
-        write_to_parameters_file(
+        error_msg = write_to_parameters_file(
             mode="substance",
             parameter_name=self.name_entry.get(),
             parameter_values=substance_dict
         )
+        if error_msg is not None:
+                        error_subwindow(self, error_msg)
+            return
 
         self.master.master.refresh_parameters()
         self.master.destroy()

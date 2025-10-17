@@ -71,11 +71,14 @@ class NewContinuousParameterFrame(BaseFrame):
         bounds = [lower, upper]
 
         # Appending list of parameter to the parameters.yaml file.
-        write_to_parameters_file(
+        error_msg = write_to_parameters_file(
             mode="continuous",
             parameter_name=self.name_entry.get(),
             parameter_values=bounds
         )
+        if error_msg is not None:
+                        error_subwindow(self, error_msg)
+            return
 
         # Refreshing the displayed parameters in the new campaign tabview
         # and destroy the new_parameter frame.
