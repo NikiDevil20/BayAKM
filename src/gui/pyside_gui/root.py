@@ -5,7 +5,6 @@ from PySide6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice
 
-from src.gui.pyside_gui.new_campaign_frame import NewCampaignWindow
 from src.gui.pyside_gui.ui_utilities import btn_connect_command, open_window
 
 

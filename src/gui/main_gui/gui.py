@@ -99,7 +99,7 @@ class App(ctk.CTk):
         # Placeholder
         label = ctk.CTkLabel(
             master=self.info_frame,
-            text="Hier könnte ein Infotext stehen.")
+            text="")
         label.pack(padx=5, pady=5)
 
     def refresh_content(self):
