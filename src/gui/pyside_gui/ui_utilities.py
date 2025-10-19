@@ -1,5 +1,7 @@
 from typing import Callable
-from PySide6.QtWidgets import QMainWindow, QStackedWidget, QWizard, QFrame, QWidget, QVBoxLayout
+from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
+                               QWizard, QFrame, QWidget, QHBoxLayout,
+                               QVBoxLayout)
 
 
 def btn_connect_command(window, btn_name: str, function: Callable) -> None:
@@ -35,4 +37,6 @@ def add_widget_to_frame(window: QMainWindow | QWizard, frame_name: str, widget: 
     layout = frame.layout()
     if layout is None:
         layout = QVBoxLayout(frame)
+    layout.setContentsMargins(0, 0, 0, 0)
+    layout.setSpacing(6)
     layout.addWidget(widget)
