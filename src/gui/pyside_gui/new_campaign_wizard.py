@@ -6,47 +6,56 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QTimer
 from PySide6.QtGui import QPixmap
 
-from src.gui.pyside_gui.ui_utilities import find_widget, add_widget_to_frame
+from src.gui.pyside_gui.ui_utilities import find_widget, add_widget_to_frame, save_or_load_envvars, save_config, \
+    connect_widget
 from src.gui.pyside_gui.widget_classes import CounterWidget
+from src.gui.pyside_gui.numerical_parameter import NewNumericalParameter
 
-frame_list = [
-
-]
 PATH_WATERMARK = "testtubes_small.jpg"
 PLACEHOLDER_CAMPAIGN = "My first Campaign"
 LINE_STYLE = "background-color: #FFFFFF"
+registry = {
+    "numerical": NewNumericalParameter
+}
+
 
 class NewCampaignWizard(QWizard):
-    def __init__(self, parent=None, ui_file_name: str = "new_campaign_wizard.ui"):
-        super().__init__(parent)
+    def __init__(self, ui_file_name: str = "new_campaign_wizard.ui"):
+        super().__init__()
+
         self.ui_file_name = ui_file_name
         self.wizard: QWizard | None = None
-        self.path_line: QLineEdit | None = None
+        self.child_list = []
 
+        self._initialize_ui(ui_file_name)
+        self._wizard_setup()
+        self._fill_content()
+        self._initialize_next_button()
+        self._open_dialog()
+
+    def _initialize_ui(self, ui_file_name):
         file = QFile(ui_file_name)
         loader = QUiLoader()
         file.open(QFile.ReadOnly)  # Type: ignore
         self.wizard: QWizard = loader.load(file)
         file.close()
 
-        self._wizard_setup()
-
+    def _initialize_next_button(self):
         QTimer.singleShot(0, self._update_next_button)
+        next_btn = self.wizard.button(QWizard.NextButton)
+        next_btn.clicked.connect(self._on_next_klicked)
 
     def _wizard_setup(self):
         self.wizard.setWizardStyle(QWizard.ModernStyle)
         self.wizard.setPixmap(QWizard.WatermarkPixmap, QPixmap(PATH_WATERMARK))
 
+    def _fill_content(self):
         self._setup_campaign_name()
         self._setup_folder_browser()
         self._setup_batchsize()
         self._setup_acquisition()
         self._setup_initial()
         self._setup_simulate()
-
-    def _page_setup(self):
-        self.page1 = self.wizard.settings
-        self.page2 = self.wizard.parameters
 
     def _setup_campaign_name(self):
         self.campaign_line = QLineEdit()
@@ -152,12 +161,32 @@ class NewCampaignWizard(QWizard):
         error_check = self._verify_entries()
         if error_check is not None:
             print(error_check)
-        else:
-            print("No errors")
 
-    def _update_next_button(self, *args):
+        self.entries_dict = self._collect_entries()
+        self.envvars_dict = save_or_load_envvars(self.entries_dict)
+        save_config(self.entries_dict)
+
+    def _update_next_button(self):
         next_btn = self.wizard.button(QWizard.NextButton)
 
         is_ok = self._verify_entries() is None
-        print(f"is ok: {is_ok}")
         next_btn.setEnabled(is_ok)
+
+    def _collect_entries(self) -> dict[str, str | int | bool]:
+        entries_dict = {
+            "campaign_name": self.campaign_line.text(),
+            "campaign_path": self.path_line.text(),
+            "batchsize": self.batchsize.value(),
+            "initial_recommender": self.initial_box.currentText(),
+            "acquisition_function": self.acqf_box.currentText(),
+            "simulate_results": self.simulate.isChecked()
+        }
+        return entries_dict
+
+    def _open_dialog(self):
+        connect_widget(
+            window=self.wizard,
+            names=["AddNum"],
+            child_windows=self.child_list
+        )
+
