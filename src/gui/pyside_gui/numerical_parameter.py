@@ -42,10 +42,10 @@ class NewNumericalParameter(QDialog):
         value_lineedit = find_widget(self.dialog, "param_values_lineedit")
 
         name = name_lineedit.text()
-        values = value_lineedit.text()
+        value_string = value_lineedit.text()
 
         value_list = []
-        for value in values.split(","):
+        for value in value_string.split(","):
             try:
                 value_list.append(float(value.strip()))
             except ValueError:
