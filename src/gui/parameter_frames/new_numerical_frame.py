@@ -92,7 +92,7 @@ class NewNumericalParameterFrame(BaseFrame):
             parameter_values=parameter_list
         )
         if error_msg is not None:
-                        error_subwindow(self, error_msg)
+            error_subwindow(self, error_msg)
             return
 
         # Refreshing the displayed parameters in the new campaign tabview

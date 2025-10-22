@@ -5,9 +5,15 @@ from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QTimer
 from PySide6.QtGui import QPixmap
+from baybe.parameters import NumericalDiscreteParameter
 
 from src.gui.pyside_gui.ui_utilities import find_widget, add_widget_to_frame, save_or_load_envvars, save_config
 from src.gui.pyside_gui.widget_classes import CounterWidget
+
+names = [
+    "param_name_lineedit",
+    "param_values_lineedit"
+]
 
 
 class NewNumericalParameter(QDialog):
@@ -15,12 +21,50 @@ class NewNumericalParameter(QDialog):
         super().__init__()
 
         self.ui_file_name = ui_file_name
+        self.value_dict = {}
+        self.parameter = None
 
         self._initialize_ui(self.ui_file_name)
+        self._connect_ok_btn()
 
     def _initialize_ui(self, ui_file_name):
         file = QFile(ui_file_name)
         loader = QUiLoader()
         file.open(QFile.ReadOnly)  # Type: ignore
-        self.wizard: QWizard = loader.load(file)
+        self.dialog: QDialog = loader.load(file)
         file.close()
+
+    def get_values(self):
+        return self.parameter
+
+    def _collect_entries(self):
+        name_lineedit = find_widget(self.dialog, "param_name_lineedit")
+        value_lineedit = find_widget(self.dialog, "param_values_lineedit")
+
+        name = name_lineedit.text()
+        values = value_lineedit.text()
+
+        value_list = []
+        for value in values.split(","):
+            try:
+                value_list.append(float(value.strip()))
+            except ValueError:
+                print("Could not convert value to float")
+
+        if not self._verify_entries(name, value_list):
+            NotImplementedError("Not implemented")
+
+        self.parameter = NumericalDiscreteParameter(
+            name=name,
+            values=tuple(value_list),
+        )
+
+
+
+    @staticmethod
+    def _verify_entries(name, values):
+        return True
+
+    def _connect_ok_btn(self):
+        self.dialog.ok_cancel_button.accepted.connect(self._collect_entries)
+

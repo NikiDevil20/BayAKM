@@ -7,7 +7,7 @@ from PySide6.QtCore import QFile, QIODevice, QTimer
 from PySide6.QtGui import QPixmap
 
 from src.gui.pyside_gui.ui_utilities import find_widget, add_widget_to_frame, save_or_load_envvars, save_config, \
-    connect_widget
+    connect_widget, window_factory, widget_connect_command
 from src.gui.pyside_gui.widget_classes import CounterWidget
 from src.gui.pyside_gui.numerical_parameter import NewNumericalParameter
 
@@ -17,6 +17,9 @@ LINE_STYLE = "background-color: #FFFFFF"
 registry = {
     "numerical": NewNumericalParameter
 }
+names_list = [
+    "AddNum"
+]
 
 
 class NewCampaignWizard(QWizard):
@@ -26,12 +29,13 @@ class NewCampaignWizard(QWizard):
         self.ui_file_name = ui_file_name
         self.wizard: QWizard | None = None
         self.child_list = []
+        self.parameter_list = []
 
         self._initialize_ui(ui_file_name)
         self._wizard_setup()
         self._fill_content()
         self._initialize_next_button()
-        self._open_dialog()
+        self._connect_buttons()
 
     def _initialize_ui(self, ui_file_name):
         file = QFile(ui_file_name)
@@ -183,10 +187,19 @@ class NewCampaignWizard(QWizard):
         }
         return entries_dict
 
-    def _open_dialog(self):
-        connect_widget(
-            window=self.wizard,
-            names=["AddNum"],
-            child_windows=self.child_list
-        )
+    def _open_dialog(self, name):
+        new_dialog = window_factory(name)
+        new_dialog.dialog.exec()
+
+        new_parameter = new_dialog.get_values()
+        self.parameter_list.append(new_parameter)
+
+
+    def _connect_buttons(self):
+        for name in names_list:
+            widget_connect_command(
+                widget_name=name,
+                window=self.wizard,
+                func=lambda: self._open_dialog(name),
+            )
 
