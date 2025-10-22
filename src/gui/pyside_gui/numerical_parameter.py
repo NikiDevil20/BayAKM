@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QTimer
 from PySide6.QtGui import QPixmap
-from baybe.parameters import NumericalDiscreteParameter
+
 
 from src.gui.pyside_gui.ui_utilities import find_widget, add_widget_to_frame, save_or_load_envvars, save_config
 from src.gui.pyside_gui.widget_classes import CounterWidget
@@ -53,6 +53,8 @@ class NewNumericalParameter(QDialog):
 
         if not self._verify_entries(name, value_list):
             NotImplementedError("Not implemented")
+
+        from baybe.parameters import NumericalDiscreteParameter
 
         self.parameter = NumericalDiscreteParameter(
             name=name,
