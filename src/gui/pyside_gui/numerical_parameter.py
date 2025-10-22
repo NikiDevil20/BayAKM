@@ -61,8 +61,6 @@ class NewNumericalParameter(QDialog):
             values=tuple(value_list),
         )
 
-
-
     @staticmethod
     def _verify_entries(name, values):
         return True

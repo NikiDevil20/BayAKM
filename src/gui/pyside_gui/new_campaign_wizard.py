@@ -18,7 +18,8 @@ registry = {
     "numerical": NewNumericalParameter
 }
 names_list = [
-    "AddNum"
+    "AddNum",
+    "AddSubst"
 ]
 
 
@@ -193,7 +194,6 @@ class NewCampaignWizard(QWizard):
 
         new_parameter = new_dialog.get_values()
         self.parameter_list.append(new_parameter)
-
 
     def _connect_buttons(self):
         for name in names_list:
