@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
                                QWizard, QLineEdit, QPushButton,
                                QFileDialog, QComboBox, QCheckBox,
-                               QSizePolicy)
+                               QSizePolicy, QTableWidget, QAbstractButton,
+                               QListWidget, QListWidgetItem)
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QTimer
 from PySide6.QtGui import QPixmap
@@ -189,11 +190,11 @@ class NewCampaignWizard(QWizard):
 
     def _open_dialog(self, name):
         new_dialog = window_factory(name)
+        new_dialog.parameter_created.connect(self._expand_param_list)
         new_dialog.dialog.exec()
 
-        new_parameter = new_dialog.get_values()
-        self.parameter_list.append(new_parameter)
-
+#        new_parameter = new_dialog.get_values()
+#        self.parameter_list.append(new_parameter)
 
     def _connect_buttons(self):
         for name in names_list:
@@ -203,3 +204,41 @@ class NewCampaignWizard(QWizard):
                 func=lambda: self._open_dialog(name),
             )
 
+    def _expand_param_list(self, param):
+        self.parameter_list.append(param)
+        self.refresh_parameter_display()
+        print(self.parameter_list)
+
+    def refresh_parameter_display(self):
+        if not hasattr(self, "param_list"):
+            self._setup_parameter_table()  # bleibt Name kompatibel zum Original
+
+        # Liste leeren und neu befüllen
+        self.param_list.clear()
+
+        for param in self.parameter_list:
+            name = getattr(param, "name", str(param))
+            values = getattr(param, "values", None)
+            if values is None:
+                values_str = str(param)
+            else:
+                try:
+                    values_str = ", ".join(map(str, values))
+                except TypeError:
+                    values_str = str(values)
+
+            item_text = f"{name}: {values_str}"
+            item = QListWidgetItem(item_text)
+            item.setToolTip(values_str)  # vollständige Werte als Tooltip
+            self.param_list.addItem(item)
+
+    def _setup_parameter_table(self):
+        # Ersetzt die Table-Setup-Funktion; erzeugt stattdessen ein QListWidget
+        self.param_list = QListWidget()
+        self.param_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.param_list.setSelectionMode(QListWidget.SingleSelection)
+        add_widget_to_frame(
+            window=self.wizard,
+            frame_name="ParameterTableFrame",  # UI-Frame bleibt derselbe
+            widget=self.param_list
+        )

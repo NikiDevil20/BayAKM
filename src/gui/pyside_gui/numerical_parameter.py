@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
                                QFileDialog, QComboBox, QCheckBox,
                                QSizePolicy, QDialog)
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QIODevice, QTimer
+from PySide6.QtCore import QFile, QIODevice, QTimer, Signal
 from PySide6.QtGui import QPixmap
 
 
@@ -17,8 +17,14 @@ names = [
 
 
 class NewNumericalParameter(QDialog):
-    def __init__(self, ui_file_name="add_numerical_parameter.ui"):
-        super().__init__()
+    parameter_created = Signal(object)
+
+    def __init__(
+            self,
+            parent=None,
+            ui_file_name="add_numerical_parameter.ui"
+    ):
+        super().__init__(parent)
 
         self.ui_file_name = ui_file_name
         self.value_dict = {}
@@ -31,7 +37,7 @@ class NewNumericalParameter(QDialog):
         file = QFile(ui_file_name)
         loader = QUiLoader()
         file.open(QFile.ReadOnly)  # Type: ignore
-        self.dialog: QDialog = loader.load(file)
+        self.dialog: QDialog = loader.load(file, self)
         file.close()
 
     def get_values(self):
@@ -60,6 +66,9 @@ class NewNumericalParameter(QDialog):
             name=name,
             values=tuple(value_list),
         )
+
+        self.parameter_created.emit(self.parameter)
+        self.dialog.accept()
 
 
 
