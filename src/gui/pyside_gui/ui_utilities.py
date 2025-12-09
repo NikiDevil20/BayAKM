@@ -37,6 +37,9 @@ def window_factory(name: str):
     elif name == "AddNum":
         from src.gui.pyside_gui.numerical_parameter import NewNumericalParameter
         window = NewNumericalParameter()
+    elif name == "AddSubst":
+        from src.gui.pyside_gui.substance_parameter import NewSubstanceParameter
+        window = NewSubstanceParameter()
     else:
         raise ValueError(f" {name} name not found")
     return window

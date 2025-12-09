@@ -19,7 +19,8 @@ registry = {
     "numerical": NewNumericalParameter
 }
 names_list = [
-    "AddNum"
+    "AddNum",
+    "AddSubst"
 ]
 
 

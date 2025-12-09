@@ -1,5 +1,9 @@
 # python
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLineEdit
+from PySide6.QtWidgets import (QWidget, QHBoxLayout,
+                               QPushButton, QLineEdit,
+                               QVBoxLayout, QTableWidget,
+                               QCheckBox, QTableWidgetItem,
+                               QSizePolicy)
 from PySide6.QtCore import Signal, Qt
 
 class CounterWidget(QWidget):
@@ -52,3 +56,51 @@ class CounterWidget(QWidget):
 
     def value(self) -> int:
         return self._value
+
+
+class CreateChoiceTable(QWidget):
+    def __init__(self, data: list[str]):
+        super().__init__()
+
+        self.data: list[str] = data
+
+        layout = QVBoxLayout(self)
+        self.table = QTableWidget()
+        layout.addWidget(self.table)
+
+        self.table.setColumnCount(2)
+        self.table.setHorizontalHeaderLabels(["", "Name"])
+
+        self.populate_table()
+
+        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.verticalHeader().setVisible(False)
+
+    def populate_table(self):
+        self.table.setRowCount(len(self.data))
+
+        for row, name in enumerate(self.data):
+            checkbox = QCheckBox()
+            checkbox.setChecked(False)
+
+            cell_widget = QWidget()
+            hlayout = QHBoxLayout(cell_widget)
+            hlayout.setContentsMargins(0, 0, 0, 0)
+            hlayout.addWidget(checkbox, 0, Qt.AlignCenter)
+
+            self.table.setCellWidget(row, 0, cell_widget)
+
+            name_item = QTableWidgetItem(name)
+            name_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+            self.table.setItem(row, 1, name_item)
+
+    def get_selected(self) -> list[str]:
+        selected = []
+        for row in range(self.table.rowCount()):
+            checkbox = self.table.cellWidget(row, 0)
+            if checkbox and checkbox.isChecked():
+                name = self.table.item(row, 1).text()
+                selected.append(name)
+        return selected
