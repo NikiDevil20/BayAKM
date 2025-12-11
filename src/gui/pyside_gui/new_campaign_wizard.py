@@ -2,7 +2,8 @@ from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
                                QWizard, QLineEdit, QPushButton,
                                QFileDialog, QComboBox, QCheckBox,
                                QSizePolicy, QTableWidget, QAbstractButton,
-                               QListWidget, QListWidgetItem)
+                               QListWidget, QListWidgetItem, QAbstractItemView,
+                               QTableWidgetItem, QHeaderView,)
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QIODevice, QTimer
 from PySide6.QtGui import QPixmap
@@ -19,8 +20,7 @@ registry = {
     "numerical": NewNumericalParameter
 }
 names_list = [
-    "AddNum",
-    "AddSubst"
+    "AddNum"
 ]
 
 
@@ -40,6 +40,9 @@ class NewCampaignWizard(QWizard):
         self._connect_buttons()
 
     def _initialize_ui(self, ui_file_name):
+        """Loads PyQT elements.
+
+        """
         file = QFile(ui_file_name)
         loader = QUiLoader()
         file.open(QFile.ReadOnly)  # Type: ignore
@@ -47,6 +50,7 @@ class NewCampaignWizard(QWizard):
         file.close()
 
     def _initialize_next_button(self):
+        """Connects the 'next' button in the wizard with a command."""
         QTimer.singleShot(0, self._update_next_button)
         next_btn = self.wizard.button(QWizard.NextButton)
         next_btn.clicked.connect(self._on_next_klicked)
@@ -211,13 +215,12 @@ class NewCampaignWizard(QWizard):
         print(self.parameter_list)
 
     def refresh_parameter_display(self):
-        if not hasattr(self, "param_list"):
+        if not hasattr(self, "param_table"):
             self._setup_parameter_table()  # bleibt Name kompatibel zum Original
 
-        # Liste leeren und neu befüllen
-        self.param_list.clear()
+        self.param_table.setRowCount(len(self.parameter_list))
 
-        for param in self.parameter_list:
+        for row, param in enumerate(self.parameter_list):
             name = getattr(param, "name", str(param))
             values = getattr(param, "values", None)
             if values is None:
@@ -228,18 +231,29 @@ class NewCampaignWizard(QWizard):
                 except TypeError:
                     values_str = str(values)
 
-            item_text = f"{name}: {values_str}"
-            item = QListWidgetItem(item_text)
-            item.setToolTip(values_str)  # vollständige Werte als Tooltip
-            self.param_list.addItem(item)
+            name_item = QTableWidgetItem(name)
+            values_item = QTableWidgetItem(values_str)
+
+            self.param_table.setItem(row, 0, name_item)
+            self.param_table.setItem(row, 1, values_item)
 
     def _setup_parameter_table(self):
-        # Ersetzt die Table-Setup-Funktion; erzeugt stattdessen ein QListWidget
-        self.param_list = QListWidget()
-        self.param_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.param_list.setSelectionMode(QListWidget.SingleSelection)
+        self.param_table = QTableWidget()
+        self.param_table.setColumnCount(2)
+        self.param_table.setHorizontalHeaderLabels(["Parameter name", "Values"])
+        self.param_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.param_table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.param_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        header = self.param_table.horizontalHeader()
+
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+
+        header.setStretchLastSection(True)
+
         add_widget_to_frame(
             window=self.wizard,
-            frame_name="ParameterTableFrame",  # UI-Frame bleibt derselbe
-            widget=self.param_list
+            frame_name="ParameterTableFrame",
+            widget=self.param_table
         )
