@@ -20,7 +20,8 @@ registry = {
     "numerical": NewNumericalParameter
 }
 names_list = [
-    "AddNum"
+    "AddNum",
+    "AddSubst"
 ]
 
 
@@ -198,21 +199,18 @@ class NewCampaignWizard(QWizard):
         new_dialog.parameter_created.connect(self._expand_param_list)
         new_dialog.dialog.exec()
 
-#        new_parameter = new_dialog.get_values()
-#        self.parameter_list.append(new_parameter)
-
     def _connect_buttons(self):
         for name in names_list:
+            print(name)
             widget_connect_command(
                 widget_name=name,
                 window=self.wizard,
-                func=lambda: self._open_dialog(name),
+                func=lambda *_, _name=name: self._open_dialog(_name),
             )
 
     def _expand_param_list(self, param):
         self.parameter_list.append(param)
         self.refresh_parameter_display()
-        print(self.parameter_list)
 
     def refresh_parameter_display(self):
         if not hasattr(self, "param_table"):

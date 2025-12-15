@@ -37,7 +37,7 @@ class NewNumericalParameter(QDialog):
         file = QFile(ui_file_name)
         loader = QUiLoader()
         file.open(QFile.ReadOnly)  # Type: ignore
-        self.dialog: QDialog = loader.load(file, self)
+        self.dialog = loader.load(file, self)
         file.close()
 
     def get_values(self):

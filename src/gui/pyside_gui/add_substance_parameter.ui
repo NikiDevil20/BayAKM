@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="QDialogButtonBox" name="ok_cancel_button">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -69,7 +69,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="NameLineEdit"/>
+        <widget class="QLineEdit" name="name_lineedit"/>
        </item>
       </layout>
      </widget>
@@ -163,7 +163,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>ok_cancel_button</sender>
    <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
@@ -179,7 +179,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>ok_cancel_button</sender>
    <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>

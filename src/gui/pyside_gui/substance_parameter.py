@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QMainWindow, QStackedWidget,
                                QSizePolicy, QDialog, QFrame, QHBoxLayout,
                                QWidget, QVBoxLayout, QLabel, QTableWidget)
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QIODevice, QTimer, Qt
+from PySide6.QtCore import QFile, QIODevice, QTimer, Qt, Signal
 from PySide6.QtGui import QPixmap
 
 from src.gui.pyside_gui.new_campaign_wizard import names_list
@@ -23,8 +23,14 @@ name_list = [
 
 
 class NewSubstanceParameter(QDialog):
-    def __init__(self, ui_file_name="add_substance_parameter.ui"):
-        super().__init__()
+    parameter_created = Signal(object)
+
+    def __init__(
+            self,
+            parent=None,
+            ui_file_name="add_substance_parameter.ui"
+    ):
+        super().__init__(parent)
 
         self.ui_file_name = ui_file_name
         self.value_dict = {}
@@ -36,14 +42,16 @@ class NewSubstanceParameter(QDialog):
         self._build_smiles_dict()
         self._build_choice_list()
 
+        self._connect_ok_btn()
+
     def get_values(self):
-        return None
+        return self.parameter
 
     def _initialize_ui(self, ui_file_name):
         file = QFile(ui_file_name)
         loader = QUiLoader()
         file.open(QFile.ReadOnly)  # Type: ignore
-        self.dialog: QDialog = loader.load(file)
+        self.dialog = loader.load(file, self)
         file.close()
 
     def _build_smiles_dict(self):
@@ -65,11 +73,27 @@ class NewSubstanceParameter(QDialog):
 
     def _collect_entries(self):
         name_list_from_choice_list = self.choice_table.get_selected()
+        name_lineedit = find_widget(self.dialog, "name_lineedit")
 
         dict_from_choice = {}
         for choosen in name_list_from_choice_list:
             dict_from_choice[choosen] = self.smiles_dict[choosen]
 
+        name = name_lineedit.text()
 
+        from baybe.parameters import SubstanceParameter
+
+        self.parameter = SubstanceParameter(
+            name=name,
+            data=dict_from_choice,
+            encoding="MORDRED",
+            decorrelate=0.7
+        )
+
+        self.parameter_created.emit(self.parameter)
+        self.dialog.accept()
+
+    def _connect_ok_btn(self):
+        self.dialog.ok_cancel_button.accepted.connect(self._collect_entries)
 
 

@@ -99,7 +99,7 @@ class CreateChoiceTable(QWidget):
     def get_selected(self) -> list[str]:
         selected = []
         for row in range(self.table.rowCount()):
-            checkbox = self.table.cellWidget(row, 0)
+            checkbox = self.table.cellWidget(row, 0).findChild(QCheckBox)
             if checkbox and checkbox.isChecked():
                 name = self.table.item(row, 1).text()
                 selected.append(name)
