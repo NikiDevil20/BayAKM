@@ -10,7 +10,7 @@ from src.gui.main_gui.menu_frame import MenuFrame
 from src.gui.main_gui.table_frame import TableFrame
 
 
-# ctk.set_default_color_theme("dark-blue")
+ctk.set_default_color_theme("blue")
 
 
 class App(ctk.CTk):

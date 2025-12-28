@@ -101,7 +101,7 @@ class NewSubstanceParameterFrame(BaseFrame):
             parameter_values=substance_dict
         )
         if error_msg is not None:
-                        error_subwindow(self, error_msg)
+            error_subwindow(self, error_msg)
             return
 
         self.master.master.refresh_parameters()
