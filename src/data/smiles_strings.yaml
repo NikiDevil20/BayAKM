@@ -1,0 +1,22 @@
+bases:
+  ammonium_hydroxide: '[NH4+].[OH-]'
+  lithium_hydroxide: '[Li+].[OH-]'
+  potassium_hydroxide: '[K+].[OH-]'
+  pyridine: c1ccncc1
+  sodium_bicarbonate: '[Na+].[O-]C(=O)O'
+  sodium_carbonate: '[Na+].[Na+][O-]C(=O)[O-]'
+  sodium_hydroxide: '[Na+].[OH-]'
+  triethylamine: CCN(CC)CC
+other:
+  thionylbromide: BrS(=O)Br
+solvents:
+  DMSO: CS(=O)C
+  acetone: CC(=O)C
+  acetonitrile: CC#N
+  benzene: c1ccccc1
+  chloroform: C(Cl)(Cl)Cl
+  ethanol: CCO
+  hexane: CCCCCC
+  methanol: CO
+  toluene: Cc1ccccc1
+  water: O
