@@ -4,8 +4,8 @@ import os
 from rdkit import Chem
 from src.environment_variables.dir_paths import DirPaths
 
-
-smiles_type = dict[str,dict[str, str]]
+SMILES = str
+smiles_type = dict[str,dict[str, SMILES]]
 
 
 dirs = DirPaths()
@@ -25,15 +25,15 @@ def smiles_dict_from_yaml() -> smiles_type:
         _smiles_dict: smiles_type = yaml.safe_load(f)
     return _smiles_dict
 
-def verify_entries(_smiles_dict: smiles_type) -> bool:
+def verify_entries(_smiles_dict: smiles_type) -> None | str:
     """
     Verify that all entries in the SMILES dictionary are valid.
 
     Args:
         _smiles_dict (dict): A dict of molecule groups like solvents, bases etc.,
         which contains molecule names as keys and SMILES strings as values.
-    Raises:
-        ValueError: If any SMILES string is invalid.
+    Returns:
+        error (str | None): Error message if any SMILES string is invalid, else None.
     """
     error = None
 
@@ -46,7 +46,7 @@ def verify_entries(_smiles_dict: smiles_type) -> bool:
                     f"Common error include dots at the end or spaces "
                 )
 
-    return error if error is not None else True
+    return error
 
 def is_valid_smiles(smiles: str) -> bool | str:
     """
@@ -65,7 +65,7 @@ def add_molecule_to_dict(
     name: str,
     smiles_string: str,
     group: str = "other"
-) -> None:
+) -> None | str:
     """
     Add a molecule to the SMILES dictionary.
 
@@ -74,23 +74,33 @@ def add_molecule_to_dict(
         group (str): The group to add the molecule to.
         name (str): The name of the molecule.
         smiles_string (str): The SMILES string of the molecule.
+    Returns:
+        error (str | None): Error message if SMILES string is invalid, else None.
     """
+    error = None
     _smiles_dict = smiles_dict_from_yaml()
+    path = os.path.join(dirs.data, "smiles_strings.yaml")
+
+
     if not is_valid_smiles(smiles_string):
-        raise ValueError(f"Invalid SMILES string: {smiles_string}")
+        error = (
+            f"Invalid SMILES string: {smiles_string}"
+        )
+        return error
+
     if group not in smiles_dict:
         _smiles_dict[group] = {}
 
     _smiles_dict[group][name] = smiles_string
 
-    path = os.path.join(dirs.data, "smiles_strings.yaml")
-
     with open(path, "w") as f:
         yaml.dump(_smiles_dict, f)
 
+    return error
+
 def remove_molecule_from_dict(
     name: str,
-) -> None:
+) -> None | str:
     """
     Remove a molecule from the SMILES dictionary.
 
@@ -98,10 +108,13 @@ def remove_molecule_from_dict(
         which contains molecule names as keys and SMILES strings as values.
         name (str): The name of the molecule to remove.
     Returns:
-        None
+        error (str | None): Error message if molecule not found, else None.
     """
     _smiles_dict = smiles_dict_from_yaml()
+    path = os.path.join(dirs.data, "smiles_strings.yaml")
     found = False
+    error = None
+
     for group in _smiles_dict:
         if name in _smiles_dict[group]:
             del _smiles_dict[group][name]
@@ -109,12 +122,15 @@ def remove_molecule_from_dict(
             break
 
     if not found:
-        raise ValueError(f"Molecule {name} not found in the dictionary.")
-
-    path = os.path.join(dirs.data, "smiles_strings.yaml")
+        error = (
+            f"Molecule {name} not found in the dictionary."
+        )
+        return error
 
     with open(path, "w") as f:
         yaml.dump(_smiles_dict, f)
+
+    return error
 
 if __name__ == "__main__":
     smiles_dict = smiles_dict_from_yaml()

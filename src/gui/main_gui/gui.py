@@ -11,7 +11,7 @@ from src.gui.main_gui.table_frame import TableFrame
 
 
 ctk.set_default_color_theme("blue")
-
+ctk.set_appearance_mode("Light")
 
 class App(ctk.CTk):
     def __init__(self):
