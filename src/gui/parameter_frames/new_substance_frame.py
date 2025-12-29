@@ -1,7 +1,8 @@
 import customtkinter as ctk
 
 from src.bayakm.parameters import write_to_parameters_file
-from src.gui.main_gui.gui_constants import STANDARD, FGCOLOR, TEXTCOLOR, ROWFGCOLOR
+from src.gui.main_gui.gui_constants import (STANDARD, FGCOLOR, TEXTCOLOR,
+                                            ROWFGCOLOR, PackagedWidget, Row)
 from src.gui.help import error_subwindow
 from src.gui.main_gui.new_page_factory import BaseFrame
 from src.bayakm.smiles_loader import (smiles_dict_from_yaml, verify_entries, add_molecule_to_dict,
@@ -16,10 +17,12 @@ SUBSTNAME_PLACEHOLDER = "Substance name"
 class NewSubstanceParameterFrame(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
+        self.subheaeder_frame = None
         self.row_list = []
         self.name_entry = None
         self.row_frame = None
         self.list_frame = None
+        self.smiles_dict = smiles_dict_from_yaml()
 
     def _create_row(self):
         """Creates a row with two entries for substance name and SMILES string.
@@ -122,26 +125,35 @@ class NewSubstanceParameterFrame(BaseFrame):
             placeholder_text=PARAMNAME_PLACEHOLDER,
             font=STANDARD
         )
-        self.name_entry.grid(row=0, column=0, pady=5, padx=20, sticky="ew")
+        self.name_entry.grid(row=0, column=0, pady=[10, 0], padx=20, sticky="ew")
+
+
 
         self.row_frame = ctk.CTkScrollableFrame(
             master=self.content_frame,
-            width=400
+            width=350
         )
         self.row_frame.columnconfigure(0, weight=1)
-        self.row_frame.grid(row=1, column=0, pady=5, padx=5, sticky="ew")
+        self.row_frame.grid(row=1, column=len(self.smiles_dict.keys())+1, pady=10, padx=20, sticky="nsew")
+
+        self.subheaeder_frame = ctk.CTkFrame(
+            master=self.row_frame,
+            fg_color=FGCOLOR
+        )
+        self.subheaeder_frame.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
+
+        custom_label = ctk.CTkLabel(
+            master=self.subheaeder_frame,
+            text="Enter custom",
+            font=STANDARD
+        )
+        custom_label.pack(pady=5, padx=10, anchor="n")
+        
         self.content_frame.columnconfigure(0, weight=1)
         self.content_frame.columnconfigure(1, weight=1)
 
-        self.list_frame = ListFrame(
-            master=self.content_frame,
-            width=400
-        )
-        self.list_frame.grid(row=1, column=1, pady=5, padx=5, sticky="ew")
-
         self._create_row()
         self._create_row()
-
         save_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Save",
@@ -160,70 +172,77 @@ class NewSubstanceParameterFrame(BaseFrame):
             fg_color="light blue"
         )
         add_button.grid(row=0, column=0, pady=5, padx=10)
+        self.build_smiles_frames()
 
-class ListFrame(ctk.CTkScrollableFrame):
-    def __init__(self, master, **kwargs):
+    def build_smiles_frames(self):
+        for index, group in enumerate(self.smiles_dict):
+            molecules = list(self.smiles_dict[group].keys())
+            smiles_frame = SmilesFramesByGroup(
+                master=self.content_frame,
+                group_name=group,
+                molecules=molecules,
+            )
+            smiles_frame.grid(
+                row=1,
+                column=index,
+                pady=10,
+                padx=20,
+                sticky="nsew"
+            )
+
+class SmilesFramesByGroup(ctk.CTkFrame):
+    def __init__(self, master, group_name: str, molecules: list[str], **kwargs):
         super().__init__(master, **kwargs)
 
-        self.smiles_dict = None
+        self.group_name = group_name
+        self.molecules = molecules
+        self.scrollframe = None
+        self.title_frame = None
+        self.checkbox_list = []
 
-        self._create_smiles_dict()
+        self._build_title_frame()
+        self._build_rows()
 
-        self.build_rows()
+    def _build_title_frame(self):
+        self.title_frame = ctk.CTkFrame(
+            master=self,
+            fg_color=FGCOLOR
+        )
+        self.title_frame.grid(row=0, column=0, pady=10, padx=20, sticky="ew")
 
-    def _create_smiles_dict(self):
-        smiles: smiles_type = smiles_dict_from_yaml()
-        error = verify_entries(smiles)
-        if error is not None:
-            error_subwindow(self, error)
-            return
-
-        self.smiles_dict = smiles
-
-    def _initialize_geometry(self):
-        pass
-
-    def _create_row(self, text: str, index: int):
-        checkbox = None
-        row = ctk.CTkFrame(master=self, fg_color="light grey", width=250)
-        row.columnconfigure(0, weight=0)
-        row.columnconfigure(1, weight=1)
-        label = ctk.CTkLabel(
-            master=row,
-            text=text,
+        title_label = ctk.CTkLabel(
+            master=self.title_frame,
+            text=f"{self.group_name}",
             font=STANDARD
         )
-        if not text == f"--- {text.strip('- ').upper()} ---":
-            checkbox = ctk.CTkCheckBox(
-                master=row,
-                text="",
-                fg_color=FGCOLOR,
-                text_color=TEXTCOLOR,
-                width=16
+        title_label.pack(pady=5, padx=10)
+
+    def _build_rows(self):
+        self.scrollframe = ctk.CTkScrollableFrame(
+            master=self,
+        )
+        self.scrollframe.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
+        packaged_checkbox = PackagedWidget(
+            widget_type=ctk.CTkCheckBox,
+            text="",
+            fg_color=FGCOLOR,
+            text_color=TEXTCOLOR,
+            width=16
+        )
+        for index, molecule in enumerate(self.molecules):
+            object_list = []
+
+            packaged_label = PackagedWidget(
+                widget_type=ctk.CTkLabel,
+                text=molecule,
+                font=STANDARD
             )
-            row.columnconfigure(0)
-            checkbox.grid(row=0, column=0, pady=2, padx=2, sticky="w")
-            label.grid(row=0, column=1, pady=2, padx=10, sticky="w")
-        else:
-            label.grid(row=0, column=0, sticky="ew", pady=2, padx=10, columnspan=2)
-
-        row.grid(row=index, column=0, sticky="ew")
-
-        return checkbox
-
-    def build_rows(self):
-        if self.smiles_dict is None:
-            return
-
-        index = 0
-        checkbox_dict = {}
-
-        for group, molecule in self.smiles_dict.items():
-            self._create_row(f"--- {group.upper()} ---", index)
-            index += 1
-            for name, smiles_string in molecule.items():
-                checkbox = self._create_row(f"{name}", index)
-                checkbox_dict[name] = checkbox
-                index += 1
-
-
+            object_list.append(packaged_checkbox)
+            object_list.append(packaged_label)
+            row = Row(
+                master=self.scrollframe,
+                object_list=object_list,
+                weights=[0, 1]
+            )
+            row.grid(row=1+index, column=0, sticky="ew")
+            self.checkbox_list.append(row.return_widget(0))
