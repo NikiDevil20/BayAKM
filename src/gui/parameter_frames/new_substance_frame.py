@@ -10,8 +10,8 @@ from src.bayakm.smiles_loader import (smiles_dict_from_yaml, verify_entries, add
 
 HEADER_TEXT = "New Substance Parameter"
 PARAMNAME_PLACEHOLDER = "Parameter name"
-SMILES_PLACEHOLDER = "Smiles string"
-SUBSTNAME_PLACEHOLDER = "Substance name"
+SMILES_PLACEHOLDER = "SMILES"
+SUBSTNAME_PLACEHOLDER = "name"
 
 
 class NewSubstanceParameterFrame(BaseFrame):
@@ -22,7 +22,11 @@ class NewSubstanceParameterFrame(BaseFrame):
         self.name_entry = None
         self.row_frame = None
         self.list_frame = None
+        self.group_list = []
+        self.checked_molecules = []
+        self.smiles_list = []
         self.smiles_dict = smiles_dict_from_yaml()
+        self.smiles_dict_flattened = self._flatten_smiles_dict()
 
     def _create_row(self):
         """Creates a row with two entries for substance name and SMILES string.
@@ -41,7 +45,7 @@ class NewSubstanceParameterFrame(BaseFrame):
             master=row,
             placeholder_text=SUBSTNAME_PLACEHOLDER,
             font=STANDARD,
-            width=150
+            width=100
         )
         smiles_entry = ctk.CTkEntry(
             master=row,
@@ -73,87 +77,71 @@ class NewSubstanceParameterFrame(BaseFrame):
         row.destroy()
         self.row_list.remove(entry_tuple)
 
+    def _flatten_smiles_dict(self):
+        return {k: v for inner in self.smiles_dict.values() for k, v in inner.items()}
+
     def _command_save_parameter(self):
         """Method for saving the parameter's name and values.
         The SMILES string is checked by the BayBE package
         upon parameter generation by the build_parameter_list()
         function in the parameters.py file.
         """
-
-        if self.name_entry.get() == "":  # Name cannot be empty.
-            error_subwindow(
-                self,
-                message="Parameter name cannot be empty."
-            )
-            return
-
         substance_dict: dict[str, str] = {}
 
-        for (substance_name_entry, smiles_entry) in self.row_list:
-            # Substance name and SMILES string must not be empty.
-            if substance_name_entry.get() == "" or smiles_entry.get() == "":
-                continue
-            substance_dict[substance_name_entry.get()] = smiles_entry.get()
+        # if self.name_entry.get() == "":  # Name cannot be empty.
+        #     error_subwindow(
+        #         self,
+        #         message="Parameter name cannot be empty."
+        #     )
+        #     return
 
-        if len(substance_dict.keys()) < 2:  # At least two values are needed for parameter creation.
-            error_subwindow(
-                self,
-                message="You must add at least two values to a parameter."
-            )
-            return
+        smiles_list = self._fetch_checked_substances()
+        print(smiles_list)
 
-        # The new parameter is added to the parameters.yaml file.
-        error_msg = write_to_parameters_file(
-            mode="substance",
-            parameter_name=self.name_entry.get(),
-            parameter_values=substance_dict
-        )
-        if error_msg is not None:
-            error_subwindow(self, error_msg)
-            return
+        # for (substance_name_entry, smiles_entry) in self.row_list:
+        #     # Substance name and SMILES string must not be empty.
+        #     if substance_name_entry.get() == "" or smiles_entry.get() == "":
+        #         continue
+        #     substance_dict[substance_name_entry.get()] = smiles_entry.get()
+        #
+        # if len(substance_dict.keys()) < 2:  # At least two values are needed for parameter creation.
+        #     error_subwindow(
+        #         self,
+        #         message="You must add at least two values to a parameter."
+        #     )
+        #     return
+        #
+        # # The new parameter is added to the parameters.yaml file.
+        # error_msg = write_to_parameters_file(
+        #     mode="substance",
+        #     parameter_name=self.name_entry.get(),
+        #     parameter_values=substance_dict
+        # )
+        # if error_msg is not None:
+        #     error_subwindow(self, error_msg)
+        #     return
+        #
+        # self.master.master.refresh_parameters()
+        # self.master.destroy()
 
-        self.master.master.refresh_parameters()
-        self.master.destroy()
+    def _fetch_checked_substances(self):
+        smiles_list = []
+        for group in self.group_list:
+            checkboxlist = group.return_checkboxlist()
+            for checkbox in checkboxlist:
+                if checkbox._variable.get():
+                    self.checked_molecules.append(checkbox._text)
 
-    def fill_content(self):
-        self.header = HEADER_TEXT
+        if not len(self.checked_molecules) > 0:
+            return []
 
-        self.build_frames()
-
-        self.name_entry = ctk.CTkEntry(
-            master=self.content_frame,
-            placeholder_text=PARAMNAME_PLACEHOLDER,
-            font=STANDARD
-        )
-        self.name_entry.grid(row=0, column=0, pady=[10, 0], padx=20, sticky="ew")
+        self.checked_molecules.sort()
+        for molecule_name in self.checked_molecules:
+            smiles_list.append(self.smiles_dict_flattened[molecule_name])
+        return smiles_list
 
 
-
-        self.row_frame = ctk.CTkScrollableFrame(
-            master=self.content_frame,
-            width=350
-        )
-        self.row_frame.columnconfigure(0, weight=1)
-        self.row_frame.grid(row=1, column=len(self.smiles_dict.keys())+1, pady=10, padx=20, sticky="nsew")
-
-        self.subheaeder_frame = ctk.CTkFrame(
-            master=self.row_frame,
-            fg_color=FGCOLOR
-        )
-        self.subheaeder_frame.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
-
-        custom_label = ctk.CTkLabel(
-            master=self.subheaeder_frame,
-            text="Enter custom",
-            font=STANDARD
-        )
-        custom_label.pack(pady=5, padx=10, anchor="n")
-        
-        self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.columnconfigure(1, weight=1)
-
-        self._create_row()
-        self._create_row()
+    def _build_buttons(self):
         save_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Save",
@@ -172,10 +160,44 @@ class NewSubstanceParameterFrame(BaseFrame):
             fg_color="light blue"
         )
         add_button.grid(row=0, column=0, pady=5, padx=10)
-        self.build_smiles_frames()
+
+    def _build_labels_and_frames(self):
+        self.name_entry = ctk.CTkEntry(
+            master=self.content_frame,
+            placeholder_text=PARAMNAME_PLACEHOLDER,
+            font=STANDARD
+        )
+        self.name_entry.grid(row=0, column=0, pady=[10, 0], padx=20, sticky="ew")
+
+        self.row_frame = ctk.CTkScrollableFrame(
+            master=self.content_frame,
+            width=250
+        )
+        self.row_frame.columnconfigure(0, weight=1)
+        self.row_frame.grid(row=2, column=2, pady=10, padx=20, sticky="nsew")
+
+        self.subheaeder_frame = ctk.CTkFrame(
+            master=self.row_frame,
+            fg_color=FGCOLOR
+        )
+        self.subheaeder_frame.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
+
+        custom_label = ctk.CTkLabel(
+            master=self.subheaeder_frame,
+            text="Enter custom",
+            font=STANDARD
+        )
+        custom_label.pack(pady=5, padx=10, anchor="n")
+
+        self.content_frame.columnconfigure(0, weight=1)
+        self.content_frame.columnconfigure(1, weight=1)
 
     def build_smiles_frames(self):
         for index, group in enumerate(self.smiles_dict):
+            row = 1
+            if index % 2 != 0:
+                row += 1
+                index = 0
             molecules = list(self.smiles_dict[group].keys())
             smiles_frame = SmilesFramesByGroup(
                 master=self.content_frame,
@@ -183,12 +205,26 @@ class NewSubstanceParameterFrame(BaseFrame):
                 molecules=molecules,
             )
             smiles_frame.grid(
-                row=1,
+                row=row,
                 column=index,
                 pady=10,
                 padx=20,
                 sticky="nsew"
             )
+            self.group_list.append(smiles_frame)
+
+    def fill_content(self):
+        self.header = HEADER_TEXT
+
+        self.build_frames()
+        self._build_buttons()
+        self._build_labels_and_frames()
+
+        self._create_row()
+        self._create_row()
+
+        self.build_smiles_frames()
+
 
 class SmilesFramesByGroup(ctk.CTkFrame):
     def __init__(self, master, group_name: str, molecules: list[str], **kwargs):
@@ -222,27 +258,28 @@ class SmilesFramesByGroup(ctk.CTkFrame):
             master=self,
         )
         self.scrollframe.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
-        packaged_checkbox = PackagedWidget(
-            widget_type=ctk.CTkCheckBox,
-            text="",
-            fg_color=FGCOLOR,
-            text_color=TEXTCOLOR,
-            width=16
-        )
+
         for index, molecule in enumerate(self.molecules):
             object_list = []
-
-            packaged_label = PackagedWidget(
-                widget_type=ctk.CTkLabel,
+            check_var = ctk.BooleanVar(value=False)
+            packaged_checkbox = PackagedWidget(
+                widget_type=ctk.CTkCheckBox,
+                fg_color=FGCOLOR,
+                text_color=TEXTCOLOR,
+                width=16,
                 text=molecule,
-                font=STANDARD
+                onvalue=True,
+                offvalue=False,
+                variable=check_var
             )
             object_list.append(packaged_checkbox)
-            object_list.append(packaged_label)
             row = Row(
                 master=self.scrollframe,
                 object_list=object_list,
-                weights=[0, 1]
+                weights=[1]
             )
             row.grid(row=1+index, column=0, sticky="ew")
             self.checkbox_list.append(row.return_widget(0))
+
+    def return_checkboxlist(self):
+        return self.checkbox_list

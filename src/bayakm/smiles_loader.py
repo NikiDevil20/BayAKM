@@ -25,6 +25,7 @@ def smiles_dict_from_yaml() -> smiles_type:
         _smiles_dict: smiles_type = yaml.safe_load(f)
     return _smiles_dict
 
+
 def verify_entries(_smiles_dict: smiles_type) -> None | str:
     """
     Verify that all entries in the SMILES dictionary are valid.
@@ -48,6 +49,7 @@ def verify_entries(_smiles_dict: smiles_type) -> None | str:
 
     return error
 
+
 def is_valid_smiles(smiles: str) -> bool | str:
     """
     Verify that a single SMILES string is valid.
@@ -60,6 +62,7 @@ def is_valid_smiles(smiles: str) -> bool | str:
     mol = Chem.MolFromSmiles(smiles)
 
     return False if mol is None else True
+
 
 def add_molecule_to_dict(
     name: str,
@@ -81,7 +84,6 @@ def add_molecule_to_dict(
     _smiles_dict = smiles_dict_from_yaml()
     path = os.path.join(dirs.data, "smiles_strings.yaml")
 
-
     if not is_valid_smiles(smiles_string):
         error = (
             f"Invalid SMILES string: {smiles_string}"
@@ -97,6 +99,7 @@ def add_molecule_to_dict(
         yaml.dump(_smiles_dict, f)
 
     return error
+
 
 def remove_molecule_from_dict(
     name: str,
@@ -131,6 +134,7 @@ def remove_molecule_from_dict(
         yaml.dump(_smiles_dict, f)
 
     return error
+
 
 if __name__ == "__main__":
     smiles_dict = smiles_dict_from_yaml()

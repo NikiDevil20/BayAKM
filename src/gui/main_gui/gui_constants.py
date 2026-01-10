@@ -24,6 +24,7 @@ class PackagedWidget:
         self.widget = self._type(master=master, **self._kwargs)
         return self.widget
 
+
 class Row(ctk.CTkFrame):
     def __init__(self, master, object_list: list[PackagedWidget], weights:list[int]=None):
         ctk.CTkFrame.__init__(self, master)
@@ -46,7 +47,7 @@ class Row(ctk.CTkFrame):
         for index, packaged_widget in enumerate(self.object_list):
             widget = self.build_object(packaged_widget)
             self.widget_list.append(widget)
-            widget.grid(row=0, column=index, sticky="ew")
+            widget.grid(row=0, column=index, sticky="ew", padx=5, pady=2)
             if self.weights is not None:
                 self.columnconfigure(index, weight=self.weights[index])
             else:
