@@ -6,7 +6,7 @@ from src.gui.main_gui.gui_constants import (STANDARD, FGCOLOR, TEXTCOLOR,
 from src.gui.help import error_subwindow
 from src.gui.main_gui.new_page_factory import BaseFrame
 from src.bayakm.smiles_loader import (smiles_dict_from_yaml, verify_entries, add_molecule_to_dict,
-                                      remove_molecule_from_dict, smiles_type)
+                                      remove_molecule_from_dict, smiles_type, is_valid_smiles)
 
 HEADER_TEXT = "New Substance Parameter"
 PARAMNAME_PLACEHOLDER = "Parameter name"
@@ -88,44 +88,53 @@ class NewSubstanceParameterFrame(BaseFrame):
         """
         substance_dict: dict[str, str] = {}
 
-        # if self.name_entry.get() == "":  # Name cannot be empty.
-        #     error_subwindow(
-        #         self,
-        #         message="Parameter name cannot be empty."
-        #     )
-        #     return
+        if self.name_entry.get() == "":  # Name cannot be empty.
+            error_subwindow(
+                self,
+                message="Parameter name cannot be empty."
+            )
+            return
 
-        smiles_list = self._fetch_checked_substances()
-        print(smiles_list)
+        substance_dict = self._fetch_checked_substances()
 
-        # for (substance_name_entry, smiles_entry) in self.row_list:
-        #     # Substance name and SMILES string must not be empty.
-        #     if substance_name_entry.get() == "" or smiles_entry.get() == "":
-        #         continue
-        #     substance_dict[substance_name_entry.get()] = smiles_entry.get()
-        #
-        # if len(substance_dict.keys()) < 2:  # At least two values are needed for parameter creation.
-        #     error_subwindow(
-        #         self,
-        #         message="You must add at least two values to a parameter."
-        #     )
-        #     return
-        #
-        # # The new parameter is added to the parameters.yaml file.
-        # error_msg = write_to_parameters_file(
-        #     mode="substance",
-        #     parameter_name=self.name_entry.get(),
-        #     parameter_values=substance_dict
-        # )
-        # if error_msg is not None:
-        #     error_subwindow(self, error_msg)
-        #     return
-        #
-        # self.master.master.refresh_parameters()
-        # self.master.destroy()
+        for (substance_name_entry, smiles_entry) in self.row_list:
+            # Substance name and SMILES string must not be empty.
+            if substance_name_entry.get() == "" or smiles_entry.get() == "":
+                continue
+            if not is_valid_smiles(smiles_entry.get()):
+                error_subwindow(
+                    self,
+                    message=(
+                        f"Invalid SMILES string for {substance_name_entry.get()}: {smiles_entry.get()}\n"
+                        f"Common error include dots at the end or spaces "
+                    )
+                )
+                return
+            substance_dict[substance_name_entry.get()] = smiles_entry.get()
+
+        if len(substance_dict.keys()) < 2:  # At least two values are needed for parameter creation.
+            error_subwindow(
+                self,
+                message="You must add at least two values to a parameter."
+            )
+            return
+
+        print(substance_dict)
+
+        # The new parameter is added to the parameters.yaml file.
+        error_msg = write_to_parameters_file(
+            mode="substance",
+            parameter_name=self.name_entry.get(),
+            parameter_values=substance_dict
+        )
+        if error_msg is not None:
+            error_subwindow(self, error_msg)
+            return
+
+        self.master.master.refresh_parameters()
+        self.master.destroy()
 
     def _fetch_checked_substances(self):
-        smiles_list = []
         for group in self.group_list:
             checkboxlist = group.return_checkboxlist()
             for checkbox in checkboxlist:
@@ -133,13 +142,11 @@ class NewSubstanceParameterFrame(BaseFrame):
                     self.checked_molecules.append(checkbox._text)
 
         if not len(self.checked_molecules) > 0:
-            return []
+            return {}
 
         self.checked_molecules.sort()
-        for molecule_name in self.checked_molecules:
-            smiles_list.append(self.smiles_dict_flattened[molecule_name])
-        return smiles_list
 
+        return {k: v for k, v in self.smiles_dict_flattened.items() if k in self.checked_molecules}
 
     def _build_buttons(self):
         save_button = ctk.CTkButton(

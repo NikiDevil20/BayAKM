@@ -5,7 +5,7 @@ from rdkit import Chem
 from src.environment_variables.dir_paths import DirPaths
 
 SMILES = str
-smiles_type = dict[str,dict[str, SMILES]]
+smiles_type = dict[str, dict[str, SMILES]]
 
 
 dirs = DirPaths()
