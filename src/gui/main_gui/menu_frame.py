@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from src.gui.main_gui.campaign_manager import CampaignManager
 from src.gui.main_gui.gui_constants import SUBHEADER
 from src.gui.insights_frame import InsightsFrame
 from src.gui.param_view_frame import ParamViewFrame
@@ -24,6 +25,7 @@ class MenuFrame(ctk.CTkFrame):
             {"name": "New campaign", "parameter_list": self.master.parameter_list},
             {"name": "View parameters", "parameter_list": self.master.parameter_list},
             {"name": "Get insights"},
+            {"name": "Choose campaign"},
             {"name": "Help"}
         )
         for i, arguments in enumerate(btn_config):
@@ -56,7 +58,8 @@ class MenuFrame(ctk.CTkFrame):
                 frame_class = ParamViewFrame
             case "Get insights":
                 frame_class = InsightsFrame
-
+            case "Choose campaign":
+                frame_class = CampaignManager
             case _:
                 raise ValueError("Tippfehler?")
 

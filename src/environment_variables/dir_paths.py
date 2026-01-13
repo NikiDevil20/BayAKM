@@ -13,7 +13,7 @@ class DirPaths:
         self.folder_path = None
 
         self.environ = os.path.join(self.base_dir, "src\\environment_variables\\paths.yaml")
-        self.data = os.path.join(self.base_dir, "src\\data")
+        self.data = os.path.join(self.base_dir, "data")
 
         # bayakm_dir = os.path.join(self.base_dir, "src")
         #
@@ -24,15 +24,18 @@ class DirPaths:
         # self.data_dir = os.path.join(bayakm_dir, "data")
 
     def build_campaign_folder(self, campaign_name):
-        if os.path.exists(self.environ):
-            os.remove(self.environ)
+        # if os.path.exists(self.environ):
+        #     os.remove(self.environ)
+        print(f"Build {campaign_name=}")
         self.folder_path = os.path.join(
             self.data,
             cleanup_folder_name(campaign_name)
         )
-        os.makedirs(self.folder_path)
 
-        self.save_dir_to_file("folder", os.path.join(self.data, cleanup_folder_name(campaign_name)))
+        if not os.path.exists(self.folder_path):
+            os.makedirs(self.folder_path)
+
+        self.save_dir_to_file("folder", self.folder_path)
         self.save_dir_to_file("config", os.path.join(self.folder_path, "config.yaml"))
         self.save_dir_to_file("output", os.path.join(self.folder_path, "results.csv"))
         self.save_dir_to_file("parameters", os.path.join(self.folder_path, "parameters.yaml"))
@@ -42,11 +45,24 @@ class DirPaths:
         self.save_dir_to_file("base", Path(__file__).resolve().parents[2])
 
     def save_dir_to_file(self, name: str, path: str | Path):
+        yaml_dict = self.load_dirs_dict()
+        yaml_dict[name] = path
+        self.save_dict(yaml_dict)
+
+    def load_dirs_dict(self) -> dict[str, str]:
         try:
-            with open(self.environ, "a") as f:
-                yaml.dump({name: path}, f)
+            with open(self.environ) as f:
+                yaml_dict = yaml.safe_load(f)
         except FileNotFoundError:
-            print(f"No file found at {self.base_dir}")
+            yaml_dict = {}
+        return yaml_dict
+
+    def save_dict(self, yaml_dict: dict[str, str]):
+        try:
+            with open(self.environ, "w") as f:
+                yaml.dump(yaml_dict, f)
+        except FileNotFoundError:
+            print(f"No file found at {self.environ}")
 
     def return_file_path(self, name):
         try:
