@@ -115,6 +115,7 @@ class ListFrame(ctk.CTkScrollableFrame):
         self.row_list = []
 
         self._build_list()
+        self.master.master.master.master.master.master.master.refresh_content()
 
 
 class CampaignHandler:
@@ -133,7 +134,6 @@ class CampaignHandler:
         return campaign_folder_list
 
     def switch_campaign(self, new_campaign_name):
-        print(f"Switch {new_campaign_name=}")
         self.dirs.build_campaign_folder(new_campaign_name)
 
     def delete_campaign(self, campaign_name):

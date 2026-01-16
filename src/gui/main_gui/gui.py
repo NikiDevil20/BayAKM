@@ -13,6 +13,7 @@ from src.gui.main_gui.table_frame import TableFrame
 ctk.set_default_color_theme("blue")
 ctk.set_appearance_mode("Light")
 
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -95,11 +96,13 @@ class App(ctk.CTk):
             pady=5, padx=10,
             sticky="ew", columnspan=3
         )
+        current_campaign = self.dirs.return_file_path("folder")
+        words = current_campaign.split("\\")
+        text = f"Active campaign: {words[-1]}"
 
-        # Placeholder
         label = ctk.CTkLabel(
             master=self.info_frame,
-            text="Hier könnte ein Infotext stehen.")
+            text=text)
         label.pack(padx=5, pady=5)
 
     def refresh_content(self):
@@ -112,6 +115,9 @@ class App(ctk.CTk):
 
         self.table_frame.destroy()
         self._display_recommendation()
+
+        self.info_frame.destroy()
+        self._create_info_frame()
 
     def _initialize_campaign(self):
 

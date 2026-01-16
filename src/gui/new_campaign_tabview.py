@@ -1,3 +1,5 @@
+import os
+
 import customtkinter as ctk
 
 from src.bayakm.config_loader import Config
@@ -40,12 +42,10 @@ class NewCampaignTabview(ctk.CTkTabview):
             segmented_button_unselected_color="light grey"
         )
         self.add("Configuration")
-        self.add("Parameters")
-        self.add("Get recommendation")
 
         self._create_widget_frame()
-        self._setup_parameters_frame()
-        self._create_recommendation_frame()
+
+        # self._create_recommendation_frame()
 
     def _create_widget_frame(self):
         self.widget_frame = ctk.CTkFrame(
@@ -126,12 +126,26 @@ class NewCampaignTabview(ctk.CTkTabview):
         try:
             int(self.widgets_dict["Batchsize"].get())
         except TypeError:
-                        error_subwindow(self, "Cannot convert batchsize to int")
+            error_subwindow(self, "Cannot convert batchsize to int")
+
+        existing_campaigns: list[str] = os.listdir(self.dirs.data)
+
+        if self.widgets_dict["Campaign name"].get() in existing_campaigns:
+            error_subwindow(self, "Campaign name already exists.")
+            return
 
         for key in self.widgets_dict.keys():
             _new_dict[key] = self.widgets_dict[key].get()
         self.cfg.save_to_yaml(_new_dict)
         info_string("Config", "Configuration saved.")
+
+        try:
+            self.tab("Parameters")
+        except ValueError:
+            self.add("Parameters")
+            self._setup_parameters_frame()
+
+        self.set("Parameters")
 
     def _setup_parameters_frame(self):
         self.setup_frame = ctk.CTkFrame(master=self.tab("Parameters"))
@@ -159,7 +173,7 @@ class NewCampaignTabview(ctk.CTkTabview):
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
-                        ("Add Continuous", {"master": self, "title": "Add continuous parameter", "frameclass": "continuous"}),
+            ("Add Continuous", {"master": self, "title": "Add continuous parameter", "frameclass": "continuous"}),
             # ("Add Constraint", {"master": self, "title": "Add constraint", "frameclass": "constraint"}),
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
@@ -179,6 +193,17 @@ class NewCampaignTabview(ctk.CTkTabview):
                 row=0, column=i,
                 pady=5, padx=10
             )
+        recommendation_button = ctk.CTkButton(
+            master=button_frame,
+            text="Get first recommendation",
+            width=100,
+            height=30,
+            command=lambda: self._save_and_get_recommendation(),
+            font=SUBHEADER,
+            fg_color="light blue",
+            text_color="black"
+        )
+        recommendation_button.grid(row=1, column=0, columnspan=4, pady=5, padx=10, sticky="ew")
 
     def _build_parameters(self):
         self.parameter_frame = ctk.CTkScrollableFrame(
@@ -198,20 +223,9 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.setup_frame.destroy()
         self._setup_parameters_frame()
 
-    def _create_recommendation_frame(self):
-        recommendation_frame = ctk.CTkFrame(master=self.tab("Get recommendation"))
-        recommendation_frame.pack(pady=5, padx=10)
-        recommendation_button = ctk.CTkButton(
-            master=recommendation_frame,
-            text="Get first recommendation",
-            width=100,
-            height=70,
-            command=lambda: self._save_and_get_recommendation(),
-            font=SUBHEADER,
-            fg_color="light blue",
-            text_color="black"
-        )
-        recommendation_button.pack()
+    # def _create_recommendation_frame(self):
+    #     recommendation_frame = ctk.CTkFrame(master=self.tab("Get recommendation"))
+    #     recommendation_frame.pack(pady=5, padx=10)
 
     def _save_and_get_recommendation(self):
         self._save_config()
