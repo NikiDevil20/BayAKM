@@ -5,6 +5,7 @@ import math
 
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 
+from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
 from src.gui.help import error_subwindow
@@ -107,14 +108,14 @@ class TableFrame(ctk.CTkFrame):
         self.df = df
         self.categories: list[str] = df.columns
         self._create_header(df.columns)
-        all_valid_entries = []
-        batch_no_list = list(df["Batch no."])
+        self.all_valid_entries = []
+        self.batch_no_list = list(df["Batch no."])
 
         for parameter_name in self.categories:
             if parameter_name in ["Journal number", "Yield"]:
-                all_valid_entries.append(None)
+                self.all_valid_entries.append(None)
             valid_entries = self._get_vaild_entries_per_column(parameter_name)
-            all_valid_entries.append(valid_entries)
+            self.all_valid_entries.append(valid_entries)
 
         self.content_frame = ctk.CTkScrollableFrame(master=self, width=125 * len(df.columns))
         self.content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
@@ -124,10 +125,10 @@ class TableFrame(ctk.CTkFrame):
         self.row_list_list = [
             Row(
                 master=self.content_frame,
-                col_content=all_valid_entries,
+                col_content=self.all_valid_entries,
                 row_content=list(series),
                 color="light blue" if i % 2 == 0 else "white",
-                batch_no=batch_no_list[i]
+                batch_no=self.batch_no_list[i]
             )
             for i, series in enumerate(df.itertuples(index=False))
         ]
@@ -257,7 +258,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        save_button.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
+        save_button.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
         new_reco_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="New recommendation",
@@ -266,7 +267,17 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        new_reco_button.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
+        new_reco_button.grid(row=0, column=2, pady=5, padx=10, sticky="ew")
+
+        add_row_button = ctk.CTkButton(
+            master=self.bottom_frame,
+            text="Add row",
+            command=lambda: self._add_empty_row(),
+            text_color=TEXTCOLOR,
+            font=STANDARD,
+            fg_color=FGCOLOR
+        )
+        add_row_button.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
 
     def _get_new_recommendation(self):
         self._read_table()
@@ -303,7 +314,28 @@ class TableFrame(ctk.CTkFrame):
         return []
 
     def _add_empty_row(self):
-        pass
+        cfg = Config()
+        i = len(self.row_list_list)
+        n = len(self.df.columns)
+        journal_prefix = cfg.dict["Journal prefix"]
+        batch_no = str(max(self.batch_no_list))
+        color = "light blue" if i % 2 == 0 else "white"
+        row_content = []
+
+        for x in range(n-3):
+            row_content.append("")
+        row_content.append(journal_prefix)
+        row_content.append(batch_no)
+        row_content.append("")
+        self.row_list_list.append(
+            Row(
+                master=self.content_frame,
+                col_content=self.all_valid_entries,
+                row_content=row_content,
+                color=color,
+                batch_no=batch_no
+            )
+        )
 
 
 class Row:
@@ -374,9 +406,8 @@ class Row:
             color: str,
             position: int
     ) -> ctk.CTkComboBox:
-        if not isinstance(starting_value, str):
-            starting_value = _format_to_str(starting_value)
-            all_values = [_format_to_str(v) for v in all_values]
+        starting_value = _format_to_str(starting_value)
+        all_values = [_format_to_str(v) for v in all_values]
 
         combo_box = ctk.CTkComboBox(
             master=master,
