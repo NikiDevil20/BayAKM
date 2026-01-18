@@ -122,6 +122,12 @@ class BayAKMCampaign(Campaign):
         )
 
         recommendation["Journal number"] = self.cfg.dict["Journal prefix"]
+
+        recommendation["Batch no."] = "1"
+        if not self.campaign.measurements.empty and "Batch no." in self.campaign.measurements.columns:
+            batch_no_list = [int(v) for v in list(self.campaign.measurements["Batch no."])]  # Type: ignore
+            recommendation["Batch no."] = max(batch_no_list) + 1
+
         if self.cfg.dict["Simulate results"]:
             target = NumericalTarget(
                 mode="MAX",  # type: ignore
@@ -136,6 +142,7 @@ class BayAKMCampaign(Campaign):
             create_output(recommendation)
         else:
             append_to_output(recommendation)
+
 
     def get_param_dict(self) -> dict[str, list]:
         """

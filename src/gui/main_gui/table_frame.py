@@ -16,7 +16,8 @@ class TableFrame(ctk.CTkFrame):
         super().__init__(master)
 
         self.dirs = DirPaths()
-        self.param_dict = None
+        self.param_dict = self.master.campaign.get_param_dict()
+        self.categories = None
 
         if not isinstance(data, pd.DataFrame):
             label = ctk.CTkLabel(
@@ -51,42 +52,82 @@ class TableFrame(ctk.CTkFrame):
 
     def _create_row(
             self,
-            content: list[int | float | str],
-            color
+            row_content: list[int | float | str],
+            color,
+            col_content: list[list[int | str | float]]
     ):
         entry_list_per_row = []
         background_frame = ctk.CTkFrame(master=self.content_frame)
-        for col, _ in enumerate(content):
-            entry = ctk.CTkEntry(
+
+        for col_number in range(len(row_content)-2):
+            combo_box = self._create_combobox(
                 master=background_frame,
-                width=100,
-                fg_color=color
+                starting_value=row_content[col_number],
+                all_values=col_content[col_number],
+                color=color,
+                position=col_number
             )
-            value = content[col]
-            if isinstance(value, float):
-                value = f"{value:.1f}"
-            entry.insert(0, value)
-            entry.grid(
-                row=0, column=col,
-                pady=2, padx=2
+            entry_list_per_row.append(combo_box)
+        for col_number in [2, 1]:
+            index = len(row_content)-col_number
+            entry = ctk.CTkEntry(
+                fg_color=color,
+                master=background_frame,
+                width=120
             )
+            entry.insert(0, _format_to_str(row_content[index], is_yield=True))
+            entry.grid(row=0, column=index, pady=2, padx=2)
             entry_list_per_row.append(entry)
         background_frame.pack()
         return entry_list_per_row
 
+    @staticmethod
+    def _create_combobox(
+            master,
+            starting_value: int | str | float,
+            all_values: list[int | str | float],
+            color: str,
+            position: int
+    ) -> ctk.CTkComboBox:
+        # if not isinstance(starting_value, str):
+        starting_value = _format_to_str(starting_value)
+        all_values = [_format_to_str(v) for v in all_values]
+
+        combo_box = ctk.CTkComboBox(
+            master=master,
+            fg_color=color,
+            values=all_values,
+            width=120
+        )
+        combo_box.set(starting_value)
+        combo_box.grid(row=0, column=position, pady=2, padx=2)
+        return combo_box
+
     def _create_table_from_df(self, df):
         self.df = df
+        self.categories: list[str] = df.columns
         self._create_header(df.columns)
+        all_valid_entries = []
+        batch_no_list = list(df["Batch no."])
 
-        self.content_frame = ctk.CTkScrollableFrame(master=self, width=105 * len(df.columns))
+        for parameter_name in self.categories:
+            if parameter_name in ["Journal number", "Yield"]:
+                all_valid_entries.append(None)
+            valid_entries = self._get_vaild_entries_per_column(parameter_name)
+            all_valid_entries.append(valid_entries)
+
+        self.content_frame = ctk.CTkScrollableFrame(master=self, width=125 * len(df.columns))
         self.content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
 
         self.columnconfigure(0, weight=1)
 
-        self.full_entry_list = [
-            self._create_row(
-                content=list(series),
-                color="light blue" if i % 2 == 0 else "white"
+        self.row_list_list = [
+            Row(
+                master=self.content_frame,
+                col_content=all_valid_entries,
+                row_content=list(series),
+                color="light blue" if i % 2 == 0 else "white",
+                batch_no=batch_no_list[i]
             )
             for i, series in enumerate(df.itertuples(index=False))
         ]
@@ -140,9 +181,9 @@ class TableFrame(ctk.CTkFrame):
         columns = self.df.columns
         error_list = []
 
-        for row_index, row_list in enumerate(self.full_entry_list):
+        for row_index, row_object in enumerate(self.row_list_list):
             row = []
-            for column_index, entry in enumerate(row_list):
+            for column_index, entry in enumerate(row_object.entry_list):
                 value, error = self._validate_entry(
                     entry.get(),
                     columns[column_index],
@@ -163,8 +204,7 @@ class TableFrame(ctk.CTkFrame):
         self.master.refresh_content()
 
     def _validate_entry(self, value, column, row_index):
-        # Validierung und Typkonvertierung je nach Spalte
-        self.param_dict = self.master.campaign.get_param_dict()
+        # self.param_dict = self.master.campaign.get_param_dict()
         try:
             if column == "Yield":
                 value = float(value)
@@ -247,4 +287,160 @@ class TableFrame(ctk.CTkFrame):
         )
         self.master.campaign.save_campaign()
         self.master.refresh_content()
+
+    def _get_vaild_entries_per_column(self, column_name: str) -> list[str]:
+        for parameter_category in self.param_dict.keys():
+            for parameter in self.param_dict[parameter_category]:
+                if parameter.name == column_name:
+                    if isinstance(parameter, SubstanceParameter):
+                        return list(parameter.data.keys())
+                    elif isinstance(parameter, NumericalDiscreteParameter):
+                        return list(parameter.values)
+                    else:
+                        TypeError("Parameter Type not supported")
+                        return []
+                continue
+        return []
+
+    def _add_empty_row(self):
+        pass
+
+
+class Row:
+    def __init__(
+            self,
+            col_content: list[int | float | str],
+            row_content: list[list[int | float | str]],
+            color,
+            master=None,
+            batch_no="1"
+    ):
+        self.master = master
+        self.col_content = col_content
+        self.row_content = row_content
+        self.color = color
+        self.batch_no = batch_no
+
+        self.state = "readonly"
+
+        self.entry_list = self._create_widgets()
+
+        if self.row_complete():
+            self.disable_row()
+
+    def _batch_no_entry(self, master):
+
+        entry = ctk.CTkEntry(
+            width=10,
+            master=master
+        )
+        entry.grid(row=0, column=0, pady=2, padx=2)
+        entry.insert(0, self.batch_no)
+        return entry
+
+    def _create_widgets(self):
+        entry_list_per_row = []
+        background_frame = ctk.CTkFrame(master=self.master)
+
+        self.batch_widget = self._batch_no_entry(master=background_frame)
+
+        for col_number in range(len(self.row_content) - 3):
+            combo_box = self._create_combobox(
+                master=background_frame,
+                starting_value=self.row_content[col_number],  # Type: ignore
+                all_values=self.col_content[col_number],  # Type: ignore
+                color=self.color,
+                position=col_number
+            )
+            entry_list_per_row.append(combo_box)
+        for col_number in [3, 2, 1]:
+            index = len(self.row_content) - col_number
+            entry = ctk.CTkEntry(
+                fg_color=self.color,
+                master=background_frame,
+                width=120
+            )
+            entry.insert(0, _format_to_str(self.row_content[index], is_yield=True))
+            entry.grid(row=0, column=index, pady=2, padx=2)
+            entry_list_per_row.append(entry)
+        background_frame.pack()
+        return entry_list_per_row
+
+    @staticmethod
+    def _create_combobox(
+            master,
+            starting_value: int | str | float,
+            all_values: list[int | str | float],
+            color: str,
+            position: int
+    ) -> ctk.CTkComboBox:
+        if not isinstance(starting_value, str):
+            starting_value = _format_to_str(starting_value)
+            all_values = [_format_to_str(v) for v in all_values]
+
+        combo_box = ctk.CTkComboBox(
+            master=master,
+            fg_color=color,
+            values=all_values,
+            width=120,
+            state="readonly",
+            text_color_disabled="black"
+        )
+        combo_box.set(starting_value)
+        combo_box.grid(row=0, column=position, pady=2, padx=2)
+        return combo_box
+
+    def disable_row(self):
+        if self.state == "disabled":
+            return
+        for widget in self.entry_list:
+            try:
+                widget.configure(state="disabled")
+            except Exception:
+                pass
+        self.state = "disabled"
+
+    def enable_row(self):
+        if self.state == "readonly":
+            return
+        for widget in self.entry_list:
+            try:
+                widget.configure(state="readonly")
+            except Exception:
+                widget.configure(state="normal")
+        self.state = "readonly"
+
+    def toggle_row(self):
+        if self.state == "normal":
+            self.disable_row()
+        else:
+            self.enable_row()
+
+    def _has_yield(self) -> bool:
+        try:
+            yield_entry: str = self.entry_list[-1].get()
+            return yield_entry.strip() != ""
+        except Exception:
+            return False
+
+    def _has_journal(self) -> bool:
+        try:
+            journal_number: str = self.entry_list[-3].get()
+            return bool(journal_number and journal_number[-1].isdigit())
+        except Exception:
+            return False
+
+    def row_complete(self) -> bool:
+        return self._has_journal() and self._has_yield()
+
+    def batch_number(self):
+        return self.batch_widget.get()
+
+
+def _format_to_str(value: float | int, is_yield: bool = False) -> str:
+    if is_yield and isinstance(value, float):
+        return str(int(value))
+    if isinstance(value, float):
+        return f"{value:.1f}"
+    return str(value)
 

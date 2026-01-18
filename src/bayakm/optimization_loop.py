@@ -54,6 +54,7 @@ def optimization_loop() -> None:
 
     recommendation["Journal number"] = cfg.prefix
     recommendation["Yield"] = np.nan
+    recommendation["Batch no."] = "1"
 
     info_string("Recommendation", f"Recommendation obtained in {time_list[1]-time_list[0]:.2f} s.")
 

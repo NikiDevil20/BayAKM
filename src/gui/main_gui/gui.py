@@ -5,6 +5,7 @@ from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path, import_output_to_df
 from src.bayakm.parameters import build_param_list
+from src.gui.help import error_subwindow
 from src.gui.main_gui.gui_constants import HEADER, STANDARD
 from src.gui.main_gui.menu_frame import MenuFrame
 from src.gui.main_gui.table_frame import TableFrame
@@ -127,6 +128,8 @@ class App(ctk.CTk):
                 self.parameter_list = self.campaign.get_parameter_list()
             # if self.cfg.dict["pi"]:
             #     self.campaign.attach_hook([print_pi])  # TODO
+        else:
+            error_subwindow(master=self, message=f"Failed to laod campaign from {self.dirs.environ}")
 
     def command_save_campaign_and_get_first_recommendation(self):
         """
