@@ -4,11 +4,13 @@ import yaml
 import math
 
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import import_output_to_df, create_output, split_import_df, check_path
 from src.gui.help import error_subwindow
+from src.gui.main_gui.YieldPlotter import YieldPlotter
 from src.gui.main_gui.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
 
 
@@ -31,6 +33,7 @@ class TableFrame(ctk.CTkFrame):
         else:
             self._create_table_from_df(data)
             self._create_bottom_frame()
+            self.build_plot_frame()
 
     def _create_header(
             self,
@@ -50,59 +53,6 @@ class TableFrame(ctk.CTkFrame):
             pady=5, padx=10,
             sticky="ew"
         )
-
-    def _create_row(
-            self,
-            row_content: list[int | float | str],
-            color,
-            col_content: list[list[int | str | float]]
-    ):
-        entry_list_per_row = []
-        background_frame = ctk.CTkFrame(master=self.content_frame)
-
-        for col_number in range(len(row_content)-2):
-            combo_box = self._create_combobox(
-                master=background_frame,
-                starting_value=row_content[col_number],
-                all_values=col_content[col_number],
-                color=color,
-                position=col_number
-            )
-            entry_list_per_row.append(combo_box)
-        for col_number in [2, 1]:
-            index = len(row_content)-col_number
-            entry = ctk.CTkEntry(
-                fg_color=color,
-                master=background_frame,
-                width=120
-            )
-            entry.insert(0, _format_to_str(row_content[index], is_yield=True))
-            entry.grid(row=0, column=index, pady=2, padx=2)
-            entry_list_per_row.append(entry)
-        background_frame.pack()
-        return entry_list_per_row
-
-    @staticmethod
-    def _create_combobox(
-            master,
-            starting_value: int | str | float,
-            all_values: list[int | str | float],
-            color: str,
-            position: int
-    ) -> ctk.CTkComboBox:
-        # if not isinstance(starting_value, str):
-        starting_value = _format_to_str(starting_value)
-        all_values = [_format_to_str(v) for v in all_values]
-
-        combo_box = ctk.CTkComboBox(
-            master=master,
-            fg_color=color,
-            values=all_values,
-            width=120
-        )
-        combo_box.set(starting_value)
-        combo_box.grid(row=0, column=position, pady=2, padx=2)
-        return combo_box
 
     def _create_table_from_df(self, df):
         self.df = df
@@ -337,6 +287,27 @@ class TableFrame(ctk.CTkFrame):
             )
         )
 
+    def build_plot_frame(self):
+        if self._number_of_batches() < 2:
+            return
+
+        yield_list = list(self.df["Yield"])
+        batch_no_list = self.batch_no_list
+        data: list[list[float]] = []
+
+        for n in range(self._number_of_batches()):
+            data.append([])
+
+        for index, batch_no in enumerate(batch_no_list):
+            data[batch_no-1].append(yield_list[index])
+
+        plot_frame = PlotFrame(master=self, data=data)
+        plot_frame.grid(row=0, column=2, pady=5, padx=10, rowspan=3)
+
+    def _number_of_batches(self):
+        unique_batches = set(self.batch_no_list)
+        return len(unique_batches)
+
 
 class Row:
     def __init__(
@@ -392,7 +363,7 @@ class Row:
                 master=background_frame,
                 width=120
             )
-            entry.insert(0, _format_to_str(self.row_content[index], is_yield=True))
+            entry.insert(0, _format_to_str(self.row_content[index], is_yield=True))  # Type: ignore
             entry.grid(row=0, column=index, pady=2, padx=2)
             entry_list_per_row.append(entry)
         background_frame.pack()
@@ -466,6 +437,25 @@ class Row:
 
     def batch_number(self):
         return self.batch_widget.get()
+
+
+class PlotFrame(ctk.CTkFrame):
+    def __init__(self, master=None, data=None):
+        super().__init__(master)
+        self.data = data
+
+        self._build_plot()
+
+    def _build_plot(self):
+        plotter = YieldPlotter(self.data)
+        fig, ax = plotter.create_plot()
+
+        canvas = FigureCanvasTkAgg(fig, master=self)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill="both", expand=True)
+
+
+
 
 
 def _format_to_str(value: float | int, is_yield: bool = False) -> str:
