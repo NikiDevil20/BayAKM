@@ -134,8 +134,13 @@ class NewCampaignTabview(ctk.CTkTabview):
             error_subwindow(self, "Campaign name already exists.")
             return
 
+        cleaned_journal_prefix = str(self.widgets_dict["Journal prefix"].get())
+
         for key in self.widgets_dict.keys():
-            _new_dict[key] = self.widgets_dict[key].get()
+            if key == "Journal prefix":
+                _new_dict[key] = cleaned_journal_prefix
+            else:
+                _new_dict[key] = self.widgets_dict[key].get()
         self.cfg.save_to_yaml(_new_dict)
         info_string("Config", "Configuration saved.")
 

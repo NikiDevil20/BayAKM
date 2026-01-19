@@ -68,7 +68,8 @@ def import_output_to_df() -> pd.DataFrame:
     df = pd.read_csv(
         filepath_or_buffer=dirs.return_file_path("output"),
         sep=";",
-        decimal="."
+        decimal=".",
+        keep_default_na=False
     )
     return df
 

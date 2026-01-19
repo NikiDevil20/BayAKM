@@ -129,12 +129,13 @@ class BayAKMCampaign(Campaign):
             recommendation["Batch no."] = max(batch_no_list) + 1
 
         if self.cfg.dict["Simulate results"]:
-            target = NumericalTarget(
-                mode="MAX",  # type: ignore
-                name="Yield",
-                transformation=None,
-                bounds=Interval(lower=0, upper=100)
-            )
+            # target = NumericalTarget(
+            #     mode="MAX",  # type: ignore
+            #     name="Yield",
+            #     transformation=None,
+            #     bounds=Interval(lower=0, upper=100)
+            # )
+            target = NumericalTarget(name="Yield").clamp(0, 100)
             recommendation = add_fake_measurements(recommendation, targets=[target])
         else:
             recommendation["Yield"] = np.nan
@@ -192,14 +193,10 @@ def create_campaign(parameter_list) -> Campaign:
         parameters=parameter_list,
         constraints=[]
     )
+    target = NumericalTarget.normalized_sigmoid(name="Yield", anchors=[(0, 0.1), (1, 0.9)])
 
     objective = SingleTargetObjective(
-        target=NumericalTarget(
-            mode="MAX",  # type: ignore
-            name="Yield",
-            transformation=None,
-            bounds=Interval(lower=0, upper=100)
-        )
+        target=target
     )
     # recommender = TwoPhaseMetaRecommender(
     #     initial_recommender=FPSRecommender(),

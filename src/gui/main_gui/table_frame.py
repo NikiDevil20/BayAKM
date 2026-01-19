@@ -2,6 +2,7 @@ import customtkinter as ctk
 import pandas as pd
 import yaml
 import math
+import numpy as np
 
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -19,7 +20,7 @@ class TableFrame(ctk.CTkFrame):
         super().__init__(master)
 
         self.dirs = DirPaths()
-        self.param_dict = self.master.campaign.get_param_dict()
+
         self.categories = None
 
         if not isinstance(data, pd.DataFrame):
@@ -31,6 +32,7 @@ class TableFrame(ctk.CTkFrame):
             )
             label.pack()
         else:
+            self.param_dict = self.master.campaign.get_param_dict()
             self._create_table_from_df(data)
             self._create_bottom_frame()
             self.build_plot_frame()
@@ -155,9 +157,11 @@ class TableFrame(ctk.CTkFrame):
         self.master.refresh_content()
 
     def _validate_entry(self, value, column, row_index):
-        # self.param_dict = self.master.campaign.get_param_dict()
         try:
             if column == "Yield":
+                print(value)
+                if value == "":
+                    value = 0.00
                 value = float(value)
                 if not 0 <= value <= 100 and not math.isnan(value):
                     return value, f"Yield '{value}' in row {row_index + 1} must be between 0 and 100."
@@ -301,12 +305,24 @@ class TableFrame(ctk.CTkFrame):
         for index, batch_no in enumerate(batch_no_list):
             data[batch_no-1].append(yield_list[index])
 
+
+        for v_list in data:
+            empty_allowed = 0
+            for value in v_list:
+                if value == "":
+                    empty_allowed += 1
+            if empty_allowed == len(v_list):
+                return
+
+
         plot_frame = PlotFrame(master=self, data=data)
         plot_frame.grid(row=0, column=2, pady=5, padx=10, rowspan=3)
 
     def _number_of_batches(self):
         unique_batches = set(self.batch_no_list)
         return len(unique_batches)
+
+
 
 
 class Row:
@@ -455,13 +471,14 @@ class PlotFrame(ctk.CTkFrame):
         canvas.get_tk_widget().pack(fill="both", expand=True)
 
 
-
-
-
 def _format_to_str(value: float | int, is_yield: bool = False) -> str:
-    if is_yield and isinstance(value, float):
-        return str(int(value))
-    if isinstance(value, float):
-        return f"{value:.1f}"
-    return str(value)
+    try:
+        value = np.nan_to_num(value)
+        return str(value)
+    except Exception:
+        if is_yield and isinstance(value, float):
+            return str(int(value))
+        if isinstance(value, float):
+            return f"{value:.1f}"
+        return str(value)
 

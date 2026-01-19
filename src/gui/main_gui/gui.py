@@ -98,8 +98,11 @@ class App(ctk.CTk):
             sticky="ew", columnspan=3
         )
         current_campaign = self.dirs.return_file_path("folder")
-        words = current_campaign.split("\\")
-        text = f"Active campaign: {words[-1]}"
+        if not current_campaign:
+            text = "No active campaign"
+        else:
+            words = current_campaign.split("\\")
+            text = f"Active campaign: {words[-1]}"
 
         label = ctk.CTkLabel(
             master=self.info_frame,
@@ -128,8 +131,6 @@ class App(ctk.CTk):
                 self.parameter_list = self.campaign.get_parameter_list()
             # if self.cfg.dict["pi"]:
             #     self.campaign.attach_hook([print_pi])  # TODO
-        else:
-            error_subwindow(master=self, message=f"Failed to laod campaign from {self.dirs.environ}")
 
     def command_save_campaign_and_get_first_recommendation(self):
         """

@@ -15,6 +15,11 @@ class DirPaths:
         self.environ = os.path.join(self.base_dir, "src\\environment_variables\\paths.yaml")
         self.data = os.path.join(self.base_dir, "data")
 
+
+
+        if not os.path.exists(self.data):
+            os.makedirs(self.data)
+
         # bayakm_dir = os.path.join(self.base_dir, "src")
         #
         # self.src_dir = os.path.join(bayakm_dir, "bayakm")
