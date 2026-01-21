@@ -17,6 +17,7 @@ from baybe.utils.basic import register_hooks
 from baybe.utils.interval import Interval
 from baybe.utils.dataframe import add_fake_measurements
 
+from src.bayakm.simulalte_results import YieldSimulator
 from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path, info_string, create_output, append_to_output
@@ -135,8 +136,7 @@ class BayAKMCampaign(Campaign):
             #     transformation=None,
             #     bounds=Interval(lower=0, upper=100)
             # )
-            target = NumericalTarget(name="Yield").clamp(0, 100)
-            recommendation = add_fake_measurements(recommendation, targets=[target])
+            recommendation = YieldSimulator().add_fake_results(recommendation)
         else:
             recommendation["Yield"] = np.nan
         if initial:

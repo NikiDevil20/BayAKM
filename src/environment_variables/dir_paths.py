@@ -76,6 +76,10 @@ class DirPaths:
         except FileNotFoundError:
             print(f"Failed to open file at {self.environ}")
 
+    @staticmethod
+    def check_path(path):
+        return os.path.exists(path)
+
 
 # KI generiert:
 def cleanup_folder_name(name: str) -> str:
