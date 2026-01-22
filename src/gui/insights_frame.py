@@ -65,6 +65,8 @@ class InsightsFrame(BaseFrame):
         self.create_generate_button()
 
     def create_plot(self, kwargs):
+        plt.close("all")
+
         axes = self.insights.plot(
             self.settings_dict["plot_type"],  # Type: ignore
             **kwargs
