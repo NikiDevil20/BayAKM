@@ -123,12 +123,12 @@ class BayAKMCampaign(Campaign):
             pending_experiments=pending
         )
 
-        recommendation["Journal number"] = self.cfg.dict["Journal prefix"]
+        recommendation["Journal no."] = self.cfg.dict["Journal prefix"]
 
-        recommendation["Batch no."] = "1"
-        if not self.campaign.measurements.empty and "Batch no." in self.campaign.measurements.columns:
-            batch_no_list = [int(v) for v in list(self.campaign.measurements["Batch no."])]  # Type: ignore
-            recommendation["Batch no."] = max(batch_no_list) + 1
+        recommendation["Batch"] = "1"
+        if not self.campaign.measurements.empty and "Batch" in self.campaign.measurements.columns:
+            batch_no_list = [int(v) for v in list(self.campaign.measurements["Batch"])]  # Type: ignore
+            recommendation["Batch"] = max(batch_no_list) + 1
 
         if self.cfg.dict["Simulate results"]:
             # target = NumericalTarget(

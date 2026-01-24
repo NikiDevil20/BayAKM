@@ -13,6 +13,7 @@ from src.logic.output import import_output_to_df, create_output, split_import_df
 from src.gui.help.help import error_subwindow
 from src.gui.table_frame.YieldPlotter import YieldPlotter
 from src.gui.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
+from src.logic.parameters import build_param_list
 
 
 class TableFrame(ctk.CTkFrame):
@@ -39,38 +40,74 @@ class TableFrame(ctk.CTkFrame):
 
     def _create_header(
             self,
-            categories: list[str] | pd.Index
+            categories: list[str] | pd.Index,
+            parameter_dict: dict[str, list[str]]
     ):
         header_frame = ctk.CTkFrame(master=self)
+        width = 120
+        length_dict = {}
+        print(parameter_dict)
+        for param in parameter_dict.keys():
+            length = len(max(parameter_dict[param], key=len))
+            length_dict[param] = length
+            print(param, length)
+
         for col, _ in enumerate(categories):
+            match categories[col]:
+                case "Journal no.":
+                    width = 60
+                case "Batch":
+                    width = 50
+                case "Yield":
+                    width = 50
+                case _:
+                    width = length_dict[categories[col]] * 11
+                    print(width)
+
             header_frame.columnconfigure(col, weight=1)
             headline = ctk.CTkLabel(
                 master=header_frame,
                 text=categories[col],
-                width=100
+                width=width
             )
-            headline.grid(row=0, column=col)
+            headline.grid(row=0, column=col, padx=10)
         header_frame.grid(
             row=0, column=0,
-            pady=5, padx=10,
+            pady=5, padx=5,
             sticky="ew"
         )
+
+    @staticmethod
+    def _param_dict_from_list(parameter_list) -> dict[str, list[str]]:
+        param_dict = {}
+        print(parameter_list)
+        for param in parameter_list:
+            if isinstance(param, NumericalDiscreteParameter):
+                param_dict[param.name] = [str(v) for v in param.values]
+            else:
+                param_dict[param.name] = [str(v) for v in param.data.keys()]
+        return param_dict
 
     def _create_table_from_df(self, df):
         self.df = df
         self.categories: list[str] = df.columns
-        self._create_header(df.columns)
+        parameter_list = build_param_list()
+        param_dict = self._param_dict_from_list(parameter_list)
+        self._create_header(df.columns, param_dict)
         self.all_valid_entries = []
-        self.batch_no_list = list(df["Batch no."])
+        self.batch_no_list = list(df["Batch"])
 
         for parameter_name in self.categories:
-            if parameter_name in ["Journal number", "Yield"]:
+            if parameter_name in ["Journal no.", "Yield"]:
                 self.all_valid_entries.append(None)
             valid_entries = self._get_vaild_entries_per_column(parameter_name)
             self.all_valid_entries.append(valid_entries)
 
-        self.content_frame = ctk.CTkScrollableFrame(master=self, width=125 * len(df.columns))
-        self.content_frame.grid(row=1, column=0, pady=5, padx=10, sticky="ew")
+        self.content_frame = ctk.CTkScrollableFrame(
+            master=self,
+            # width=125 * len(df.columns)
+        )
+        self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=10, sticky="nsew")
 
         self.columnconfigure(0, weight=1)
 
@@ -84,6 +121,8 @@ class TableFrame(ctk.CTkFrame):
             )
             for i, series in enumerate(df.itertuples(index=False))
         ]
+        self.rowconfigure(0, weight=0)
+        self.rowconfigure(1, weight=1)
 
     def _build_param_name_and_value_list(self):
         try:
@@ -165,7 +204,7 @@ class TableFrame(ctk.CTkFrame):
                 if not 0 <= value <= 100 and not math.isnan(value):
                     return value, f"Yield '{value}' in row {row_index + 1} must be between 0 and 100."
 
-            elif column != "Journal number":
+            elif column != "Journal no.":
                 for param_class in self.param_dict.keys():
                     for parameter in self.param_dict[param_class]:
 
@@ -199,7 +238,7 @@ class TableFrame(ctk.CTkFrame):
         self.bottom_frame = ctk.CTkFrame(master=self)
         self.bottom_frame.grid(
             row=3, column=0,
-            pady=5, padx=10,
+            pady=[0, 5], padx=10,
             sticky="ew"
         )
 
@@ -304,7 +343,6 @@ class TableFrame(ctk.CTkFrame):
         for index, batch_no in enumerate(batch_no_list):
             data[batch_no-1].append(yield_list[index])
 
-
         for v_list in data:
             empty_allowed = 0
             for value in v_list:
@@ -312,7 +350,6 @@ class TableFrame(ctk.CTkFrame):
                     empty_allowed += 1
             if empty_allowed == len(v_list):
                 return
-
 
         plot_frame = PlotFrame(master=self, data=data)
         plot_frame.grid(row=0, column=2, pady=5, padx=10, rowspan=3)
@@ -371,17 +408,22 @@ class Row:
                 position=col_number
             )
             entry_list_per_row.append(combo_box)
+            background_frame.columnconfigure(col_number, weight=1)
         for col_number in [3, 2, 1]:
             index = len(self.row_content) - col_number
+            width = 60
+            if col_number == 2:
+                width = 30
             entry = ctk.CTkEntry(
                 fg_color=self.color,
                 master=background_frame,
-                width=120
+                width=width
             )
             entry.insert(0, _format_to_str(self.row_content[index], is_yield=True))  # Type: ignore
-            entry.grid(row=0, column=index, pady=2, padx=2)
+            entry.grid(row=0, column=index, pady=2, padx=2, sticky="ew")
+            background_frame.columnconfigure(index, weight=1)
             entry_list_per_row.append(entry)
-        background_frame.pack()
+        background_frame.pack(expand=True, fill="both")
         return entry_list_per_row
 
     @staticmethod
@@ -394,17 +436,19 @@ class Row:
     ) -> ctk.CTkComboBox:
         starting_value = _format_to_str(starting_value)
         all_values = [_format_to_str(v) for v in all_values]
+        string_length = len(max(all_values, key=len))
+        width = string_length * 8 + 40
 
         combo_box = ctk.CTkComboBox(
             master=master,
             fg_color=color,
             values=all_values,
-            width=120,
+            width=width,
             state="readonly",
             text_color_disabled="black"
         )
         combo_box.set(starting_value)
-        combo_box.grid(row=0, column=position, pady=2, padx=2)
+        combo_box.grid(row=0, column=position, pady=2, padx=2, sticky="ew")
         return combo_box
 
     def disable_row(self):
