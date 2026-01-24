@@ -14,10 +14,9 @@ from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
-from baybe.utils.interval import Interval
-from baybe.utils.dataframe import add_fake_measurements
 
-from src.bayakm.simulalte_results import YieldSimulator
+
+from src.bayakm.simulate_results import YieldSimulator
 from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path, info_string, create_output, append_to_output
@@ -149,7 +148,6 @@ class BayAKMCampaign(Campaign):
 
     def get_param_dict(self) -> dict[str, list]:
         """
-
         :return: A dictionary with keys "substance", "numerical", "continuous", and "categorical",
                  each containing a list of the corresponding parameter types from the campaign.
         """
