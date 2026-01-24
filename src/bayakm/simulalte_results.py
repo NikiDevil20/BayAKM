@@ -210,21 +210,3 @@ class YieldSimulator:
 
         return df
 
-
-
-if __name__ == "__main__":
-    _df = pd.DataFrame(
-        {
-            "Parameter_1": [1, 2, 3, 4],
-            "Parameter_2": ["Hexan", "Pentan", "Butan", "Propan"],
-            "Yield": [0.6, np.nan, "", 0.0]
-        }
-    )
-    _dict = {
-        "Parameter_1": [1, 2, 3, 4],
-        "Parameter_2": ["Hexan", "Pentan", "Butan", "Propan"],
-    }
-    sim = YieldSimulator()
-    sim._build_params_dict()
-    print(sim.parameter_dict)
-    print(sim.optimal_dict)

@@ -159,7 +159,6 @@ class TableFrame(ctk.CTkFrame):
     def _validate_entry(self, value, column, row_index):
         try:
             if column == "Yield":
-                print(value)
                 if value == "":
                     value = 0.00
                 value = float(value)

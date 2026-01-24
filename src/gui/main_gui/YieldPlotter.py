@@ -14,8 +14,6 @@ class YieldPlotter:
         self.data = np.array(data)
 
     def _unpack_data(self):
-        print(self.data)
-        print(type(self.data))
         self.means = self.data.mean(axis=1)
         self.mins = self.data.min(axis=1)
         self.maxs = self.data.max(axis=1)
