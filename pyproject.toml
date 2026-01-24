@@ -1,13 +1,13 @@
 [project]
 name = "BayAKM"
-version = "0.2.0"
+version = "1.0.0"
 description = "A tool for Bayesian optimization of chemical reactions."
 authors = [
     { name = "Niklas Abe", email = "niklas.abe@hhu.de" }
 ]
 dependencies = [
     "customtkinter",
-    "baybe[chem,insight]",
+    "baybe[chem,insights]<=0.13.2",
     "pyyaml",
     "pandas",
     "numpy"
