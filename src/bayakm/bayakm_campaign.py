@@ -21,7 +21,7 @@ from src.bayakm.simulalte_results import YieldSimulator
 from src.bayakm.config_loader import Config
 from src.environment_variables.dir_paths import DirPaths
 from src.bayakm.output import check_path, info_string, create_output, append_to_output
-from src.bayakm.parameters import build_param_list
+from src.bayakm.parameters import build_param_list, build_constraints
 
 dirs = DirPaths()
 
@@ -34,7 +34,7 @@ class BayAKMCampaign(Campaign):
     change it inside the DirPaths Class.
     """
 
-    def __init__(self, parameter_list=None):
+    def __init__(self, parameter_list=None, constraint_list=None):
         info_string("Campaign", "Initializing campaign...")
 
         self.cfg = Config()
@@ -43,7 +43,9 @@ class BayAKMCampaign(Campaign):
             if not check_path(dirs.return_file_path("campaign")):
                 if parameter_list is None:
                     parameter_list = build_param_list()
-                self.campaign = create_campaign(parameter_list)
+                if constraint_list is None:
+                    constraint_list = build_constraints()
+                self.campaign = create_campaign(parameter_list, constraint_list)
                 self.save_campaign()
                 self.hybrid = is_hybrid(parameter_list)
             else:
@@ -181,7 +183,7 @@ class BayAKMCampaign(Campaign):
         return self.campaign.parameters
 
 
-def create_campaign(parameter_list) -> Campaign:
+def create_campaign(parameter_list, constraint_list) -> Campaign:
     """Create a new campaign based on the parameters from
     the parameters in the parameters.yaml file.
     Returns:
@@ -189,9 +191,10 @@ def create_campaign(parameter_list) -> Campaign:
     """
     cfg = Config()
 
+
     searchspace = SearchSpace.from_product(
         parameters=parameter_list,
-        constraints=[]
+        constraints=constraint_list
     )
     target = NumericalTarget.normalized_sigmoid(name="Yield", anchors=[(0, 0.1), (1, 0.9)])
 

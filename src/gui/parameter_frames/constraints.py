@@ -1,142 +1,229 @@
 import customtkinter as ctk
 from baybe.constraints import DiscreteExcludeConstraint, ThresholdCondition, SubSelectionCondition
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
-from numba.core.compiler_machinery import pass_info
 
-from src.bayakm.parameters import write_to_parameters_file
+from src.bayakm.parameters import write_to_parameters_file, write_constraints_to_file
 from src.gui.main_gui.gui_constants import STANDARD, FGCOLOR, TEXTCOLOR
 from src.gui.help import error_subwindow
 from src.gui.main_gui.new_page_factory import BaseFrame
+from src.gui.main_gui.gui_constants import Row, PackagedWidget
 
 HEADER_PLACEHOLDER = "Add constraint"
-ERROR_MESSAGE = "Wrong parameter type"
 
 
 class ConstraintsFrame(BaseFrame):
     def __init__(self, master):
         super().__init__(master)
-        # self.parameter_list = self.master.master.parameter_list
+        self.parameter_list = self.master.master.parameter_list
 
     def fill_content(self):
         self.header = HEADER_PLACEHOLDER
         self.build_frames()
-        row = ConstraintRow(master=self.content_frame)
-        row.grid(row=0, column=0, pady=5, padx=10)
 
-
-class ConstraintRow(ctk.CTkFrame):
-    def __init__(self, master):
-        super().__init__(master)
-
-        self.frame = ctk.CTkFrame(
-            master=self
+        param_window = ParameterWindow(
+            master=self.content_frame,
+            parameter_list=self.parameter_list
         )
-        self.frame.grid(row=0, column=0, pady=5, padx=10)
+        param_window.grid(row=0, column=0, sticky="ew")
+        param_window.build_widgets()
 
-        self.parameter_list = self.master.master.master.master.parameter_list  # :)
-        self.name_list = [parameter.name for parameter in self.parameter_list]
-
-        self.current = self.parameter_list[0]
-
-        self._display_param_name_menu(0)
-        self._display_values(1)
-
-        self._operator_menu(3)
-
-    def _remove(self):
-        pass
-
-    def _save(self):
-        pass
-
-    def _construct_constraint(self):
-        pass
-
-    @staticmethod
-    def _choose_discrete_condition_type(parameter) -> ThresholdCondition | SubSelectionCondition:
-        if parameter["type"] == "numerical":
-            condition = ThresholdCondition(
-                threshold=parameter["threshold"],
-                operator=parameter["operator"]
-            )
-        else:
-            condition = SubSelectionCondition(
-                selection=parameter["selection"]
-            )
-        return condition
-
-    @staticmethod
-    def _choose_cont_condition_type(parameter):
-        NotImplementedError()  # TODO
-
-    def disc_excl_constraint(self, parameter: dict, other_parameter: dict) -> DiscreteExcludeConstraint:
-        constraint = DiscreteExcludeConstraint(
-            parameters=[parameter["name"], other_parameter["name"]],
-            combiner="AND",
-            conditions=[
-                self._choose_discrete_condition_type(parameter),
-                self._choose_discrete_condition_type(other_parameter)
-            ]
-        )
-        return constraint
-
-    def _display_param_name_menu(self, col):
-        values = ([parameter.name for parameter in self.parameter_list
-                   if not isinstance(parameter, NumericalContinuousParameter)])
-        self.parameter = self._display_optionmenu(
-            values=values,
-            master=self.frame,
-            column=col,
-            command=self.set_current_param
+        combiner = ctk.CTkOptionMenu(
+            master=self.content_frame,
+            values=["AND", "OR"],
+            font=STANDARD,
+            fg_color=FGCOLOR,
+            text_color=TEXTCOLOR,
+            width=30
         )
 
-    def set_current_param(self, choice):
-        self.current = [param for param in self.parameter_list if param.name == choice][0]
-        # if self.frame is not None:
-        #     self.frame.destroy()
-        self._display_values(1)
-
-    def _display_values(self, col):
-        if self.current is None:
-            return
-
-        if isinstance(self.current, SubstanceParameter):
-            filtered_param = [param for param in self.parameter_list if param.name == self.current.name]
-            value_list = [name for name in filtered_param[0].data.keys()]
-
-        elif isinstance(self.current, NumericalDiscreteParameter):
-            value_list = [str(value) for value in self.current.values]
-
-        else:
-            value_list = None
-            error_subwindow(master=self, message=ERROR_MESSAGE)
-
-        self.value = self._display_optionmenu(
-            master=self.frame,
-            values=value_list,
-            column=col,
-            command=None
+        other_param_window = ParameterWindow(
+            master=self.content_frame,
+            parameter_list=self.parameter_list
         )
+        other_param_window.grid(row=0, column=1, sticky="ew")
+        other_param_window.build_widgets()
 
-    @staticmethod
-    def _display_optionmenu(master, values, column, command):
-        param_name_menu = ctk.CTkOptionMenu(
-            master=master,
-            values=values,
+        save_button = ctk.CTkButton(
+            master=self.bottom_frame,
+            command=lambda: self._save_constraint(
+                param_window,
+                other_param_window,
+                combiner.get()
+            ),
+            text="Save constraint",
+            text_color=TEXTCOLOR,
             fg_color=FGCOLOR,
             font=STANDARD,
-            command=command,
-            text_color=TEXTCOLOR
         )
-        param_name_menu.grid(row=0, column=column, pady=5, padx=10)
-        return param_name_menu
+        save_button.grid(row=0, column=0, pady=5, padx=5)
 
-    def _operator_menu(self, col):
-        self.operator = self._display_optionmenu(
-            master=self.frame,
-            values=["<", "=", ">"],
-            column=col,
-            command=None
+    def _save_constraint(self, param_window_1, param_window_2, combiner="AND"):
+        write_constraints_to_file(
+            first_condition=param_window_1.build_condition(),
+            second_condition=param_window_2.build_condition(),
+            combiner=combiner
         )
+        self.master.destroy()
 
+
+class ParameterWindow(ctk.CTkFrame):
+    def __init__(self, master, parameter_list):
+        super().__init__(master)
+        self.param_choice = None
+        self.lower_frame = None
+        self.parameter_list = parameter_list
+        self.param_name_list = self._build_param_name_list()
+        self.param_value_list = None
+        self.constraint_list = []
+
+    def _build_param_name_list(self):
+        return [p.name for p in self.parameter_list]
+
+    def _build_param_value_list(self):
+        self.mode = self._choose_mode()
+        match self.mode:
+            case "substance":
+                self.param_value_list = self.current_param.data.keys()
+            case "numerical":
+                self.param_value_list = self.current_param.values
+            case None:
+                self.param_value_list = None
+            case _:
+                error_subwindow(master=self, message="Unknown parameter type selected.")
+
+    def build_widgets(self):
+        self.param_choice = ctk.CTkOptionMenu(
+            master=self,
+            values=self.param_name_list,
+            command=self._refresh
+        )
+        self.param_choice.grid(row=0, column=0, pady=5, padx=5, sticky="w")
+        self.param_choice.set("Select parameter")
+
+    def _current_param_object(self):
+        current_selection = self.param_choice.get()
+        if current_selection == "Select parameter":
+            return None
+
+        for param in self.parameter_list:
+            if param.name == current_selection:
+                return param
+        return None
+
+    def _choose_mode(self):
+        self.current_param = self._current_param_object()
+        if isinstance(self.current_param, SubstanceParameter):
+            return "substance"
+        elif isinstance(self.current_param, NumericalDiscreteParameter):
+            return "numerical"
+        else:
+            return None
+
+    def _refresh(self, name):
+        if self.lower_frame is not None:
+            self.lower_frame.destroy()
+        self._build_param_value_list()
+        self.lower_frame = LowerFrame(master=self)
+        self.lower_frame.grid(row=1, column=0, pady=5, padx=5)
+        self.lower_frame.build_lower_frame(
+            mode=self._choose_mode(),
+            value_list=self.param_value_list
+        )
+        self.widget_list = self.lower_frame.widget_list
+
+    def build_condition(self):
+        match self.mode:
+            case "substance":
+                selected_values = list(
+                    checkbox.cget("text")
+                    for checkbox in self.widget_list
+                    if checkbox.get()
+                )
+                condition = {
+                    "type": "subselection",
+                    "selection": selected_values,
+                    "operator": None,
+                    "threshold": None
+                }
+                return self.current_param.name, condition
+            case "numerical":
+                operator = self.widget_list[0].get()
+                value = float(self.widget_list[1].get())
+                condition = {
+                    "type": "threshold",
+                    "selection": None,
+                    "operator": operator,
+                    "threshold": value
+                }
+                return self.current_param.name, condition
+            case _:
+                error_subwindow(master=self, message="Unknown parameter type selected.")
+                return None
+
+
+class LowerFrame(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.mode = None
+        self.widget_list = None
+
+    def build_lower_frame(self, mode, value_list):
+        self.mode = mode
+        match self.mode:
+            case "substance":
+                widget = ValueChoiceList(
+                    master=self,
+                    value_list=value_list,
+                    height=150
+                )
+                widget.pack(pady=5, padx=5, fill="both", expand=True)
+                self.widget_list = widget.return_checkbox_list()
+            case "numerical":
+                operator = ctk.CTkOptionMenu(
+                    master=self,
+                    values=["<", "<=", "=", ">=", ">"],
+                    font=STANDARD,
+                    fg_color=FGCOLOR,
+                    text_color=TEXTCOLOR,
+                    width=30
+                )
+                operator.grid(row=0, column=0, pady=5, padx=5, sticky="w")
+                value_entry = ctk.CTkEntry(
+                    master=self,
+                    font=STANDARD,
+                    fg_color=FGCOLOR,
+                    text_color=TEXTCOLOR
+                )
+                value_entry.grid(row=0, column=1, pady=5, padx=5, sticky="w")
+                self.widget_list = [operator, value_entry]
+            case _:
+                error_subwindow(master=self, message="Unknown parameter type selected.")
+
+
+class ValueChoiceList(ctk.CTkScrollableFrame):
+    def __init__(self, master, value_list, **kwargs):
+        super().__init__(master, **kwargs)
+        self.value_list = value_list
+
+    def _build_list(self):
+        self.check_box_list = []
+        for index, value in enumerate(self.value_list):
+            checkbox = PackagedWidget(
+                ctk.CTkCheckBox,
+                text=str(value),
+                font=STANDARD,
+                fg_color=FGCOLOR,
+                text_color=TEXTCOLOR
+            )
+            row = Row(
+                master=self,
+                object_list=[checkbox],
+                weights=[1]
+            )
+            row.grid(row=index, column=0, pady=2, padx=5, sticky="ew")
+            self.check_box_list.append(row.return_widget(0))
+
+    def return_checkbox_list(self):
+        self._build_list()
+        return self.check_box_list
 

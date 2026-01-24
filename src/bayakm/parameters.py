@@ -2,6 +2,7 @@ import os.path
 
 import yaml
 from baybe import Campaign
+from baybe.constraints import DiscreteExcludeConstraint, ThresholdCondition, SubSelectionCondition
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
     CategoricalParameter
 from baybe.utils.interval import Interval
@@ -142,6 +143,57 @@ def write_to_parameters_file(
 
     save_yaml(yaml_dict)
     return None
+
+
+def write_constraints_to_file(first_condition, second_condition, combiner="AND"):
+    yaml_dict = load_yaml()
+    constraint_name = first_condition[0] + "_" + second_condition[0]
+    constraint_dict = {
+        "parameters": [first_condition[0], second_condition[0]],
+        "conditions": [first_condition[1], second_condition[1]],
+        "combiner": combiner
+    }
+    if "Constraints" not in yaml_dict.keys():
+        yaml_dict["Constraints"] = {constraint_name: constraint_dict}
+    else:
+        yaml_dict["Constraints"][constraint_name] = constraint_dict
+
+    save_yaml(yaml_dict)
+
+
+def build_constraints() -> list:
+    yaml_dict = load_yaml()
+    constraint_list = []
+    if "Constraints" in yaml_dict.keys():
+        all_constraints_dict: dict[str, dict] = yaml_dict["Constraints"]
+        for key in all_constraints_dict.keys():
+            condition_list = []
+            for condition in all_constraints_dict[key]["conditions"]:
+                ctype = condition["type"]
+                match ctype:
+                    case "threshold":
+                        condition = ThresholdCondition(
+                            threshold=condition["threshold"],
+                            operator=condition["operator"]
+                        )
+                    case "subselection":
+                        condition = SubSelectionCondition(
+                            selection=condition["selection"]
+                        )
+
+                condition_list.append(condition)
+
+            constraint_list.append(
+                DiscreteExcludeConstraint(
+                    parameters=all_constraints_dict[key]["parameters"],
+                    conditions=condition_list,
+                    combiner=all_constraints_dict[key]["combiner"]
+                )
+            )
+    else:
+        info_string("Parameters", "No Constraints detected.")
+    return constraint_list
+
 
 
 def delete_parameter(parameter_names: list[str]):
