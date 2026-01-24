@@ -12,10 +12,8 @@ class DirPaths:
         self.base_dir = Path(__file__).resolve().parents[2]
         self.folder_path = None
 
-        self.environ = os.path.join(self.base_dir, "src\\environment_variables\\paths.yaml")
+        self.environ = os.path.join(self.base_dir, "src\\environment\\paths.yaml")
         self.data = os.path.join(self.base_dir, "data")
-
-
 
         if not os.path.exists(self.data):
             os.makedirs(self.data)
