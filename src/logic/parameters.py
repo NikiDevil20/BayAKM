@@ -1,5 +1,6 @@
 import os.path
 
+import numpy as np
 import yaml
 from baybe import Campaign
 from baybe.constraints import DiscreteExcludeConstraint, ThresholdCondition, SubSelectionCondition
@@ -195,7 +196,6 @@ def build_constraints() -> list:
     return constraint_list
 
 
-
 def delete_parameter(parameter_names: list[str]):
     """
     Removes a parameter from the parameters.yaml file.
@@ -223,3 +223,36 @@ def check_name_exists(
         if isinstance(parameter_dict[key], dict) and parameter_name in parameter_dict[key]:
             return True
     return False
+
+
+def save_pi_to_file(pi_fraction: float, pi_values: np.ndarray):
+    """
+    Saves the given PI fraction and values to the parameters.yaml file under the PI section.
+    If the file does not exist, it creates a new one.
+    :param pi_fraction: The fraction of candidates with PI above the threshold.
+    :param pi_values: The array of PI values for all candidates.
+    """
+    yaml_dict = load_yaml()
+    if "PI" not in yaml_dict.keys():
+        yaml_dict["PI"] = []
+
+    yaml_dict["PI"].append({
+        "fraction": float(pi_fraction),
+        "values": list(pi_values)
+    })
+
+    save_yaml(yaml_dict)
+
+
+def load_pi_from_file() -> dict | None:
+    """
+    Reads the PI section from the parameters.yaml file and returns its contents as a dictionary.
+    If the file does not exist, it returns None.
+    :return: A dictionary with all PI data.
+    """
+    yaml_dict = load_yaml()
+    if "PI" in yaml_dict.keys():
+        return yaml_dict["PI"]
+    else:
+        info_string("Parameters", "No PI data found.")
+        return None

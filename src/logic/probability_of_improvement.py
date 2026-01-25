@@ -1,5 +1,5 @@
 import pandas as pd
-from baybe.acquisition.acqfs import ProbabilityOfImprovement
+from baybe.acquisition.acqfs import qProbabilityOfImprovement
 from baybe.objectives.base import Objective
 from baybe.recommenders import BotorchRecommender
 from baybe.searchspace import SearchSpace
@@ -38,7 +38,7 @@ def print_pi(
     #     sys.exit(1)
 
     candidates, _ = searchspace.discrete.get_candidates()
-    acqf = ProbabilityOfImprovement()
+    acqf = qProbabilityOfImprovement()
     pi = self.acquisition_values(
         candidates,
         searchspace,
@@ -49,6 +49,7 @@ def print_pi(
 
     n_pis_over = (pi > 0.01).sum()
     pi_fraction = n_pis_over / len(pi)
+
 
     info_string(
         "Recommendation",

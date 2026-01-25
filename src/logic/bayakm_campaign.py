@@ -5,7 +5,9 @@ import numpy as np
 import pandas as pd
 import yaml
 from baybe import Campaign
+from baybe.acquisition import qProbabilityOfImprovement
 from baybe.objectives import SingleTargetObjective
+from baybe.objectives.base import Objective
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
     CategoricalParameter
 from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, RandomRecommender, \
@@ -20,7 +22,8 @@ from src.logic.simulate_results import YieldSimulator
 from src.logic.config_loader import Config
 from src.environment.dir_paths import DirPaths
 from src.logic.output import check_path, info_string, create_output, append_to_output
-from src.logic.parameters import build_param_list, build_constraints
+from src.logic.parameters import build_param_list, build_constraints, save_pi_to_file
+from src.logic.probability_of_improvement import print_pi
 
 dirs = DirPaths()
 
@@ -37,6 +40,7 @@ class BayAKMCampaign(Campaign):
         info_string("Campaign", "Initializing campaign...")
 
         self.cfg = Config()
+        self.pi_list = []
 
         if check_path(dirs.environ):
             if not check_path(dirs.return_file_path("campaign")):
@@ -79,6 +83,52 @@ class BayAKMCampaign(Campaign):
         )
         self.campaign.recommender = recommender
 
+    def print_pi(
+        self,
+        searchspace: SearchSpace,
+        objective: Objective | None = None,
+        measurements: pd.DataFrame | None = None,
+    ) -> None:
+        """Prints the fraction of candidates with a probability of improvement
+        above the threshold defined in the configuration.
+        Args:
+            self (BotorchRecommender): The BotorchRecommender object.
+            searchspace (SearchSpace): The SearchSpace object containing the
+                candidates.
+            objective (Objective): The Objective object, if any.
+            measurements (pd.DataFrame): The measurements DataFrame, if any.
+        Returns:
+            None
+        Raises:
+            TypeError: If the PI threshold is not a float.
+        """
+        # try:
+        #     pi_threshold = float(cfg.pi_threshold)
+        # except TypeError:
+        #     print(f"Failed to convert entry {cfg.pi_threshold} to float.")
+        #     sys.exit(1)
+
+        candidates, _ = searchspace.discrete.get_candidates()
+        acqf = qProbabilityOfImprovement()
+        pi = BotorchRecommender.acquisition_values(
+            candidates,
+            searchspace,
+            objective,  # type: ignore
+            measurements,  # type: ignore
+            acquisition_function=acqf
+        )
+
+        n_pis_over = (pi > 0.01).sum()
+        pi_fraction = n_pis_over / len(pi)
+        pi_copy = pi
+
+        save_pi_to_file(pi_fraction, pi_copy.to_numpy())
+
+        info_string(
+            "Recommendation",
+            f"{pi_fraction:.0%} of candidates "
+            f"have a PI > 0.01.")
+
     def save_campaign(self) -> None:
         """Method for saving the baybe Campaign to the campaign.yaml file.
         Args:
@@ -90,6 +140,17 @@ class BayAKMCampaign(Campaign):
         campaign_dict = self.campaign.to_dict()
         with open(dirs.return_file_path("campaign"), "w") as f:
             yaml.dump(campaign_dict, f)
+
+    def get_pi(self):
+        candidates, _ = self.campaign.searchspace.discrete.get_candidates()
+        acqf = qProbabilityOfImprovement()
+        pi = self.campaign.acquisition_values(
+            candidates,
+            acqf,
+        )
+        n_pis_over = (pi > 0.01).sum()
+        pi_fraction = n_pis_over / len(pi)
+        save_pi_to_file(pi_fraction, pi)
 
     def get_recommendation(
             self,
@@ -118,6 +179,9 @@ class BayAKMCampaign(Campaign):
             if pending.empty:
                 pending = None
 
+        if not initial:
+            self.get_pi()
+
         recommendation = self.campaign.recommend(
             batch_size=int(self.cfg.dict["Batchsize"]),
             pending_experiments=pending
@@ -131,12 +195,6 @@ class BayAKMCampaign(Campaign):
             recommendation["Batch"] = max(batch_no_list) + 1
 
         if self.cfg.dict["Simulate results"]:
-            # target = NumericalTarget(
-            #     mode="MAX",  # type: ignore
-            #     name="Yield",
-            #     transformation=None,
-            #     bounds=Interval(lower=0, upper=100)
-            # )
             recommendation = YieldSimulator().add_fake_results(recommendation)
         else:
             recommendation["Yield"] = np.nan
@@ -144,7 +202,6 @@ class BayAKMCampaign(Campaign):
             create_output(recommendation)
         else:
             append_to_output(recommendation)
-
 
     def get_param_dict(self) -> dict[str, list]:
         """
@@ -189,25 +246,16 @@ def create_campaign(parameter_list, constraint_list) -> Campaign:
     """
     cfg = Config()
 
-
     searchspace = SearchSpace.from_product(
         parameters=parameter_list,
         constraints=constraint_list
     )
+    # target = NumericalTarget(name="Yield").clamp(0, 1)
     target = NumericalTarget.normalized_sigmoid(name="Yield", anchors=[(0, 0.1), (1, 0.9)])
 
     objective = SingleTargetObjective(
         target=target
     )
-    # recommender = TwoPhaseMetaRecommender(
-    #     initial_recommender=FPSRecommender(),
-    #     recommender=BotorchRecommender(
-    #         acquisition_function=cfg.dict["Acquisition function"],
-    #         hybrid_sampler="FPS",
-    #     ),
-    #     switch_after=1,
-    #     remain_switched=True
-    # )
 
     initial_recommender = RandomRecommender()
 
