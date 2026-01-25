@@ -54,22 +54,18 @@ class NewNumericalParameterFrame(BaseFrame):
         bottom_label.grid(row=0, column=0, pady=5, padx=10)
 
     def _command_save_parameter(self):
-        # Sehr schöne list comprehension, in die leider kein error handling passt :(
-        # parameter_list = [float(value) for value in self.content_entry.get().split(", ")]
-
         parameter_list = []
-        # Appending the comma separated values in the entry to the parameter_list.
         for value in self.content_entry.get().split(","):
             try:
-                parameter_list.append(float(value.strip()))  # Strip off spaces and try to convert value to float.
-            except ValueError:  # Call error subwindow if value cannot be converted to float.
+                parameter_list.append(float(value.strip()))
+            except ValueError:
                 error_subwindow(
                     master=self,
                     message=f"Value '{value.strip()}' could not be converted to float."
                 )
                 return
 
-        if self.name_entry.get() == "":  # Call error subwindow if name is empty.
+        if self.name_entry.get() == "":
             error_subwindow(
                 self,
                 message="Parameter name cannot be empty."
@@ -78,14 +74,13 @@ class NewNumericalParameterFrame(BaseFrame):
 
         parameter_list = list(set(parameter_list))
 
-        if len(parameter_list) < 2:  # Call error subwindow if only one parameter is detected.
+        if len(parameter_list) < 2:
             error_subwindow(
                 self,
                 message="Parameter needs to have at least two numerical values."
             )
             return
 
-        # Appending list of parameter to the parameters.yaml file.
         error_msg = write_to_parameters_file(
             mode="numerical",
             parameter_name=self.name_entry.get(),
@@ -95,7 +90,5 @@ class NewNumericalParameterFrame(BaseFrame):
             error_subwindow(self, error_msg)
             return
 
-        # Refreshing the displayed parameters in the new campaign tabview
-        # and destroy the new_parameter frame.
         self.master.master.refresh_parameters()
         self.master.destroy()

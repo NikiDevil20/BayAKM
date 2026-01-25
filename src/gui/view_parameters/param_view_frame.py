@@ -65,9 +65,6 @@ def create_block(
     block = ctk.CTkFrame(master=master)
     block.columnconfigure(0, weight=1)
 
-    # for row in range(len(parameter.values)+1):
-    #     block.rowconfigure(row, weight=1)
-
     label = ctk.CTkLabel(
         master=block,
         text=parameter.name,

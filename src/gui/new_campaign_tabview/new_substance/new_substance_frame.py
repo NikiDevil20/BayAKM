@@ -56,8 +56,6 @@ class NewSubstanceParameterFrame(BaseFrame):
         substance_name_entry.grid(row=0, column=0, pady=5, padx=10)
         smiles_entry.grid(row=0, column=1, pady=5, padx=10)
 
-        # Add one remove button per row,
-        # which removes it upon click.
         remove_button = ctk.CTkButton(
             master=row,
             text="-",
@@ -68,8 +66,6 @@ class NewSubstanceParameterFrame(BaseFrame):
         )
         remove_button.grid(row=0, column=2, pady=5, padx=10)
 
-        # Row's entries are placed in a list,
-        # so their values can be retrieved.
         self.row_list.append((substance_name_entry, smiles_entry))
 
     def _delete_row(self, row, entry_tuple):
@@ -87,7 +83,7 @@ class NewSubstanceParameterFrame(BaseFrame):
         """
         substance_dict: dict[str, str] = {}
 
-        if self.name_entry.get() == "":  # Name cannot be empty.
+        if self.name_entry.get() == "":
             error_subwindow(
                 self,
                 message="Parameter name cannot be empty."
@@ -97,7 +93,6 @@ class NewSubstanceParameterFrame(BaseFrame):
         substance_dict = self._fetch_checked_substances()
 
         for (substance_name_entry, smiles_entry) in self.row_list:
-            # Substance name and SMILES string must not be empty.
             if substance_name_entry.get() == "" or smiles_entry.get() == "":
                 continue
             if not is_valid_smiles(smiles_entry.get()):
@@ -111,16 +106,13 @@ class NewSubstanceParameterFrame(BaseFrame):
                 return
             substance_dict[substance_name_entry.get()] = smiles_entry.get()
 
-        if len(substance_dict.keys()) < 2:  # At least two values are needed for parameter creation.
+        if len(substance_dict.keys()) < 2:
             error_subwindow(
                 self,
                 message="You must add at least two values to a parameter."
             )
             return
 
-        print(substance_dict)
-
-        # The new parameter is added to the parameters.yaml file.
         error_msg = write_to_parameters_file(
             mode="substance",
             parameter_name=self.name_entry.get(),

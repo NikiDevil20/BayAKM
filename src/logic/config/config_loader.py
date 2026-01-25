@@ -25,12 +25,6 @@ class Config:
                 "Simulate results": False
             }
 
-        # self.pi: float = self.dict["PI_threshold"]
-        # self.prefix: str = self.dict["Journal_prefix"]
-        # self.initial_recommender: str = self.dict["Initial_recommender"]
-        # self.acquisition_function: str = self.dict["Acquisition_function"]
-        # self.batch_size: int = self.dict["Batch_size"]
-
     def save_to_yaml(self, config_dict):
         if not os.path.exists(dirs.environ) or config_dict["Campaign name"] != self.load_from_yaml()["Campaign name"]:
             dirs.build_campaign_folder(

@@ -79,9 +79,6 @@ def load_yaml() -> dict | None:
         if os.path.exists(dirs.return_file_path("parameters")):
             with open(dirs.return_file_path("parameters"), "r") as f:
                 yaml_string: str = f.read()
-        # except FileNotFoundError:
-        #     print(f"Could not locate parameters.yaml at {dirs.return_file_path('parameters')}.")
-        #     return {}
 
             return yaml.safe_load(yaml_string)
         else:
@@ -103,8 +100,6 @@ def save_yaml(yaml_dict: dict):
     if os.path.exists(dirs.environ):
         with open(dirs.return_file_path("parameters"), "w") as f:
             yaml.dump(yaml_dict, f)
-        # except FileNotFoundError:
-        #     print(f"Parameter file not found at {dirs.return_file_path('parameters')}")
 
 
 def write_to_parameters_file(

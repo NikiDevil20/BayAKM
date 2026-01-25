@@ -105,7 +105,6 @@ class TableFrame(ctk.CTkFrame):
 
         self.content_frame = ctk.CTkScrollableFrame(
             master=self,
-            # width=125 * len(df.columns)
         )
         self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=10, sticky="nsew")
 
@@ -145,30 +144,20 @@ class TableFrame(ctk.CTkFrame):
 
     @staticmethod
     def _build_numerical_values(yaml_dict) -> dict[str, list[float]]:
-        # numerical_dict = yaml_dict["Numerical Discrete Parameters"]
-        # numerical_list = [(key, numerical_dict[key]) for key in numerical_dict.keys()]
-        # return numerical_list
         numerical_dict = yaml_dict["Numerical Discrete Parameters"]
         return numerical_dict
 
     @staticmethod
     def _build_substance_values(yaml_dict) -> dict[str, list[str]]:
         substance_dict = yaml_dict["Substance Parameters"]
-        # substance_list = [(key, substance_dict[key].keys()) for key in substance_dict.keys()]
-        # for key in substance_dict.keys():
-        #     substance_list.append(
-        #         (key, substance_dict[key].keys())
-        #     )
         return substance_dict
 
     @staticmethod
     def _build_continuous_values(yaml_dict) -> dict[str, tuple[int, int]]:
         conti_dict = yaml_dict["Numerical Continuous Parameters"]
-        # conti_list = [(key, conti_dict[key]) for key in conti_dict.keys()]
         return conti_dict
 
     def _read_table(self):
-        # self._build_param_name_and_value_list()
         rows = []
         columns = self.df.columns
         error_list = []
@@ -215,10 +204,7 @@ class TableFrame(ctk.CTkFrame):
                                 allowed_values = current_parameter.values
 
                                 if isinstance(current_parameter, NumericalDiscreteParameter):
-                                    # try:
                                     value = float(value)
-                                    # except ValueError:
-                                    #     return value, f"Value '{value}' in column {column} must be a number."
 
                                 if value not in allowed_values:
                                     return value, f"Value '{value}' in column {column} is not allowed. Allowed values: {allowed_values}"

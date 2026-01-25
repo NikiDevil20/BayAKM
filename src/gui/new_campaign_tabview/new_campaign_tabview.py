@@ -29,7 +29,6 @@ class NewCampaignTabview(ctk.CTkTabview):
             font=ctk.CTkFont(
                 family="Inter",
                 size=16,
-                # weight="bold"
             ),
             fg_color="light grey",
             corner_radius=10
@@ -44,8 +43,6 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.add("Configuration")
 
         self._create_widget_frame()
-
-        # self._create_recommendation_frame()
 
     def _create_widget_frame(self):
         self.widget_frame = ctk.CTkFrame(
@@ -178,7 +175,6 @@ class NewCampaignTabview(ctk.CTkTabview):
         btn_config = (
             ("Add Numerical", {"master": self, "title": "Add numerical parameter", "frameclass": "numerical"}),
             ("Add Substance", {"master": self, "title": "Add substance parameter", "frameclass": "substance"}),
-            # ("Add Continuous", {"master": self, "title": "Add continuous parameter", "frameclass": "continuous"}),
             ("Add Constraint", {"master": self, "title": "Add constraint", "frameclass": "constraint"}),
             ("Remove", {"master": self, "title": "Remove parameter", "frameclass": "remove"})
         )
@@ -227,10 +223,6 @@ class NewCampaignTabview(ctk.CTkTabview):
         self.parameter_list = build_param_list()
         self.setup_frame.destroy()
         self._setup_parameters_frame()
-
-    # def _create_recommendation_frame(self):
-    #     recommendation_frame = ctk.CTkFrame(master=self.tab("Get recommendation"))
-    #     recommendation_frame.pack(pady=5, padx=10)
 
     def _save_and_get_recommendation(self):
         self._save_config()

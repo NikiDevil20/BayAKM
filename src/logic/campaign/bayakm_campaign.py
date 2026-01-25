@@ -81,6 +81,7 @@ class BayAKMCampaign(Campaign):
         )
         self.campaign.recommender = recommender
 
+    @staticmethod
     def print_pi(
         self,
         searchspace: SearchSpace,
@@ -100,12 +101,6 @@ class BayAKMCampaign(Campaign):
         Raises:
             TypeError: If the PI threshold is not a float.
         """
-        # try:
-        #     pi_threshold = float(cfg.pi_threshold)
-        # except TypeError:
-        #     print(f"Failed to convert entry {cfg.pi_threshold} to float.")
-        #     sys.exit(1)
-
         candidates, _ = searchspace.discrete.get_candidates()
         acqf = qProbabilityOfImprovement()
         pi = BotorchRecommender.acquisition_values(
@@ -248,7 +243,6 @@ def create_campaign(parameter_list, constraint_list) -> Campaign:
         parameters=parameter_list,
         constraints=constraint_list
     )
-    # target = NumericalTarget(name="Yield").clamp(0, 1)
     target = NumericalTarget.normalized_sigmoid(name="Yield", anchors=[(0, 0.1), (1, 0.9)])
 
     objective = SingleTargetObjective(

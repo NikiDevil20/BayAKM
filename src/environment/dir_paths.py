@@ -19,17 +19,7 @@ class DirPaths:
         if not os.path.exists(self.data):
             os.makedirs(self.data)
 
-        # bayakm_dir = os.path.join(self.base_dir, "src")
-        #
-        # self.src_dir = os.path.join(bayakm_dir, "bayakm")
-        # self.docs_dir = os.path.join(base_dir, "docs")
-        # self.tests_dir = os.path.join(base_dir, "tests")
-
-        # self.data_dir = os.path.join(bayakm_dir, "data")
-
     def build_campaign_folder(self, campaign_name):
-        # if os.path.exists(self.environ):
-        #     os.remove(self.environ)
         print(f"Build {campaign_name=}")
         self.folder_path = os.path.join(
             self.data,
