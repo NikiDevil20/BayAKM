@@ -20,7 +20,6 @@ class DirPaths:
             os.makedirs(self.data)
 
     def build_campaign_folder(self, campaign_name):
-        print(f"Build {campaign_name=}")
         self.folder_path = os.path.join(
             self.data,
             cleanup_folder_name(campaign_name)

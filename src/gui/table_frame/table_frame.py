@@ -46,11 +46,9 @@ class TableFrame(ctk.CTkFrame):
         header_frame = ctk.CTkFrame(master=self)
         width = 120
         length_dict = {}
-        print(parameter_dict)
         for param in parameter_dict.keys():
             length = len(max(parameter_dict[param], key=len))
             length_dict[param] = length
-            print(param, length)
 
         for col, _ in enumerate(categories):
             match categories[col]:
@@ -62,7 +60,6 @@ class TableFrame(ctk.CTkFrame):
                     width = 50
                 case _:
                     width = length_dict[categories[col]] * 11
-                    print(width)
 
             header_frame.columnconfigure(col, weight=1)
             headline = ctk.CTkLabel(
@@ -80,7 +77,6 @@ class TableFrame(ctk.CTkFrame):
     @staticmethod
     def _param_dict_from_list(parameter_list) -> dict[str, list[str]]:
         param_dict = {}
-        print(parameter_list)
         for param in parameter_list:
             if isinstance(param, NumericalDiscreteParameter):
                 param_dict[param.name] = [str(v) for v in param.values]
