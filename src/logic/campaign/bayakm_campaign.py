@@ -10,20 +10,18 @@ from baybe.objectives import SingleTargetObjective
 from baybe.objectives.base import Objective
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
     CategoricalParameter
-from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, RandomRecommender, \
-    KMeansClusteringRecommender
+from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, RandomRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
 from baybe.targets import NumericalTarget
 from baybe.utils.basic import register_hooks
 
 
-from src.logic.simulate_results import YieldSimulator
-from src.logic.config_loader import Config
+from src.logic.simulation.simulate_results import YieldSimulator
+from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
-from src.logic.output import check_path, info_string, create_output, append_to_output
-from src.logic.parameters import build_param_list, build_constraints, save_pi_to_file
-from src.logic.probability_of_improvement import print_pi
+from src.logic.output.output import check_path, info_string, create_output, append_to_output
+from src.logic.parameters.parameters import build_param_list, build_constraints, save_pi_to_file
 
 dirs = DirPaths()
 
@@ -150,7 +148,7 @@ class BayAKMCampaign(Campaign):
         )
         n_pis_over = (pi > 0.01).sum()
         pi_fraction = n_pis_over / len(pi)
-        save_pi_to_file(pi_fraction, pi)
+        save_pi_to_file(list(pi))
 
     def get_recommendation(
             self,

@@ -1,8 +1,8 @@
 import customtkinter as ctk
 
-from src.logic.parameters import delete_parameter, build_param_list
-from src.gui.gui_constants import STANDARD, TEXTCOLOR, FGCOLOR
-from src.gui.new_page_factory import BaseFrame
+from src.logic.parameters.parameters import delete_parameter, build_param_list
+from src.gui.main.gui_constants import STANDARD, TEXTCOLOR, FGCOLOR
+from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
 
 HEADER_TEXT = "Remove parameters"
 BUTTON_TEXT = "Remove"

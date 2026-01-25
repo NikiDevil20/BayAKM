@@ -1,9 +1,9 @@
 import customtkinter as ctk
 
-from src.logic.parameters import write_to_parameters_file
-from src.gui.gui_constants import STANDARD
+from src.logic.parameters.parameters import write_to_parameters_file
+from src.gui.main.gui_constants import STANDARD
 from src.gui.help.help import error_subwindow
-from src.gui.new_page_factory import BaseFrame
+from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
 
 HEADER_PLACEHOLDER = "Add numerical parameter"
 PARAMETER_NAME_PLACEHOLDER = "Parameter name"

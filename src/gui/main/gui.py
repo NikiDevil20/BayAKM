@@ -1,11 +1,11 @@
 import customtkinter as ctk
 
-from src.logic.bayakm_campaign import BayAKMCampaign
-from src.logic.config_loader import Config
+from src.logic.campaign.bayakm_campaign import BayAKMCampaign
+from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
-from src.logic.output import check_path, import_output_to_df
-from src.gui.gui_constants import HEADER, STANDARD
-from src.gui.menu_frame import MenuFrame
+from src.logic.output.output import check_path, import_output_to_df
+from src.gui.main.gui_constants import HEADER, STANDARD
+from src.gui.main.menu_frame import MenuFrame
 from src.gui.table_frame.table_frame import TableFrame
 
 

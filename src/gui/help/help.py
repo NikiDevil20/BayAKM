@@ -1,6 +1,6 @@
 import customtkinter as ctk
 
-from src.gui.gui_constants import SUBHEADER
+from src.gui.main.gui_constants import SUBHEADER
 
 
 class HelpFrame(ctk.CTkFrame):

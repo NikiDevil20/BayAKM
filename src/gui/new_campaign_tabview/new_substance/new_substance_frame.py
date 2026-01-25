@@ -1,11 +1,11 @@
 import customtkinter as ctk
 
-from src.logic.parameters import write_to_parameters_file
-from src.gui.gui_constants import (STANDARD, FGCOLOR, TEXTCOLOR,
-                                   ROWFGCOLOR, PackagedWidget, Row)
+from src.logic.parameters.parameters import write_to_parameters_file
+from src.gui.main.gui_constants import (STANDARD, FGCOLOR, TEXTCOLOR,
+                                        ROWFGCOLOR, PackagedWidget, Row)
 from src.gui.help.help import error_subwindow
-from src.gui.new_page_factory import BaseFrame
-from src.logic.smiles_loader import (smiles_dict_from_yaml, is_valid_smiles)
+from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
+from src.logic.smiles.smiles_loader import (smiles_dict_from_yaml, is_valid_smiles)
 
 HEADER_TEXT = "New Substance Parameter"
 PARAMNAME_PLACEHOLDER = "Parameter name"

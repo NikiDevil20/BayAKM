@@ -9,7 +9,7 @@ from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, Num
 from baybe.utils.interval import Interval
 from typing import Literal
 
-from src.logic.output import info_string
+from src.logic.output.output import info_string
 from src.environment.dir_paths import DirPaths
 
 SMILES = str
@@ -225,26 +225,22 @@ def check_name_exists(
     return False
 
 
-def save_pi_to_file(pi_fraction: float, pi_values: np.ndarray):
+def save_pi_to_file(pi_values: list[float]):
     """
     Saves the given PI fraction and values to the parameters.yaml file under the PI section.
     If the file does not exist, it creates a new one.
-    :param pi_fraction: The fraction of candidates with PI above the threshold.
     :param pi_values: The array of PI values for all candidates.
     """
     yaml_dict = load_yaml()
     if "PI" not in yaml_dict.keys():
         yaml_dict["PI"] = []
 
-    yaml_dict["PI"].append({
-        "fraction": float(pi_fraction),
-        "values": list(pi_values)
-    })
+    yaml_dict["PI"].append(pi_values)
 
     save_yaml(yaml_dict)
 
 
-def load_pi_from_file() -> dict | None:
+def load_pi_from_file() -> list | None:
     """
     Reads the PI section from the parameters.yaml file and returns its contents as a dictionary.
     If the file does not exist, it returns None.

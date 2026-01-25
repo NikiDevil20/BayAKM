@@ -6,7 +6,7 @@ from time import time
 
 import pandas as pd
 
-from src.logic.config_loader import Config
+from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
 
 dirs = DirPaths()

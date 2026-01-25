@@ -19,7 +19,7 @@ def smiles_dict_from_yaml() -> smiles_type:
         dict: A dict of molecule groups like solvents, bases etc.,
         which contains molecule names as keys and SMILES strings as values.
     """
-    path = os.path.join(dirs.data, "smiles_strings.yaml")
+    path = dirs.smiles
 
     with open(path, 'r') as f:
         _smiles_dict: smiles_type = yaml.safe_load(f)

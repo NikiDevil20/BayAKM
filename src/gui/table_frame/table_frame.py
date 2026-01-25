@@ -7,13 +7,13 @@ import numpy as np
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from src.logic.config_loader import Config
+from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
-from src.logic.output import import_output_to_df, create_output, split_import_df, check_path
+from src.logic.output.output import import_output_to_df, create_output, split_import_df, check_path
 from src.gui.help.help import error_subwindow
 from src.gui.table_frame.YieldPlotter import YieldPlotter
-from src.gui.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
-from src.logic.parameters import build_param_list
+from src.gui.main.gui_constants import SUBHEADER, TEXTCOLOR, STANDARD, FGCOLOR
+from src.logic.parameters.parameters import build_param_list
 
 
 class TableFrame(ctk.CTkFrame):

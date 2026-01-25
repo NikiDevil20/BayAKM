@@ -1,11 +1,11 @@
 import customtkinter as ctk
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter
 
-from src.logic.parameters import write_constraints_to_file
-from src.gui.gui_constants import STANDARD, FGCOLOR, TEXTCOLOR
+from src.logic.parameters.parameters import write_constraints_to_file
+from src.gui.main.gui_constants import STANDARD, FGCOLOR, TEXTCOLOR
 from src.gui.help.help import error_subwindow
-from src.gui.new_page_factory import BaseFrame
-from src.gui.gui_constants import Row, PackagedWidget
+from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
+from src.gui.main.gui_constants import Row, PackagedWidget
 
 HEADER_PLACEHOLDER = "Add constraint"
 

@@ -7,7 +7,7 @@ from baybe.parameters import SubstanceParameter
 from typing import Dict, List, Union
 
 from src.environment.dir_paths import DirPaths
-from src.logic.parameters import build_param_list
+from src.logic.parameters.parameters import build_param_list
 
 Distance = float
 ParamName = str

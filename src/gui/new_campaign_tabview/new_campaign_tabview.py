@@ -2,11 +2,11 @@ import os
 
 import customtkinter as ctk
 
-from src.logic.config_loader import Config
+from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
-from src.logic.output import check_path, info_string
-from src.logic.parameters import build_param_list
-from src.gui.gui_constants import STANDARD, SUBHEADER, FGCOLOR, TEXTCOLOR
+from src.logic.output.output import check_path, info_string
+from src.logic.parameters.parameters import build_param_list
+from src.gui.main.gui_constants import STANDARD, SUBHEADER, FGCOLOR, TEXTCOLOR
 from src.gui.help.help import error_subwindow
 from src.gui.new_campaign_tabview.new_constraint.constraints import ConstraintsFrame
 from src.gui.new_campaign_tabview.new_continuous.new_continuous_frame import NewContinuousParameterFrame

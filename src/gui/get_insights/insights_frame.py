@@ -9,8 +9,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from src.environment.dir_paths import DirPaths
 from src.gui.help.help import error_subwindow
-from src.gui.gui_constants import TEXTCOLOR, FGCOLOR, STANDARD
-from src.gui.new_page_factory import BaseFrame
+from src.gui.main.gui_constants import TEXTCOLOR, FGCOLOR, STANDARD
+from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
 
 HEADER = "Get insights"
 PLOTTYPE: Literal["bar", "beeswarm", "force", "heatmap", "waterfall"] = "bar"

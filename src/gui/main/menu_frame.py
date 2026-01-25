@@ -1,10 +1,10 @@
 import customtkinter as ctk
 
 from src.gui.choose_campaign.campaign_manager import CampaignManager
-from src.gui.gui_constants import SUBHEADER
+from src.gui.main.gui_constants import SUBHEADER
 from src.gui.get_insights.insights_frame import InsightsFrame
 from src.gui.view_parameters.param_view_frame import ParamViewFrame
-from src.logic.config_loader import Config
+from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
 from src.gui.help.help import HelpFrame
 from src.gui.new_campaign_tabview.new_campaign_tabview import NewCampaignTabview
