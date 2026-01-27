@@ -7,6 +7,7 @@ import numpy as np
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from src.gui.table_frame.pi_plot_frame import PIPlotFrame
 from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
@@ -21,6 +22,7 @@ class TableFrame(ctk.CTkFrame):
     def __init__(self, master=None, data=None):
         super().__init__(master)
 
+        self.both_plot_frame = None
         self.dirs = DirPaths()
 
         self.categories = None
@@ -38,6 +40,7 @@ class TableFrame(ctk.CTkFrame):
             self._create_table_from_df(data)
             self._create_bottom_frame()
             self.build_plot_frame()
+            self._build_pi_plot_frame()
 
     def _create_header(
             self,
@@ -335,8 +338,17 @@ class TableFrame(ctk.CTkFrame):
             if empty_allowed == len(v_list):
                 return
 
-        plot_frame = PlotFrame(master=self, data=data)
-        plot_frame.grid(row=0, column=2, pady=5, padx=10, rowspan=3)
+        self.both_plot_frame = ctk.CTkFrame(master=self)
+        self.both_plot_frame.grid(row=0, column=2, pady=5, padx=10, sticky="nsew", rowspan=4)
+        plot_frame = PlotFrame(master=self.both_plot_frame, data=data)
+        plot_frame.grid(row=0, column=0, pady=5, padx=10)
+
+    def _build_pi_plot_frame(self):
+        if self._number_of_batches() < 2:
+            return
+
+        plotframe = PIPlotFrame(master=self.both_plot_frame)
+        plotframe.grid(row=1, column=0, pady=5, padx=10)
 
     def _number_of_batches(self):
         unique_batches = set(self.batch_no_list)
