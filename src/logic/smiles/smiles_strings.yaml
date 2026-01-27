@@ -1,13 +1,13 @@
 bases:
-  ammonium_hydroxide: '[NH4+].[OH-]'
-  lithium_hydroxide: '[Li+].[OH-]'
-  potassium_hydroxide: '[K+].[OH-]'
+  NH4OH: '[NH4+].[OH-]'
+  LiOH: '[Li+].[OH-]'
+  KOH: '[K+].[OH-]'
   pyridine: "c1ccncc1"
-  sodium_bicarbonate: '[Na+].[O-]C(=O)O'
-  sodium_carbonate: '[Na+].[Na+][O-]C(=O)[O-]'
-  sodium_hydroxide: '[Na+].[OH-]'
-  triethylamine: "CCN(CC)CC"
-catalysts:
+  NaHCO3: '[Na+].[O-]C(=O)O'
+  Na2CO3: '[Na+].[Na+][O-]C(=O)[O-]'
+  NaOH: '[Na+].[OH-]'
+  NEt3: "CCN(CC)CC"
+Ligands:
   Fu-Salz: "F[B-](F)(F)F.CC(C)(C)[PH+](C(C)(C)C)C(C)(C)C"
 solvents:
   DMSO: "CS(=O)C"

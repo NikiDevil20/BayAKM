@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 
+from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.gui.main.gui_constants import SUBHEADER, HEADER, STANDARD
 
 
@@ -76,7 +77,9 @@ def create_block(
         for row in range(len(parameter.values)):
             value = ctk.CTkLabel(
                 master=block,
-                text=display_parameter_name(parameter.values[row])
+                text=display_parameter_name(
+                    SumFormulaConverter.subscript(parameter.values[row])
+                )
             )
             value.grid(row=row+1, column=0, pady=1, padx=10)
     else:

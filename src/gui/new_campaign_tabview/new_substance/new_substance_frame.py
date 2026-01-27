@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.logic.parameters.parameters import write_to_parameters_file
 from src.gui.main.gui_constants import (STANDARD, FGCOLOR, TEXTCOLOR,
                                         ROWFGCOLOR, PackagedWidget, Row)
@@ -130,7 +131,7 @@ class NewSubstanceParameterFrame(BaseFrame):
             checkboxlist = group.return_checkboxlist()
             for checkbox in checkboxlist:
                 if checkbox._variable.get():
-                    self.checked_molecules.append(checkbox._text)
+                    self.checked_molecules.append(SumFormulaConverter.plain(checkbox._text))
 
         if not len(self.checked_molecules) > 0:
             return {}
@@ -260,12 +261,13 @@ class SmilesFramesByGroup(ctk.CTkFrame):
         for index, molecule in enumerate(self.molecules):
             object_list = []
             check_var = ctk.BooleanVar(value=False)
+            text = SumFormulaConverter.subscript(molecule)
             packaged_checkbox = PackagedWidget(
                 widget_type=ctk.CTkCheckBox,
                 fg_color=FGCOLOR,
                 text_color=TEXTCOLOR,
                 width=16,
-                text=molecule,
+                text=text,
                 onvalue=True,
                 offvalue=False,
                 variable=check_var

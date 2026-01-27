@@ -7,6 +7,7 @@ import numpy as np
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
 from src.logic.output.output import import_output_to_df, create_output, split_import_df, check_path
@@ -181,6 +182,7 @@ class TableFrame(ctk.CTkFrame):
         self.master.refresh_content()
 
     def _validate_entry(self, value, column, row_index):
+        value = SumFormulaConverter.plain(value)
         try:
             if column == "Yield":
                 if value == "":
@@ -416,8 +418,10 @@ class Row:
             color: str,
             position: int
     ) -> ctk.CTkComboBox:
-        starting_value = _format_to_str(starting_value)
-        all_values = [_format_to_str(v) for v in all_values]
+        starting_value = SumFormulaConverter.subscript(_format_to_str(starting_value))
+        all_values = [
+            SumFormulaConverter.subscript(_format_to_str(v)) for v in all_values
+        ]
         string_length = len(max(all_values, key=len))
         width = string_length * 8 + 40
 
