@@ -18,16 +18,18 @@ The script then recommends parameters for the next reactions in the results file
 - Different AcquisitionFunctions
 - Exclude combinations via constraints
 - SHAP insights
+- Plotting yield per batch
+- Plotting probability of improvement for all remaining combinations
 
 ### :construction: Planned
 
-- Probability of Improvement (PI) based early stopping
+- Minor gui improvements
 
 ## :gear: Installation
 
 1. Download the repository as a ZIP file and extract it.
-2. Install [Python 3.13](https://www.python.org/downloads/) and when asked, add to PATH
-3. 
+2. Install the requirements via pip
+3. Execute the `bayakm.bat` file in the extracted folder.
 
 ## :scroll: Getting your recommendation
 
@@ -39,6 +41,14 @@ The script then recommends parameters for the next reactions in the results file
 6. Note the recommended conditions and run the experiments. The application may be closed.
 7. Reopen the application and enter the yields.
 8. Click on "Save" and "New Recommendation" to proceed with the campaign.
+
+## :wrench: Requirements
+
+- customtkinter",
+- baybe[chem,insights]<=0.13.2
+- pyyaml
+- pandas
+- numpy
 
 
 

@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from src.gui.table_frame.pi_plot_frame import fetch_pi_over_threshold
 from src.logic.campaign.bayakm_campaign import BayAKMCampaign
 from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
@@ -102,10 +103,18 @@ class App(ctk.CTk):
             words = current_campaign.split("\\")
             text = f"Active campaign: {words[-1]}"
 
+
         label = ctk.CTkLabel(
             master=self.info_frame,
             text=text)
-        label.pack(padx=5, pady=5)
+        label.pack(padx=5, pady=5, side="left")
+
+        pi_string = fetch_pi_over_threshold(threshold=0.01)
+        pi_label = ctk.CTkLabel(
+            master=self.info_frame,
+            text=pi_string
+        )
+        pi_label.pack(padx=5, pady=5, side="left")
 
     def refresh_content(self):
         """

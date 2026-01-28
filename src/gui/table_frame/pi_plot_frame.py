@@ -81,3 +81,13 @@ class PIPlotFrame(ctk.CTkFrame):
         # ax.set_zlabel("Density", labelpad=10, fontsize=base_fontsize - 2)
 
         return fig, ax
+
+def fetch_pi_over_threshold(threshold) -> str:
+    pi_list = load_pi_from_file()
+    if not pi_list:
+        return "Probability of improvement will be displayed after at least one iteration."
+    latest_iteration = pi_list[-1]
+
+    n_pis_over = (latest_iteration > threshold).sum()
+
+    return f"{n_pis_over} / {len(latest_iteration)} PI values are over {threshold:.2f}."
