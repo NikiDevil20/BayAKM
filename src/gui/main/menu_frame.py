@@ -39,9 +39,14 @@ class MenuFrame(ctk.CTkFrame):
                 width=200,
                 fg_color="light blue"
             )
+            pady = 5
+            if i == 0:
+                pady = (10, 5)
+            if i == len(btn_config)-1:
+                pady = (5, 10)
             button.grid(
                 row=i+1, column=0,
-                pady=5, padx=10
+                pady=pady, padx=10
             )
 
     def _commands_subwindow(

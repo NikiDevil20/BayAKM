@@ -62,7 +62,7 @@ class App(ctk.CTk):
         )
         self.header_frame.grid(
             row=0, column=0,
-            pady=10, padx=10,
+            pady=(10, 5), padx=10,
             sticky="ew", columnspan=3
         )
 
@@ -92,7 +92,7 @@ class App(ctk.CTk):
         self.info_frame = ctk.CTkFrame(master=self)
         self.info_frame.grid(
             row=2, column=0,
-            pady=5, padx=10,
+            pady=(5, 10), padx=10,
             sticky="ew", columnspan=3
         )
         current_campaign = self.dirs.return_file_path("folder")

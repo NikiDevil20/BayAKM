@@ -3,7 +3,8 @@ import customtkinter as ctk
 from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.logic.parameters.parameters import write_to_parameters_file
 from src.gui.main.gui_constants import (STANDARD, FGCOLOR, TEXTCOLOR,
-                                        ROWFGCOLOR, PackagedWidget, Row)
+                                        ROWFGCOLOR, PackagedWidget, Row,
+                                        SUBHEADER)
 from src.gui.help.help import error_subwindow
 from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
 from src.logic.smiles.smiles_loader import (smiles_dict_from_yaml, is_valid_smiles)
@@ -173,7 +174,7 @@ class NewSubstanceParameterFrame(BaseFrame):
             width=250
         )
         self.row_frame.columnconfigure(0, weight=1)
-        self.row_frame.grid(row=2, column=2, pady=10, padx=20, sticky="nsew")
+        self.row_frame.grid(row=0, column=0, pady=10, padx=20, sticky="nsew")
 
         self.subheaeder_frame = ctk.CTkFrame(
             master=self.row_frame,
@@ -188,15 +189,11 @@ class NewSubstanceParameterFrame(BaseFrame):
         )
         custom_label.pack(pady=5, padx=10, anchor="n")
 
-        self.content_frame.columnconfigure(0, weight=1)
-        self.content_frame.columnconfigure(1, weight=1)
+        self.content_frame.columnconfigure(0, weight=0)
+        self.content_frame.columnconfigure(1, weight=0)
 
     def build_smiles_frames(self):
         for index, group in enumerate(self.smiles_dict):
-            row = 1
-            if index % 2 != 0:
-                row += 1
-                index = 0
             molecules = list(self.smiles_dict[group].keys())
             smiles_frame = SmilesFramesByGroup(
                 master=self.content_frame,
@@ -204,11 +201,10 @@ class NewSubstanceParameterFrame(BaseFrame):
                 molecules=molecules,
             )
             smiles_frame.grid(
-                row=row,
-                column=index,
+                row=0,
+                column=index+1,
                 pady=10,
-                padx=20,
-                sticky="nsew"
+                padx=10,
             )
             self.group_list.append(smiles_frame)
 
@@ -234,29 +230,28 @@ class SmilesFramesByGroup(ctk.CTkFrame):
         self.scrollframe = None
         self.title_frame = None
         self.checkbox_list = []
+        self.width = self._get_width() * 10 + 10
 
-        self._build_title_frame()
         self._build_rows()
 
-    def _build_title_frame(self):
-        self.title_frame = ctk.CTkFrame(
-            master=self,
-            fg_color=FGCOLOR
-        )
-        self.title_frame.grid(row=0, column=0, pady=10, padx=20, sticky="ew")
+    def _get_width(self):
+        length = 0
 
-        title_label = ctk.CTkLabel(
-            master=self.title_frame,
-            text=f"{self.group_name}",
-            font=STANDARD
-        )
-        title_label.pack(pady=5, padx=10)
+        for name in self.molecules:
+            if len(name) > length:
+                length = len(name)
+
+        return length
 
     def _build_rows(self):
         self.scrollframe = ctk.CTkScrollableFrame(
             master=self,
+            label_text=f"{self.group_name}",
+            label_font=SUBHEADER,
+            label_fg_color=FGCOLOR,
+            width=self.width
         )
-        self.scrollframe.grid(row=1, column=0, pady=10, padx=10, sticky="ew")
+        self.scrollframe.pack(pady=10, padx=10, anchor="n")
 
         for index, molecule in enumerate(self.molecules):
             object_list = []
@@ -278,7 +273,7 @@ class SmilesFramesByGroup(ctk.CTkFrame):
                 object_list=object_list,
                 weights=[1]
             )
-            row.grid(row=1+index, column=0, sticky="ew")
+            row.pack(anchor="n", fill="both")
             self.checkbox_list.append(row.return_widget(0))
 
     def return_checkboxlist(self):
