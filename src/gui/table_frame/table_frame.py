@@ -185,7 +185,7 @@ class TableFrame(ctk.CTkFrame):
         self.master.refresh_content()
 
     def _validate_entry(self, value, column, row_index):
-        value = SumFormulaConverter.plain(value)
+        value = SumFormulaConverter.make_string(value)
         try:
             if column == "Yield":
                 if value == "":
@@ -430,9 +430,9 @@ class Row:
             color: str,
             position: int
     ) -> ctk.CTkComboBox:
-        starting_value = SumFormulaConverter.subscript(_format_to_str(starting_value))
+        starting_value = SumFormulaConverter.make_formula(_format_to_str(starting_value))
         all_values = [
-            SumFormulaConverter.subscript(_format_to_str(v)) for v in all_values
+            SumFormulaConverter.make_formula(_format_to_str(v)) for v in all_values
         ]
         string_length = len(max(all_values, key=len))
         width = string_length * 8 + 40

@@ -78,7 +78,7 @@ def create_block(
             value = ctk.CTkLabel(
                 master=block,
                 text=display_parameter_name(
-                    SumFormulaConverter.subscript(parameter.values[row])
+                    SumFormulaConverter.make_formula(parameter.values[row])
                 )
             )
             value.grid(row=row+1, column=0, pady=1, padx=10)

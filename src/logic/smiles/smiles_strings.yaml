@@ -1,22 +1,41 @@
 bases:
-  NH4OH: '[NH4+].[OH-]'
-  LiOH: '[Li+].[OH-]'
+  Cs2CO3: "[Cs+].[Cs+][O-]C(=O)[O-]"
+  CsF: "[Cs+].[F-]"
   KOH: '[K+].[OH-]'
-  pyridine: "c1ccncc1"
-  NaHCO3: '[Na+].[O-]C(=O)O'
+  K3PO4: "[O-]P(=O)([O-])[O-].[K+].[K+].[K+]"
+  LiOH: '[Li+].[OH-]'
+  NaOAc: "CC(=O)[O-].[Na+]"
   Na2CO3: '[Na+].[Na+][O-]C(=O)[O-]'
+  NaHCO3: '[Na+].[O-]C(=O)O'
   NaOH: '[Na+].[OH-]'
   NEt3: "CCN(CC)CC"
-Ligands:
-  Fu-Salz: "F[B-](F)(F)F.CC(C)(C)[PH+](C(C)(C)C)C(C)(C)C"
+  NH4OH: '[NH4+].[OH-]'
+  pyridine: "c1ccncc1"
+ligands:
+  Amphos: "CN(C)C1=CC=C(P(C(C)(C)C)C(C)(C)C)C=C1"
+  BippyPhos: "CC(C)(C)P(C1=CC=NN1C2=C(N(N=C2C3=CC=CC=C3)C4=CC=CC=C4)C5=CC=CC=C5)C(C)(C)C"
+  Fu-salt: "F[B-](F)(F)F.CC(C)(C)[PH+](C(C)(C)C)C(C)(C)C"
+  JohnPhos: "CC(C)(C)P(c1ccccc1-c2ccccc2)C(C)(C)C"
+  PEPPSI_iPr: "CC(C)C1=C(C(=CC=C1)C(C)C)N2[CH-]N(C=C2)C3=C(C=CC=C3C(C)C)C(C)C.C1=CC(=CN=C1)Cl.Cl[Pd]Cl"
+  RockPhos: "CC1=C(C2=C(C(C)C)C=C(C(C)C)C=C2C(C)C)C(P(C(C)(C)C)C(C)(C)C)=C(OC)C=C1"
+  Sphos_Pd_G2: "COC1=CC=CC(OC)=C1C2=C(P(C3CCCCC3)C4CCCCC4)C=CC=C2.NC5=C(C6=C([Pd]Cl)C=CC=C6)C=CC=C5"
+  tBuBrettphos: "COc1ccc(OC)c(c1P(C(C)(C)C)C(C)(C)C)-c2c(cc(cc2C(C)C)C(C)C)C(C)C"
+  tBuXantPhos: "CC(C)(C)P(c1cccc2c1Oc3c(cccc3C2(C)C)P(C(C)(C)C)C(C)(C)C)C(C)(C)C"
 solvents:
+  acetone: "CC(=O)C"
+  acetonitrile: "CC#N"
+  benzene: "c1ccccc1"
+  chloroform: "C(Cl)(Cl)Cl"
+  Dioxane: "O1CCOCC1"
+  DME: "COCCOC"
+  DMF: "CN(C)C=O"
   DMSO: "CS(=O)C"
-  acetone: CC(=O)C
-  acetonitrile: CC#N
-  benzene: c1ccccc1
-  chloroform: C(Cl)(Cl)Cl
-  ethanol: CCO
-  hexane: CCCCCC
-  methanol: CO
-  toluene: Cc1ccccc1
-  water: O
+  ethanol: "CCO"
+  hexane: "CCCCCC"
+  methanol: "CO"
+  THF: "C1CCOC1"
+  toluene: "Cc1ccccc1"
+  water: "O"
+
+
+

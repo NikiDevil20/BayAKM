@@ -131,7 +131,7 @@ class NewSubstanceParameterFrame(BaseFrame):
             checkboxlist = group.return_checkboxlist()
             for checkbox in checkboxlist:
                 if checkbox._variable.get():
-                    self.checked_molecules.append(SumFormulaConverter.plain(checkbox._text))
+                    self.checked_molecules.append(SumFormulaConverter.make_string(checkbox._text))
 
         if not len(self.checked_molecules) > 0:
             return {}
@@ -261,7 +261,7 @@ class SmilesFramesByGroup(ctk.CTkFrame):
         for index, molecule in enumerate(self.molecules):
             object_list = []
             check_var = ctk.BooleanVar(value=False)
-            text = SumFormulaConverter.subscript(molecule)
+            text = SumFormulaConverter.make_formula(molecule)
             packaged_checkbox = PackagedWidget(
                 widget_type=ctk.CTkCheckBox,
                 fg_color=FGCOLOR,
