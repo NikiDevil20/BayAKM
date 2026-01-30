@@ -1,0 +1,82 @@
+import customtkinter as ctk
+
+from src.gui.choose_campaign.campaign_manager import CampaignManager
+from src.gui.main.gui_constants import SUBHEADER
+from src.gui.get_insights.insights_frame import InsightsFrame
+from src.gui.view_parameters.param_view_frame import ParamViewFrame
+from src.logic.config.config_loader import Config
+from src.environment.dir_paths import DirPaths
+from src.gui.help.help import HelpFrame
+from src.gui.new_campaign_tabview.new_campaign_tabview import NewCampaignTabview
+
+
+class MenuFrame(ctk.CTkFrame):
+    def __init__(self, master=None, *args, **kwargs):
+        super().__init__(master)
+
+        self.dirs = DirPaths()
+        self.cfg = Config()
+        self.campaign = None
+
+        self._create_subwindows()
+
+    def _create_subwindows(self):
+        btn_config = (
+            {"name": "New campaign", "parameter_list": self.master.parameter_list},
+            {"name": "View parameters", "parameter_list": self.master.parameter_list},
+            {"name": "Get insights"},
+            {"name": "Choose campaign"},
+            {"name": "Help"}
+        )
+        for i, arguments in enumerate(btn_config):
+            button = ctk.CTkButton(
+                master=self,
+                text=arguments["name"],
+                command=lambda args=arguments: self._commands_subwindow(**args),
+                font=SUBHEADER,
+                text_color="black",
+                height=40,
+                width=200,
+                fg_color="light blue"
+            )
+            pady = 5
+            if i == 0:
+                pady = (10, 5)
+            if i == len(btn_config)-1:
+                pady = (5, 10)
+            button.grid(
+                row=i+1, column=0,
+                pady=pady, padx=10
+            )
+
+    def _commands_subwindow(
+            self,
+            name: str,
+            **kwargs
+    ):
+        match name:
+            case "Help":
+                frame_class = HelpFrame
+            case "New campaign":
+                frame_class = NewCampaignTabview
+            case "View parameters":
+                frame_class = ParamViewFrame
+            case "Get insights":
+                frame_class = InsightsFrame
+            case "Choose campaign":
+                frame_class = CampaignManager
+            case _:
+                raise ValueError("Tippfehler?")
+
+        subwindow = ctk.CTkToplevel(self)
+        subwindow.title(name)
+        subwindow.grab_set()
+        subwindow.focus_set()
+        subwindow.frame = frame_class(
+            master=subwindow,
+            **kwargs
+        )
+        if subwindow.frame is not None and hasattr(subwindow.frame, 'winfo_exists') and subwindow.frame.winfo_exists():
+            subwindow.frame.grid(row=0, column=0, sticky="nsew")
+        else:
+            subwindow.destroy()

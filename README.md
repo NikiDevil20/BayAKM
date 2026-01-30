@@ -16,44 +16,40 @@ The script then recommends parameters for the next reactions in the results file
   - NumericalParameters
   - SubstanceParameters
 - Different AcquisitionFunctions
-  - LogEI
-  - PI
-  - UCB
 - Exclude combinations via constraints
-- Tracking of PI for early campaign stopping
+- SHAP insights
+- Plotting yield per batch
+- Plotting probability of improvement for all remaining combinations
 
 ### :construction: Planned
 
-- transfer learning
-- continuous SearchSpaces
+- Minor gui improvements
+
+## :gear: Installation
+
+1. Download the repository as a ZIP file and extract it.
+2. Install the requirements via pip
+3. Execute the `bayakm.bat` file in the extracted folder.
 
 ## :scroll: Getting your recommendation
 
-1. Configure your settings in the `config.yaml` file.
-2. Set up your parameters in the `parameters.yaml` file.
-3. Execute the `main.py` file.
-4. See your initial set of recommendations in the `results.csv` file.
-5. Run the experiments, or choose other conditions. It's just a recommendation after all :upside_down_face:
-6. Enter your measured results (and your reaction conditions, if you didn't choose the recommended) in the `results.csv` file.
+1. Run the `bayakm.bat` file.
+2. Click "New Campaign" and enter the required information.
+3. Add at least two parameters with at least two values.
+4. (Optional) Add constraints to exclude certain combinations.
+5. Click "Get first Recommendation!"
+6. Note the recommended conditions and run the experiments. The application may be closed.
+7. Reopen the application and enter the yields.
+8. Click on "Save" and "New Recommendation" to proceed with the campaign.
 
-    > :rotating_light: If you chose your own conditions make sure that all parameters are included in the parameters used to build the campaign. Otherwise an error will be raised. :rotating_light:
+## :wrench: Requirements
 
-7. To run the optimiziation campaign, simply reapeat steps 3 - 6 until satisfied.
+- customtkinter
+- baybe[chem,insights]<=0.13.2
+- pyyaml
+- pandas
+- numpy
 
-## :cd: Getting started
 
-Downloads:
 
-- [Python via anaconda distribution](https://www.anaconda.com/download/success)
-- [Visual studio code](https://code.visualstudio.com/)
-- `BayAKM folder` via github or sciebo
 
-1. Open VS-Code
-2. Open `BayAKM folder`
-3. Open python Terminal
-4. Enter `pip install baybe[chem,simulation,insights]`
-
-## :bug: Help and Bugs
-
-If you get stuck im happy to help you out :sunglasses:
-Please report any bugs you find, so I can try to fix them
