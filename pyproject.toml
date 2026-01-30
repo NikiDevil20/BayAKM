@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
     "customtkinter",
-    "baybe[chem,insights]<=0.13.2",
+    "baybe[chem,insights]<=0.14.0",
     "pyyaml",
     "pandas",
     "numpy"
