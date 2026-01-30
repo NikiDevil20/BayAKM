@@ -13,7 +13,7 @@ from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, Num
 from baybe.recommenders import TwoPhaseMetaRecommender, FPSRecommender, BotorchRecommender, RandomRecommender
 from baybe.searchspace import SearchSpace
 from baybe.surrogates import GaussianProcessSurrogate
-from baybe.targets import NumericalTarget
+from baybe.targets.numerical import NumericalTarget
 from baybe.utils.basic import register_hooks
 
 
@@ -244,6 +244,7 @@ def create_campaign(parameter_list, constraint_list) -> Campaign:
         constraints=constraint_list
     )
     target = NumericalTarget.normalized_sigmoid(name="Yield", anchors=[(0, 0.1), (1, 0.9)])
+
 
     objective = SingleTargetObjective(
         target=target

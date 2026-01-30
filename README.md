@@ -44,7 +44,7 @@ The script then recommends parameters for the next reactions in the results file
 
 ## :wrench: Requirements
 
-- customtkinter",
+- customtkinter
 - baybe[chem,insights]<=0.13.2
 - pyyaml
 - pandas

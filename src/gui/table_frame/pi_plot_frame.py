@@ -88,6 +88,9 @@ def fetch_pi_over_threshold(threshold) -> str:
         return "Probability of improvement will be displayed after at least one iteration."
     latest_iteration = pi_list[-1]
 
-    n_pis_over = (latest_iteration > threshold).sum()
+    n_pis_over = 0
+    for p in latest_iteration:
+        if p > threshold:
+            n_pis_over += 1
 
     return f"{n_pis_over} / {len(latest_iteration)} PI values are over {threshold:.2f}."

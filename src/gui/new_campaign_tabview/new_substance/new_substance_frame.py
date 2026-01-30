@@ -174,7 +174,7 @@ class NewSubstanceParameterFrame(BaseFrame):
             width=250
         )
         self.row_frame.columnconfigure(0, weight=1)
-        self.row_frame.grid(row=0, column=0, pady=10, padx=20, sticky="nsew")
+        self.row_frame.grid(row=1, column=0, pady=10, padx=20, sticky="nsew")
 
         self.subheaeder_frame = ctk.CTkFrame(
             master=self.row_frame,
@@ -201,7 +201,7 @@ class NewSubstanceParameterFrame(BaseFrame):
                 molecules=molecules,
             )
             smiles_frame.grid(
-                row=0,
+                row=1,
                 column=index+1,
                 pady=10,
                 padx=10,
