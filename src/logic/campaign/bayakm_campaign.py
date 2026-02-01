@@ -231,13 +231,15 @@ class BayAKMCampaign(Campaign):
         return self.campaign.parameters
 
 
-def create_campaign(parameter_list, constraint_list) -> Campaign:
+def create_campaign(parameter_list, constraint_list=None, acqf=None) -> Campaign:
     """Create a new campaign based on the parameters from
     the parameters in the parameters.yaml file.
     Returns:
         campaign (Campaign): The campaign object.
     """
     cfg = Config()
+    if acqf is None:
+        acqf = cfg.dict["Acquisition function"]
 
     searchspace = SearchSpace.from_product(
         parameters=parameter_list,
@@ -258,7 +260,7 @@ def create_campaign(parameter_list, constraint_list) -> Campaign:
     recommender = TwoPhaseMetaRecommender(
         initial_recommender=initial_recommender,
         recommender=BotorchRecommender(
-            acquisition_function=cfg.dict["Acquisition function"],
+            acquisition_function=acqf,
             hybrid_sampler="FPS"  # Type: ignore
         ),
         switch_after=1,

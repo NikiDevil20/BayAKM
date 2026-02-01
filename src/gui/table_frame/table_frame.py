@@ -106,7 +106,7 @@ class TableFrame(ctk.CTkFrame):
         self.content_frame = ctk.CTkScrollableFrame(
             master=self,
         )
-        self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=10, sticky="nsew")
+        self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=5, sticky="nsew")
 
         self.columnconfigure(0, weight=1)
 
@@ -225,7 +225,7 @@ class TableFrame(ctk.CTkFrame):
         self.bottom_frame = ctk.CTkFrame(master=self)
         self.bottom_frame.grid(
             row=3, column=0,
-            pady=[0, 5], padx=10,
+            pady=[0, 5], padx=5,
             sticky="ew"
         )
 
@@ -237,7 +237,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        save_button.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
+        save_button.grid(row=0, column=1, pady=5, padx=(0, 5), sticky="ew")
         new_reco_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="New recommendation",
@@ -246,7 +246,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        new_reco_button.grid(row=0, column=2, pady=5, padx=10, sticky="ew")
+        new_reco_button.grid(row=0, column=2, pady=5, padx=(0, 5), sticky="ew")
 
         add_row_button = ctk.CTkButton(
             master=self.bottom_frame,
@@ -256,7 +256,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        add_row_button.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
+        add_row_button.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
 
     def _get_new_recommendation(self):
         self._read_table()
@@ -339,16 +339,16 @@ class TableFrame(ctk.CTkFrame):
                 return
 
         self.both_plot_frame = ctk.CTkFrame(master=self)
-        self.both_plot_frame.grid(row=0, column=2, pady=5, padx=10, sticky="nsew", rowspan=4)
+        self.both_plot_frame.grid(row=0, column=2, pady=5, padx=(0, 5), sticky="nsew", rowspan=4)
         plot_frame = PlotFrame(master=self.both_plot_frame, data=data)
-        plot_frame.grid(row=0, column=0, pady=5, padx=10)
+        plot_frame.grid(row=0, column=0, pady=(10, 5), padx=10)
 
     def _build_pi_plot_frame(self):
         if self._number_of_batches() < 2:
             return
 
         plotframe = PIPlotFrame(master=self.both_plot_frame)
-        plotframe.grid(row=1, column=0, pady=5, padx=10)
+        plotframe.grid(row=1, column=0, pady=(5, 10), padx=10)
 
     def _number_of_batches(self):
         unique_batches = set(self.batch_no_list)
