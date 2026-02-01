@@ -126,3 +126,18 @@ def info_string(chapter: str, text: str):
         chapter_in_brackets += " "
 
     print(chapter_in_brackets + text)
+
+
+def find_current_iteration() -> int:
+    output_path = dirs.return_file_path("output")
+
+    if not check_path(output_path):
+        return 0
+
+    df = pd.read_csv(
+        filepath_or_buffer=output_path,
+        sep=";",
+        keep_default_na=False
+    )
+    return int(df.iloc[-1, -2])
+

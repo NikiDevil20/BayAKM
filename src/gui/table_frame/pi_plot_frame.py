@@ -19,7 +19,7 @@ class PIPlotFrame(ctk.CTkFrame):
         self._display_plot()
 
     def _display_plot(self):
-        fig, ax = self._build_plot()
+        fig, ax = self.build_plot()
 
         canvas = FigureCanvasTkAgg(fig, master=self)
         canvas.draw()
@@ -28,12 +28,13 @@ class PIPlotFrame(ctk.CTkFrame):
     def _load_values(self):
         self.pi_list = load_pi_from_file()
 
-    def _build_plot(
+    def build_plot(
             self,
             figsize: tuple[float, float] = (3, 3),
-            base_fontsize: int = 10
+            base_fontsize: int = 10,
+            layout: str = "constrained"
     ):
-        fig = plt.figure(layout="constrained", figsize=figsize)
+        fig = plt.figure(layout=layout, figsize=figsize)
         ax = fig.add_subplot(projection="3d")
         cmap = plt.get_cmap("viridis")
         pi_max = max([np.max(p) for p in self.pi_list])
@@ -75,12 +76,8 @@ class PIPlotFrame(ctk.CTkFrame):
 
         ax.tick_params(axis='both', which='major', labelsize=base_fontsize - 4)
 
-
-        # ax.set_ylabel("PI", labelpad=10, fontsize=base_fontsize - 2)
-        # ax.set_xlabel("Iteration", labelpad=10, fontsize=base_fontsize - 2)
-        # ax.set_zlabel("Density", labelpad=10, fontsize=base_fontsize - 2)
-
         return fig, ax
+
 
 def fetch_pi_over_threshold(threshold) -> str:
     pi_list = load_pi_from_file()

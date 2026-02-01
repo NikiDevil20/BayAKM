@@ -22,11 +22,12 @@ class YieldPlotter:
     def create_plot(
             self,
             figsize: tuple[float, float] = (3, 2),
-            base_fontsize: int = 10
+            base_fontsize: int = 10,
+            layout: str = "constrained"
     ):
         self._unpack_data()
 
-        fig, ax = plt.subplots(figsize=figsize, layout="constrained")
+        fig, ax = plt.subplots(figsize=figsize, layout=layout)
         ax.plot(self.batches, self.means, label="Mean yield per batch")
         ax.fill_between(
             self.batches, self.mins, self.maxs,
@@ -41,7 +42,5 @@ class YieldPlotter:
         ax.tick_params(which='major', labelsize=base_fontsize - 4)
 
         ax.legend(fontsize=base_fontsize - 3)
-
-        # fig.tight_layout()
 
         return fig, ax
