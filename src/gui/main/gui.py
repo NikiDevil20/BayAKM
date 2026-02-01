@@ -86,14 +86,14 @@ class App(ctk.CTk):
         self.table_frame = TableFrame(master=self, data=data)
         self.table_frame.grid(
             row=1, column=1,
-            pady=5, padx=(0, 10)
+            pady=5, padx=(0, 10), sticky="ew"
         )
 
     def _create_info_frame(self):
         self.info_frame = ctk.CTkFrame(master=self)
         self.info_frame.grid(
-            row=2, column=1,
-            pady=(5, 10), padx=(0, 10),
+            row=2, column=0,
+            pady=(5, 10), padx=10,
             sticky="ew", columnspan=3
         )
         current_campaign = self.dirs.return_file_path("folder")
@@ -103,8 +103,11 @@ class App(ctk.CTk):
             words = current_campaign.split("\\")
             text = f"Active campaign: {words[-1]}"
 
+        self.info_frame.columnconfigure(0, weight=1)
+        self.info_frame.columnconfigure(1, weight=1)
+
         name_frame = ctk.CTkFrame(master=self.info_frame, fg_color=FGCOLOR)
-        name_frame.pack(padx=5, pady=5, side="left")
+        name_frame.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         label = ctk.CTkLabel(
             master=name_frame,
@@ -112,7 +115,7 @@ class App(ctk.CTk):
         label.pack(padx=5)
 
         pi_frame = ctk.CTkFrame(master=self.info_frame, fg_color=FGCOLOR)
-        pi_frame.pack(padx=5, pady=5, side="left")
+        pi_frame.grid(row=0, column=1, padx=(0, 5), pady=5, sticky="ew")
 
         pi_string = fetch_pi_over_threshold(threshold=0.01)
         pi_label = ctk.CTkLabel(
