@@ -8,21 +8,21 @@ from src.environment.dir_paths import DirPaths
 from src.logic.output.output import find_current_iteration
 
 
-def save_plot(
-        figure: plt.Figure,
-        file_name: str
-) -> None:
-    """
-    Saves a matplotlib figure to the specified filename within the plots directory.
-    :param figure: The matplotlib figure to save.
-    :param file_name: The name of the file to save the figure as.
-    """
-    dirs = DirPaths()
-    path = dirs.return_file_path("folder")
-    full = os.path.join(path, file_name)
-
-    figure.savefig(full)
-    plt.close(figure)
+# def save_plot(
+#         figure: plt.Figure,
+#         file_name: str
+# ) -> None:
+#     """
+#     Saves a matplotlib figure to the specified filename within the plots directory.
+#     :param figure: The matplotlib figure to save.
+#     :param file_name: The name of the file to save the figure as.
+#     """
+#     dirs = DirPaths()
+#     path = dirs.return_file_path("folder")
+#     full = os.path.join(path, file_name)
+#
+#     figure.savefig(full)
+#     plt.close(figure)
 
 
 def command_save_plot(
@@ -33,7 +33,7 @@ def command_save_plot(
     """
     Saves a plot based on the current iteration and mode.
     :param figure: The matplotlib figure to save.
-    :param mode: Specifies, what plot is sabed in what place.
+    :param mode: Specifies what plot is sabed in what place.
     :param insight_type: Optional; The type of insight plot, if mode is "insight".
     """
 
@@ -53,4 +53,12 @@ def command_save_plot(
         case _:
             raise ValueError(f"Mode {mode} not recognized.")
 
-    return save_plot(figure=figure, file_name=file_name)
+    def save_plot() -> None:
+        dirs = DirPaths()
+        path = dirs.return_file_path("folder")
+        full = os.path.join(path, file_name)
+
+        figure.savefig(full, bbox_inches="tight")
+        plt.close(figure)
+
+    return save_plot

@@ -409,8 +409,6 @@ class TableFrame(ctk.CTkFrame):
         frame.grid(row=3, column=2, pady=(0, 5), padx=(0, 5), sticky="nsew")
 
 
-
-
 class Row:
     def __init__(
             self,
