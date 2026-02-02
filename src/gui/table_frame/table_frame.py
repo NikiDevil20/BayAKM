@@ -8,6 +8,7 @@ from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, Num
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from src.gui.table_frame.pi_plot_frame import PIPlotFrame
+from src.logic.output.plot_saver import command_save_plot
 from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
@@ -22,6 +23,7 @@ class TableFrame(ctk.CTkFrame):
     def __init__(self, master=None, data=None):
         super().__init__(master)
 
+        self.data = None
         self.both_plot_frame = None
         self.dirs = DirPaths()
 
@@ -41,6 +43,7 @@ class TableFrame(ctk.CTkFrame):
             self._create_bottom_frame()
             self.build_plot_frame()
             self._build_pi_plot_frame()
+            self._build_plot_save_buttons()
 
     def _create_header(
             self,
@@ -106,7 +109,7 @@ class TableFrame(ctk.CTkFrame):
         self.content_frame = ctk.CTkScrollableFrame(
             master=self,
         )
-        self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=10, sticky="nsew")
+        self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=5, sticky="nsew")
 
         self.columnconfigure(0, weight=1)
 
@@ -225,7 +228,7 @@ class TableFrame(ctk.CTkFrame):
         self.bottom_frame = ctk.CTkFrame(master=self)
         self.bottom_frame.grid(
             row=3, column=0,
-            pady=[0, 5], padx=10,
+            pady=[0, 5], padx=5,
             sticky="ew"
         )
 
@@ -237,7 +240,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        save_button.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
+        save_button.grid(row=0, column=1, pady=5, padx=(0, 5), sticky="ew")
         new_reco_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="New recommendation",
@@ -246,7 +249,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        new_reco_button.grid(row=0, column=2, pady=5, padx=10, sticky="ew")
+        new_reco_button.grid(row=0, column=2, pady=5, padx=(0, 5), sticky="ew")
 
         add_row_button = ctk.CTkButton(
             master=self.bottom_frame,
@@ -256,7 +259,7 @@ class TableFrame(ctk.CTkFrame):
             font=STANDARD,
             fg_color=FGCOLOR
         )
-        add_row_button.grid(row=0, column=0, pady=5, padx=10, sticky="ew")
+        add_row_button.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
 
     def _get_new_recommendation(self):
         self._read_table()
@@ -322,15 +325,15 @@ class TableFrame(ctk.CTkFrame):
 
         yield_list = list(self.df["Yield"])
         batch_no_list = self.batch_no_list
-        data: list[list[float]] = []
+        self.data: list[list[float]] = []
 
         for n in range(self._number_of_batches()):
-            data.append([])
+            self.data.append([])
 
         for index, batch_no in enumerate(batch_no_list):
-            data[batch_no-1].append(yield_list[index])
+            self.data[batch_no-1].append(yield_list[index])
 
-        for v_list in data:
+        for v_list in self.data:
             empty_allowed = 0
             for value in v_list:
                 if value == "":
@@ -339,22 +342,71 @@ class TableFrame(ctk.CTkFrame):
                 return
 
         self.both_plot_frame = ctk.CTkFrame(master=self)
-        self.both_plot_frame.grid(row=0, column=2, pady=5, padx=10, sticky="nsew", rowspan=4)
-        plot_frame = PlotFrame(master=self.both_plot_frame, data=data)
-        plot_frame.grid(row=0, column=0, pady=5, padx=10)
+        self.both_plot_frame.grid(row=0, column=2, pady=5, padx=(0, 5), sticky="nsew", rowspan=2)
+        plot_frame = PlotFrame(master=self.both_plot_frame, data=self.data)
+        plot_frame.grid(row=0, column=0, pady=(10, 5), padx=10)
 
     def _build_pi_plot_frame(self):
         if self._number_of_batches() < 2:
             return
 
         plotframe = PIPlotFrame(master=self.both_plot_frame)
-        plotframe.grid(row=1, column=0, pady=5, padx=10)
+        plotframe.grid(row=1, column=0, pady=(5, 10), padx=10)
 
     def _number_of_batches(self):
         unique_batches = set(self.batch_no_list)
         return len(unique_batches)
 
+    def _build_plot_save_buttons(self):
+        if not self.both_plot_frame:
+            return
 
+        frame = ctk.CTkFrame(master=self)
+        figsize = (10, 7)
+        fontsize = 24
+        layout = "tight"
+
+        yield_figure, _ = YieldPlotter(self.data).create_plot(
+            figsize=figsize,
+            base_fontsize=fontsize,
+            layout=layout
+        )
+
+        temp_frame = PIPlotFrame(master=self)
+        pi_figure, _ = temp_frame.build_plot(
+            figsize=figsize,
+            base_fontsize=fontsize,
+            layout=layout
+        )
+
+        save_yield_button = ctk.CTkButton(
+            master=frame,
+            text="Save yield plot",
+            command=command_save_plot(
+                figure=yield_figure,
+                mode="yield"
+            ),
+            text_color=TEXTCOLOR,
+            fg_color=FGCOLOR
+        )
+        save_pi_button = ctk.CTkButton(
+            master=frame,
+            text="Save PI plot",
+            command=command_save_plot(
+                figure=pi_figure,
+                mode="pi"
+            ),
+            text_color=TEXTCOLOR,
+            fg_color=FGCOLOR
+        )
+
+        frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(1, weight=1)
+
+        save_yield_button.grid(row=0, column=0, pady=5, padx=(10, 5), sticky="ew")
+        save_pi_button.grid(row=0, column=1, pady=5, padx=(5, 10), sticky="ew")
+
+        frame.grid(row=3, column=2, pady=(0, 5), padx=(0, 5), sticky="nsew")
 
 
 class Row:
@@ -505,9 +557,9 @@ class PlotFrame(ctk.CTkFrame):
 
     def _build_plot(self):
         plotter = YieldPlotter(self.data)
-        fig, ax = plotter.create_plot()
+        self.fig, ax = plotter.create_plot()
 
-        canvas = FigureCanvasTkAgg(fig, master=self)
+        canvas = FigureCanvasTkAgg(self.fig, master=self)
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True)
 

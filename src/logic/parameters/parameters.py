@@ -3,7 +3,8 @@ import os.path
 import numpy as np
 import yaml
 from baybe import Campaign
-from baybe.constraints import DiscreteExcludeConstraint, ThresholdCondition, SubSelectionCondition
+from baybe.constraints import DiscreteExcludeConstraint, ThresholdCondition, SubSelectionCondition, \
+    DiscreteSumConstraint
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter, \
     CategoricalParameter
 from baybe.utils.interval import Interval
@@ -141,13 +142,14 @@ def write_to_parameters_file(
     return None
 
 
-def write_constraints_to_file(first_condition, second_condition, combiner="AND"):
+def write_constraints_to_file(first_condition, second_condition, cont_type, combiner="AND"):
     yaml_dict = load_yaml()
     constraint_name = first_condition[0] + "_" + second_condition[0]
     constraint_dict = {
         "parameters": [first_condition[0], second_condition[0]],
         "conditions": [first_condition[1], second_condition[1]],
-        "combiner": combiner
+        "combiner": combiner,
+        "cont_type": cont_type
     }
     if "Constraints" not in yaml_dict.keys():
         yaml_dict["Constraints"] = {constraint_name: constraint_dict}
@@ -179,16 +181,53 @@ def build_constraints() -> list:
 
                 condition_list.append(condition)
 
-            constraint_list.append(
-                DiscreteExcludeConstraint(
-                    parameters=all_constraints_dict[key]["parameters"],
-                    conditions=condition_list,
-                    combiner=all_constraints_dict[key]["combiner"]
-                )
-            )
+            constraint_type = get_constraint_type(condition_list)
+            constraint = None
+
+            match constraint_type:
+                case "discrete_exclude":
+                    constraint = DiscreteExcludeConstraint(
+                        parameters=all_constraints_dict[key]["parameters"],
+                        conditions=condition_list,
+                        combiner=all_constraints_dict[key]["combiner"]
+                    )
+                case "sum":
+                    constraint = DiscreteSumConstraint(
+                        parameters=all_constraints_dict[key]["parameters"],
+                        condition=condition_list[0],
+                    )
+                case _:
+                    info_string("Parameters", f"Unknown constraint type: {constraint_type}")
+
+            constraint_list.append(constraint)
     else:
         info_string("Parameters", "No Constraints detected.")
     return constraint_list
+
+
+def get_constraint_type(
+        condition_list: list[SubSelectionCondition | ThresholdCondition]
+) -> str:
+    """
+    Constraint type is set to 'sum', if both conditions are threshold conditions
+    with '=' operator and the same threshold value, else DiscreteExcludeConstraint.
+    """
+
+    seen = set()
+    for condition in condition_list:
+        if isinstance(condition, SubSelectionCondition):
+            return "discrete_exclude"
+
+        if not condition.operator == "=":
+            return "discrete_exclude"
+
+        seen.add(condition.threshold)
+
+    if not len(seen) == 1:
+        return "discrete_exclude"
+
+    return "sum"
+
 
 
 def delete_parameter(parameter_names: list[str]):

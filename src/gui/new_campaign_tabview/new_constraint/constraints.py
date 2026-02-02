@@ -56,11 +56,12 @@ class ConstraintsFrame(BaseFrame):
         )
         save_button.grid(row=0, column=0, pady=5, padx=5)
 
-    def _save_constraint(self, param_window_1, param_window_2, combiner="AND"):
+    def _save_constraint(self, param_window_1, param_window_2, cont_type, combiner="AND", ):
         write_constraints_to_file(
             first_condition=param_window_1.build_condition(),
             second_condition=param_window_2.build_condition(),
-            combiner=combiner
+            combiner=combiner,
+            cont_type=cont_type
         )
         self.master.destroy()
 

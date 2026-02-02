@@ -1,0 +1,23 @@
+SumConstraint:
+  - "For adding a SumConstraint you have to choose both parameters in the constraint menu."
+  - "Then select the operator '=' for both parameters and set the value to e.g. 10."
+  - "This will only recommend combinations where the sum of both parameter values equals 10."
+  - ""
+  - "Example:"
+  - "First condition: parameter -> 'water%', operator -> '=', value -> '10'"
+  - "Second condition: parameter -> 'solvent%', operator -> '=', value -> '10"
+  - "Result:"
+  - "Only combinations where water% + solvent% = 10 will be recommended."
+Expected Improvement (qEI, qLogEI):
+  - "Well balanced acquisition function."
+  - "Initially, it favors exploration in spaces with few data points."
+  - "As more data is collected, it gradually shifts focus towards exploitation of known good areas"
+What is Bayesian Optimization?:
+  - "Bayesian Optimization is a strategy for the global optimization of noisy, black-box functions."
+  - "It is particularly useful when the objective function is expensive to evaluate."
+  - "The method builds a probabilistic model of the objective function and uses it to select the most promising points to evaluate next."
+  - "This approach balances exploration (searching new areas) and exploitation (refining known good areas) to efficiently find the optimum."
+  - "- wikipedia.org/wiki/Bayesian_optimization"
+Surrogate Models:
+  - "Makes predictions about the blackbox function based on previously evaluated points."
+  - "This is done via a Gaussian Process, which returns a probabilty distribution over possible functions, that fit the observed data."

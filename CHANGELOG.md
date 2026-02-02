@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.1.0] - 2026-02-02
+
+### Added
+- Added buttons to save plots as images
+- DiscreteSumConstraint
+- Help menu with documentation on bayesian optimization
+
+### Fixed
+- Improved main menu appearance
+
+
+## [1.0.0] - 2026-01-28
+
+### Added
+- Switch and delete campaigns
+- Choose substances from a predefined list
+- constraints between any two parameters
+- Batch number in table view
+- Plots of yield per batch and probability of improvement
+- Display of current campaign name
+- Display of remaining experiments' probabilities of improvement
+- Add empty rows in recommendation table to input custom reaction conditions
+
+### Fixed
+- A ton of minor bugs and UI improvements including major refactoring of the codebase
+
+### Removed
+- Continuous parameters are deprecated due to conflicts with probability of improvement and recommender
+
+
+
 ## [0.2.1] - 2025-10-17
 
 ### Fixed

@@ -5,7 +5,7 @@ from src.logic.campaign.bayakm_campaign import BayAKMCampaign
 from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
 from src.logic.output.output import check_path, import_output_to_df
-from src.gui.main.gui_constants import HEADER, STANDARD
+from src.gui.main.gui_constants import HEADER, STANDARD, FGCOLOR
 from src.gui.main.menu_frame import MenuFrame
 from src.gui.table_frame.table_frame import TableFrame
 
@@ -86,7 +86,7 @@ class App(ctk.CTk):
         self.table_frame = TableFrame(master=self, data=data)
         self.table_frame.grid(
             row=1, column=1,
-            pady=5, padx=10
+            pady=5, padx=(0, 10), sticky="ew"
         )
 
     def _create_info_frame(self):
@@ -103,18 +103,26 @@ class App(ctk.CTk):
             words = current_campaign.split("\\")
             text = f"Active campaign: {words[-1]}"
 
+        self.info_frame.columnconfigure(0, weight=1)
+        self.info_frame.columnconfigure(1, weight=1)
+
+        name_frame = ctk.CTkFrame(master=self.info_frame, fg_color=FGCOLOR)
+        name_frame.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         label = ctk.CTkLabel(
-            master=self.info_frame,
+            master=name_frame,
             text=text)
-        label.pack(padx=5, pady=5, side="left")
+        label.pack(padx=5)
+
+        pi_frame = ctk.CTkFrame(master=self.info_frame, fg_color=FGCOLOR)
+        pi_frame.grid(row=0, column=1, padx=(0, 5), pady=5, sticky="ew")
 
         pi_string = fetch_pi_over_threshold(threshold=0.01)
         pi_label = ctk.CTkLabel(
-            master=self.info_frame,
+            master=pi_frame,
             text=pi_string
         )
-        pi_label.pack(padx=5, pady=5, side="left")
+        pi_label.pack(padx=5)
 
     def refresh_content(self):
         """
