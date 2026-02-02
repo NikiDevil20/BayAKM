@@ -15,9 +15,13 @@ class DirPaths:
         self.environ = os.path.join(self.base_dir, "src\\environment\\paths.yaml")
         self.data = os.path.join(self.base_dir, "data")
         self.smiles = os.path.join(self.base_dir, "src\\logic\\smiles\\smiles_strings.yaml")
+        self.help = os.path.join(self.base_dir, "docs\\help.yaml")
 
         if not os.path.exists(self.data):
             os.makedirs(self.data)
+
+        if not os.path.exists(self.help):
+            os.makedirs(self.help)
 
     def build_campaign_folder(self, campaign_name):
         self.folder_path = os.path.join(

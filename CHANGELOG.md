@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.1.0] - 2026-02-01
+## [1.1.0] - 2026-02-02
 
 ### Added
 - Added buttons to save plots as images
+- DiscreteSumConstraint
+- Help menu with documentation on bayesian optimization
 
 ### Fixed
 - Improved main menu appearance
