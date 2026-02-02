@@ -1,6 +1,6 @@
 [project]
 name = "BayAKM"
-version = "1.0.0"
+version = "1.1.0"
 description = "A tool for Bayesian optimization of chemical reactions."
 authors = [
     { name = "Niklas Abe", email = "niklas.abe@hhu.de" }

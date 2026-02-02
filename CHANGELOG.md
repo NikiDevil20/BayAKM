@@ -16,11 +16,11 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2026-01-28
 
 ### Added
-- Switch and delete `campaigns`
-- Choose `substances` from a predefined list
-- `constraints` between any two parameters
+- Switch and delete campaigns
+- Choose substances from a predefined list
+- constraints between any two parameters
 - Batch number in table view
-- Plots of yield per batch and `probability of improvement`
+- Plots of yield per batch and probability of improvement
 - Display of current campaign name
 - Display of remaining experiments' probabilities of improvement
 - Add empty rows in recommendation table to input custom reaction conditions
