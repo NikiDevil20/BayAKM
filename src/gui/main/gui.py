@@ -1,17 +1,18 @@
 import customtkinter as ctk
 
+from src.gui.menubar.menu_bar import CustomMenuBar
 from src.gui.table_frame.pi_plot_frame import fetch_pi_over_threshold
 from src.logic.campaign.bayakm_campaign import BayAKMCampaign
 from src.logic.config.config_loader import Config
 from src.environment.dir_paths import DirPaths
 from src.logic.output.output import check_path, import_output_to_df
 from src.gui.main.gui_constants import HEADER, STANDARD, FGCOLOR
-from src.gui.main.menu_frame import MenuFrame
 from src.gui.table_frame.table_frame import TableFrame
 
 
 ctk.set_default_color_theme("blue")
 ctk.set_appearance_mode("Light")
+
 
 
 class App(ctk.CTk):
@@ -28,13 +29,16 @@ class App(ctk.CTk):
         # Initializing content
         self._initialize_geometry()
         self._initialize_campaign()
-        self._create_header()
+        # self._create_header()
         self._display_recommendation()
-        self._create_menu_frame()
+
         self._create_info_frame()
+
+        self._create_menu_frame()
 
     def _initialize_geometry(self):
         self.title("BayAKM")
+
 
     def _create_header(self):
         self.header_frame = ctk.CTkFrame(master=self)
@@ -68,12 +72,14 @@ class App(ctk.CTk):
         )
 
     def _create_menu_frame(self):
-        self.menu_frame = MenuFrame(master=self)
-        self.menu_frame.grid(
-            row=1, column=0,
-            pady=5, padx=10,
-            sticky="nw"
-        )
+
+        self.option_add("*tearOff", False)
+
+        menu = CustomMenuBar(self).return_menu()
+
+        self.configure(menu=menu)
+
+
 
     def _display_recommendation(self):
         data = None
@@ -129,8 +135,7 @@ class App(ctk.CTk):
         Refresh the content of the GUI, e.g. after a new recommendation
         has been generated.
         """
-        self.menu_frame.destroy()
-        self._create_menu_frame()
+        self.campaign = BayAKMCampaign()
 
         self.table_frame.destroy()
         self._display_recommendation()
@@ -165,6 +170,7 @@ def main():
     """
     Initializes app.
     """
+
     app = App()
     app.mainloop()
 

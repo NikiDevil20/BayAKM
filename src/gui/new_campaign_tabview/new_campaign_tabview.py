@@ -225,8 +225,9 @@ class NewCampaignTabview(ctk.CTkTabview):
         self._setup_parameters_frame()
 
     def _save_and_get_recommendation(self):
-        self._save_config()
-        self.master.master.master.command_save_campaign_and_get_first_recommendation()
+        # self._save_config()
+        self.master.master.command_save_campaign_and_get_first_recommendation()
+        self.destroy()
 
 
 def create_subwindow(

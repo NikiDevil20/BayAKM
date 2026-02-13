@@ -92,6 +92,7 @@ class ListFrame(ctk.CTkScrollableFrame):
     def _switch_and_refresh(self, campaign):
         self.cmp.switch_campaign(campaign)
         self._refresh()
+        self.master.master.master.master.master.destroy()
 
     def _delete_and_refresh(self, campaign, active_campaign):
         if active_campaign.endswith(campaign):
@@ -115,7 +116,9 @@ class ListFrame(ctk.CTkScrollableFrame):
         self.row_list = []
 
         self._build_list()
-        self.master.master.master.master.master.master.master.refresh_content()
+
+        self.master.master.master.master.master.master.refresh_content()
+
 
 
 class CampaignHandler:

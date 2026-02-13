@@ -93,7 +93,7 @@ class TableFrame(ctk.CTkFrame):
 
     def _create_table_from_df(self, df):
         self.df = df
-        self.categories: list[str] = df.columns
+        self.categories = list(df.columns)
         parameter_list = build_param_list()
         param_dict = self._param_dict_from_list(parameter_list)
         self._create_header(df.columns, param_dict)
@@ -101,8 +101,9 @@ class TableFrame(ctk.CTkFrame):
         self.batch_no_list = list(df["Batch"])
 
         for parameter_name in self.categories:
-            if parameter_name in ["Journal no.", "Yield"]:
+            if parameter_name in ["Journal no.", "Yield", "Batch"]:
                 self.all_valid_entries.append(None)
+                continue
             valid_entries = self._get_vaild_entries_per_column(parameter_name)
             self.all_valid_entries.append(valid_entries)
 
@@ -160,7 +161,7 @@ class TableFrame(ctk.CTkFrame):
         conti_dict = yaml_dict["Numerical Continuous Parameters"]
         return conti_dict
 
-    def _read_table(self):
+    def read_table(self):
         rows = []
         columns = self.df.columns
         error_list = []
@@ -168,8 +169,10 @@ class TableFrame(ctk.CTkFrame):
         for row_index, row_object in enumerate(self.row_list_list):
             row = []
             for column_index, entry in enumerate(row_object.entry_list):
+                print(f"{entry=}")
+                unchecked_value = entry.get()
                 value, error = self._validate_entry(
-                    entry.get(),
+                    unchecked_value,
                     columns[column_index],
                     row_index
                 )
@@ -185,7 +188,6 @@ class TableFrame(ctk.CTkFrame):
 
         df = pd.DataFrame(rows, columns=columns)
         create_output(df)
-        self.master.refresh_content()
 
     def _validate_entry(self, value, column, row_index):
         value = SumFormulaConverter.make_string(value)
@@ -235,7 +237,7 @@ class TableFrame(ctk.CTkFrame):
         save_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Save",
-            command=lambda: self._read_table(),
+            command=lambda: self.read_table(),
             text_color=TEXTCOLOR,
             font=STANDARD,
             fg_color=FGCOLOR
@@ -244,7 +246,7 @@ class TableFrame(ctk.CTkFrame):
         new_reco_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="New recommendation",
-            command=lambda: self._get_new_recommendation(),
+            command=lambda: self.get_new_recommendation(),
             text_color=TEXTCOLOR,
             font=STANDARD,
             fg_color=FGCOLOR
@@ -261,8 +263,8 @@ class TableFrame(ctk.CTkFrame):
         )
         add_row_button.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
 
-    def _get_new_recommendation(self):
-        self._read_table()
+    def get_new_recommendation(self):
+        self.read_table()
 
         if check_path(self.dirs.return_file_path("output")):
             full_input: pd.DataFrame = import_output_to_df()
@@ -282,9 +284,13 @@ class TableFrame(ctk.CTkFrame):
         self.master.refresh_content()
 
     def _get_vaild_entries_per_column(self, column_name: str) -> list[str]:
+
         for parameter_category in self.param_dict.keys():
+
             for parameter in self.param_dict[parameter_category]:
+
                 if parameter.name == column_name:
+
                     if isinstance(parameter, SubstanceParameter):
                         return list(parameter.data.keys())
                     elif isinstance(parameter, NumericalDiscreteParameter):
@@ -486,6 +492,7 @@ class Row:
         all_values = [
             SumFormulaConverter.make_formula(_format_to_str(v)) for v in all_values
         ]
+
         string_length = len(max(all_values, key=len))
         width = string_length * 8 + 40
 
