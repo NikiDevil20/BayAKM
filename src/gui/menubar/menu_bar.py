@@ -22,7 +22,7 @@ class CustomMenuBar:
             "Save": master.table_frame.read_table,
             "New recommendation": master.table_frame.get_new_recommendation,
             "break": None,
-            "Add row": None
+            "Add row": master.table_frame.add_empty_row
         }
 
         insight_dict = {

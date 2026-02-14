@@ -11,13 +11,21 @@ BGCOLOR = "skyblue"
 
 class YieldPlotter:
     def __init__(self, data: list[list[float]]):
-        self.data = np.array(data)
+        self.data = [np.array(batch) for batch in data]
 
     def _unpack_data(self):
-        self.means = self.data.mean(axis=1)
-        self.mins = self.data.min(axis=1)
-        self.maxs = self.data.max(axis=1)
+        self.means = []
+        self.mins = []
+        self.maxs = []
+        for batch in self.data:
+            mean = batch.mean()
+            self.means.append(mean)
+            self.mins.append(batch.min())
+            self.maxs.append(batch.max())
+
         self.batches = np.arange(1, len(self.data) + 1)
+        print(self.means)
+        print(self.mins)
 
     def create_plot(
             self,

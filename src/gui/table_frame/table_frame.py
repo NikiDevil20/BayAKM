@@ -27,6 +27,7 @@ class TableFrame(ctk.CTkFrame):
         self.both_plot_frame = None
         self.header_frame = None
         self.dirs = DirPaths()
+        self.df = None
 
         self.categories = None
 
@@ -168,7 +169,8 @@ class TableFrame(ctk.CTkFrame):
     def read_table(self):
         rows = []
 
-        self.refresh_table()
+        # self.refresh_table()
+        self.df = self.master.df
         columns = self.df.columns
         error_list = []
 
@@ -261,7 +263,7 @@ class TableFrame(ctk.CTkFrame):
         add_row_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Add row",
-            command=lambda: self._add_empty_row(),
+            command=lambda: self.add_empty_row(),
             text_color=TEXTCOLOR,
             font=STANDARD,
             fg_color=FGCOLOR
@@ -306,7 +308,7 @@ class TableFrame(ctk.CTkFrame):
                 continue
         return []
 
-    def _add_empty_row(self):
+    def add_empty_row(self):
         cfg = Config()
         i = len(self.row_list_list)
         n = len(self.df.columns)
