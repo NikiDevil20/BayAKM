@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Menubar
 
+### Fixed
+- Yieldplotter can handle different numbers of reactions per batch
+
 
 ## [1.1.0] - 2026-02-02
 
