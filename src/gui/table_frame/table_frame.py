@@ -23,6 +23,7 @@ class TableFrame(ctk.CTkFrame):
     def __init__(self, master=None, data=None):
         super().__init__(master)
 
+        self.content_frame = None
         self.data = None
         self.both_plot_frame = None
         self.header_frame = None
@@ -46,15 +47,18 @@ class TableFrame(ctk.CTkFrame):
             self._build_pi_plot_frame()
             self._build_plot_save_buttons()
 
-    def refresh_table(self):
+    def refresh_table(self, df):
         self.destroy()
-        self.__init__(data=self.master.df)
+        self.__init__(data=df)
 
     def _create_header(
             self,
             categories: list[str] | pd.Index,
             parameter_dict: dict[str, list[str]]
     ):
+        if self.header_frame:
+            self.header_frame.destroy()
+
         self.header_frame = ctk.CTkFrame(master=self)
         width = 120
         length_dict = {}
@@ -96,14 +100,17 @@ class TableFrame(ctk.CTkFrame):
                 param_dict[param.name] = [str(v) for v in param.data.keys()]
         return param_dict
 
-    def _create_table_from_df(self, df):
-        self.df = df
-        self.categories = list(df.columns)
+    def _create_table_from_df(self, df=None):
+        if self.content_frame:
+            self.content_frame.destroy()
+
+        self.df = self.master.df
+        self.categories = list(self.df.columns)
         parameter_list = build_param_list()
         param_dict = self._param_dict_from_list(parameter_list)
-        self._create_header(df.columns, param_dict)
+        self._create_header(self.df.columns, param_dict)
         self.all_valid_entries = []
-        self.batch_no_list = list(df["Batch"])
+        self.batch_no_list = list(self.df["Batch"])
 
         for parameter_name in self.categories:
             if parameter_name in ["Journal no.", "Yield", "Batch"]:
@@ -127,7 +134,7 @@ class TableFrame(ctk.CTkFrame):
                 color="light blue" if i % 2 == 0 else "white",
                 batch_no=self.batch_no_list[i]
             )
-            for i, series in enumerate(df.itertuples(index=False))
+            for i, series in enumerate(self.df.itertuples(index=False))
         ]
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
@@ -168,15 +175,19 @@ class TableFrame(ctk.CTkFrame):
 
     def read_table(self):
         rows = []
+        print(self.df)
+        df = self.master.df
+        self.refresh_table(df)
 
-        # self.refresh_table()
-        self.df = self.master.df
+        # self._create_table_from_df()
+        print(self.df)
         columns = self.df.columns
         error_list = []
 
         for row_index, row_object in enumerate(self.row_list_list):
             row = []
             for column_index, entry in enumerate(row_object.entry_list):
+                print(row_object)
                 unchecked_value = entry.get()
                 value, error = self._validate_entry(
                     unchecked_value,
