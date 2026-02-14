@@ -1,3 +1,5 @@
+from typing import Callable
+
 from src.gui.menubar.abstract_menu import AbstractMenu
 from src.gui.menubar.open_window import open_window
 
@@ -43,4 +45,10 @@ class CustomMenuBar:
 
     def return_menu(self):
         return self.menu
+
+    def recommend_or_save(self, master, recommendation) -> Callable:
+        def command():
+            master.refresh_content(recommendation=recommendation)
+            master.table_frame.read_table
+        return command
 

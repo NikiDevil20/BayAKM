@@ -14,7 +14,6 @@ ctk.set_default_color_theme("blue")
 ctk.set_appearance_mode("Light")
 
 
-
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -34,11 +33,10 @@ class App(ctk.CTk):
 
         self._create_info_frame()
 
-        self._create_menu_frame()
+        self._create_menu()
 
     def _initialize_geometry(self):
         self.title("BayAKM")
-
 
     def _create_header(self):
         self.header_frame = ctk.CTkFrame(master=self)
@@ -71,7 +69,7 @@ class App(ctk.CTk):
             sticky="ew", columnspan=3
         )
 
-    def _create_menu_frame(self):
+    def _create_menu(self):
 
         self.option_add("*tearOff", False)
 
@@ -79,26 +77,23 @@ class App(ctk.CTk):
 
         self.configure(menu=menu)
 
-
-
     def _display_recommendation(self):
-        data = None
+        self.df = None
         if check_path(self.dirs.environ):
             if check_path(self.dirs.return_file_path("output")):
-                data = import_output_to_df()
+                self.df = import_output_to_df()
 
-        # TableFrame is always constructed, but if no real data
-        # can be displayed, a message is shown.
-        self.table_frame = TableFrame(master=self, data=data)
+        self.table_frame = TableFrame(master=self, data=self.df)
         self.table_frame.grid(
-            row=1, column=1,
-            pady=5, padx=(0, 10), sticky="ew"
+            row=0, column=0,
+            pady=(10, 5), padx=10, sticky="ew",
+            columnspan=2
         )
 
     def _create_info_frame(self):
         self.info_frame = ctk.CTkFrame(master=self)
         self.info_frame.grid(
-            row=2, column=0,
+            row=1, column=0,
             pady=(5, 10), padx=10,
             sticky="ew", columnspan=3
         )
@@ -130,17 +125,23 @@ class App(ctk.CTk):
         )
         pi_label.pack(padx=5)
 
-    def refresh_content(self):
+    def refresh_content(self, initial=False, recommendation=False):
         """
-        Refresh the content of the GUI, e.g. after a new recommendation
+        Refresh the content of the GUI, e.g., after a new recommendation
         has been generated.
         """
         self.campaign = BayAKMCampaign()
+        self.parameter_list = self.campaign.get_parameter_list()
+        self.campaign.save_campaign()
+        if initial:
+            self.campaign.get_recommendation(initial=True)
+        if recommendation:
+            self.campaign.get_recommendation()
 
         self.table_frame.destroy()
-        self._display_recommendation()
-
         self.info_frame.destroy()
+
+        self._display_recommendation()
         self._create_info_frame()
 
     def _initialize_campaign(self):
@@ -159,11 +160,7 @@ class App(ctk.CTk):
         4. Build the parameter list from the newly created campaign.
         5. Refresh the content of the main window.
         """
-        self.campaign = BayAKMCampaign()
-        self.campaign.get_recommendation(initial=True)
-        self.campaign.save_campaign()
-        self.parameter_list = self.campaign.get_parameter_list()
-        self.refresh_content()
+        self.refresh_content(initial=True)
 
 
 def main():

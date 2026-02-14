@@ -147,7 +147,7 @@ class BayAKMCampaign(Campaign):
 
     def get_recommendation(
             self,
-            initial: bool,
+            initial: bool = False,
             full_input_with_yield=None,
             pending=None
     ):

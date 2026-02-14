@@ -25,6 +25,7 @@ class TableFrame(ctk.CTkFrame):
 
         self.data = None
         self.both_plot_frame = None
+        self.header_frame = None
         self.dirs = DirPaths()
 
         self.categories = None
@@ -33,10 +34,9 @@ class TableFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 master=self,
                 text="Create a new campaign \n to display table.",
-                pady=20, padx=20,
                 font=SUBHEADER
             )
-            label.pack()
+            label.pack(pady=5, padx=10, fill="x", expand=True)
         else:
             self.param_dict = self.master.campaign.get_param_dict()
             self._create_table_from_df(data)
@@ -45,12 +45,16 @@ class TableFrame(ctk.CTkFrame):
             self._build_pi_plot_frame()
             self._build_plot_save_buttons()
 
+    def refresh_table(self):
+        self.destroy()
+        self.__init__(data=self.master.df)
+
     def _create_header(
             self,
             categories: list[str] | pd.Index,
             parameter_dict: dict[str, list[str]]
     ):
-        header_frame = ctk.CTkFrame(master=self)
+        self.header_frame = ctk.CTkFrame(master=self)
         width = 120
         length_dict = {}
         for param in parameter_dict.keys():
@@ -68,14 +72,14 @@ class TableFrame(ctk.CTkFrame):
                 case _:
                     width = length_dict[categories[col]] * 11
 
-            header_frame.columnconfigure(col, weight=1)
+            self.header_frame.columnconfigure(col, weight=1)
             headline = ctk.CTkLabel(
-                master=header_frame,
+                master=self.header_frame,
                 text=categories[col],
                 width=width
             )
             headline.grid(row=0, column=col, padx=10)
-        header_frame.grid(
+        self.header_frame.grid(
             row=0, column=0,
             pady=5, padx=5,
             sticky="ew"
@@ -163,13 +167,14 @@ class TableFrame(ctk.CTkFrame):
 
     def read_table(self):
         rows = []
+
+        self.refresh_table()
         columns = self.df.columns
         error_list = []
 
         for row_index, row_object in enumerate(self.row_list_list):
             row = []
             for column_index, entry in enumerate(row_object.entry_list):
-                print(f"{entry=}")
                 unchecked_value = entry.get()
                 value, error = self._validate_entry(
                     unchecked_value,
