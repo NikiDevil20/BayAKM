@@ -1,3 +1,5 @@
+from typing import Callable
+
 import customtkinter as ctk
 
 from src.gui.choose_campaign.campaign_manager import CampaignManager
@@ -32,7 +34,7 @@ class MenuFrame(ctk.CTkFrame):
             button = ctk.CTkButton(
                 master=self,
                 text=arguments["name"],
-                command=lambda args=arguments: self._commands_subwindow(**args),
+                command=lambda args=arguments: commands_subwindow(**args),
                 font=SUBHEADER,
                 text_color="black",
                 height=40,
@@ -49,34 +51,34 @@ class MenuFrame(ctk.CTkFrame):
                 pady=pady, padx=10
             )
 
-    def _commands_subwindow(
-            self,
-            name: str,
-            **kwargs
-    ):
-        match name:
-            case "Help":
-                frame_class = HelpFrame
-            case "New campaign":
-                frame_class = NewCampaignTabview
-            case "View parameters":
-                frame_class = ParamViewFrame
-            case "Get insights":
-                frame_class = InsightsFrame
-            case "Choose campaign":
-                frame_class = CampaignManager
-            case _:
-                raise ValueError("Tippfehler?")
+def commands_subwindow(
+        master,
+        name: str,
+        **kwargs
+) -> Callable:
+    match name:
+        case "Help":
+            frame_class = HelpFrame
+        case "New campaign":
+            frame_class = NewCampaignTabview
+        case "View parameters":
+            frame_class = ParamViewFrame
+        case "Get insights":
+            frame_class = InsightsFrame
+        case "Choose campaign":
+            frame_class = CampaignManager
+        case _:
+            raise ValueError("Tippfehler?")
 
-        subwindow = ctk.CTkToplevel(self)
-        subwindow.title(name)
-        subwindow.grab_set()
-        subwindow.focus_set()
-        subwindow.frame = frame_class(
-            master=subwindow,
-            **kwargs
-        )
-        if subwindow.frame is not None and hasattr(subwindow.frame, 'winfo_exists') and subwindow.frame.winfo_exists():
-            subwindow.frame.grid(row=0, column=0, sticky="nsew")
-        else:
-            subwindow.destroy()
+    subwindow = ctk.CTkToplevel(master)
+    subwindow.title(name)
+    subwindow.grab_set()
+    subwindow.focus_set()
+    subwindow.frame = frame_class(
+        master=subwindow,
+        **kwargs
+    )
+    if subwindow.frame is not None and hasattr(subwindow.frame, 'winfo_exists') and subwindow.frame.winfo_exists():
+        subwindow.frame.grid(row=0, column=0, sticky="nsew")
+    else:
+        subwindow.destroy()

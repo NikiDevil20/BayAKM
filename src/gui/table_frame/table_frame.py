@@ -23,9 +23,12 @@ class TableFrame(ctk.CTkFrame):
     def __init__(self, master=None, data=None):
         super().__init__(master)
 
+        self.content_frame = None
         self.data = None
         self.both_plot_frame = None
+        self.header_frame = None
         self.dirs = DirPaths()
+        self.df = None
 
         self.categories = None
 
@@ -33,24 +36,30 @@ class TableFrame(ctk.CTkFrame):
             label = ctk.CTkLabel(
                 master=self,
                 text="Create a new campaign \n to display table.",
-                pady=20, padx=20,
                 font=SUBHEADER
             )
-            label.pack()
+            label.pack(pady=5, padx=10, fill="x", expand=True)
         else:
             self.param_dict = self.master.campaign.get_param_dict()
             self._create_table_from_df(data)
-            self._create_bottom_frame()
+            # self._create_bottom_frame()
             self.build_plot_frame()
             self._build_pi_plot_frame()
             self._build_plot_save_buttons()
+
+    def refresh_table(self, df):
+        self.destroy()
+        self.__init__(data=df)
 
     def _create_header(
             self,
             categories: list[str] | pd.Index,
             parameter_dict: dict[str, list[str]]
     ):
-        header_frame = ctk.CTkFrame(master=self)
+        if self.header_frame:
+            self.header_frame.destroy()
+
+        self.header_frame = ctk.CTkFrame(master=self)
         width = 120
         length_dict = {}
         for param in parameter_dict.keys():
@@ -68,14 +77,14 @@ class TableFrame(ctk.CTkFrame):
                 case _:
                     width = length_dict[categories[col]] * 11
 
-            header_frame.columnconfigure(col, weight=1)
+            self.header_frame.columnconfigure(col, weight=1)
             headline = ctk.CTkLabel(
-                master=header_frame,
+                master=self.header_frame,
                 text=categories[col],
                 width=width
             )
             headline.grid(row=0, column=col, padx=10)
-        header_frame.grid(
+        self.header_frame.grid(
             row=0, column=0,
             pady=5, padx=5,
             sticky="ew"
@@ -91,18 +100,22 @@ class TableFrame(ctk.CTkFrame):
                 param_dict[param.name] = [str(v) for v in param.data.keys()]
         return param_dict
 
-    def _create_table_from_df(self, df):
-        self.df = df
-        self.categories: list[str] = df.columns
+    def _create_table_from_df(self, df=None):
+        if self.content_frame:
+            self.content_frame.destroy()
+
+        self.df = self.master.df
+        self.categories = list(self.df.columns)
         parameter_list = build_param_list()
         param_dict = self._param_dict_from_list(parameter_list)
-        self._create_header(df.columns, param_dict)
+        self._create_header(self.df.columns, param_dict)
         self.all_valid_entries = []
-        self.batch_no_list = list(df["Batch"])
+        self.batch_no_list = list(self.df["Batch"])
 
         for parameter_name in self.categories:
-            if parameter_name in ["Journal no.", "Yield"]:
+            if parameter_name in ["Journal no.", "Yield", "Batch"]:
                 self.all_valid_entries.append(None)
+                continue
             valid_entries = self._get_vaild_entries_per_column(parameter_name)
             self.all_valid_entries.append(valid_entries)
 
@@ -121,7 +134,7 @@ class TableFrame(ctk.CTkFrame):
                 color="light blue" if i % 2 == 0 else "white",
                 batch_no=self.batch_no_list[i]
             )
-            for i, series in enumerate(df.itertuples(index=False))
+            for i, series in enumerate(self.df.itertuples(index=False))
         ]
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
@@ -160,16 +173,21 @@ class TableFrame(ctk.CTkFrame):
         conti_dict = yaml_dict["Numerical Continuous Parameters"]
         return conti_dict
 
-    def _read_table(self):
+    def read_table(self):
         rows = []
+        df = self.master.df
+        self.refresh_table(df)
+
+        # self._create_table_from_df()
         columns = self.df.columns
         error_list = []
 
         for row_index, row_object in enumerate(self.row_list_list):
             row = []
             for column_index, entry in enumerate(row_object.entry_list):
+                unchecked_value = entry.get()
                 value, error = self._validate_entry(
-                    entry.get(),
+                    unchecked_value,
                     columns[column_index],
                     row_index
                 )
@@ -185,7 +203,6 @@ class TableFrame(ctk.CTkFrame):
 
         df = pd.DataFrame(rows, columns=columns)
         create_output(df)
-        self.master.refresh_content()
 
     def _validate_entry(self, value, column, row_index):
         value = SumFormulaConverter.make_string(value)
@@ -235,7 +252,7 @@ class TableFrame(ctk.CTkFrame):
         save_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Save",
-            command=lambda: self._read_table(),
+            command=lambda: self.read_table(),
             text_color=TEXTCOLOR,
             font=STANDARD,
             fg_color=FGCOLOR
@@ -244,7 +261,7 @@ class TableFrame(ctk.CTkFrame):
         new_reco_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="New recommendation",
-            command=lambda: self._get_new_recommendation(),
+            command=lambda: self.get_new_recommendation(),
             text_color=TEXTCOLOR,
             font=STANDARD,
             fg_color=FGCOLOR
@@ -254,15 +271,15 @@ class TableFrame(ctk.CTkFrame):
         add_row_button = ctk.CTkButton(
             master=self.bottom_frame,
             text="Add row",
-            command=lambda: self._add_empty_row(),
+            command=lambda: self.add_empty_row(),
             text_color=TEXTCOLOR,
             font=STANDARD,
             fg_color=FGCOLOR
         )
         add_row_button.grid(row=0, column=0, pady=5, padx=5, sticky="ew")
 
-    def _get_new_recommendation(self):
-        self._read_table()
+    def get_new_recommendation(self):
+        self.read_table()
 
         if check_path(self.dirs.return_file_path("output")):
             full_input: pd.DataFrame = import_output_to_df()
@@ -282,9 +299,13 @@ class TableFrame(ctk.CTkFrame):
         self.master.refresh_content()
 
     def _get_vaild_entries_per_column(self, column_name: str) -> list[str]:
+
         for parameter_category in self.param_dict.keys():
+
             for parameter in self.param_dict[parameter_category]:
+
                 if parameter.name == column_name:
+
                     if isinstance(parameter, SubstanceParameter):
                         return list(parameter.data.keys())
                     elif isinstance(parameter, NumericalDiscreteParameter):
@@ -295,7 +316,7 @@ class TableFrame(ctk.CTkFrame):
                 continue
         return []
 
-    def _add_empty_row(self):
+    def add_empty_row(self):
         cfg = Config()
         i = len(self.row_list_list)
         n = len(self.df.columns)
@@ -486,6 +507,7 @@ class Row:
         all_values = [
             SumFormulaConverter.make_formula(_format_to_str(v)) for v in all_values
         ]
+
         string_length = len(max(all_values, key=len))
         width = string_length * 8 + 40
 
