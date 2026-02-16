@@ -42,7 +42,7 @@ class TableFrame(ctk.CTkFrame):
         else:
             self.param_dict = self.master.campaign.get_param_dict()
             self._create_table_from_df(data)
-            self._create_bottom_frame()
+            # self._create_bottom_frame()
             self.build_plot_frame()
             self._build_pi_plot_frame()
             self._build_plot_save_buttons()
@@ -175,19 +175,16 @@ class TableFrame(ctk.CTkFrame):
 
     def read_table(self):
         rows = []
-        print(self.df)
         df = self.master.df
         self.refresh_table(df)
 
         # self._create_table_from_df()
-        print(self.df)
         columns = self.df.columns
         error_list = []
 
         for row_index, row_object in enumerate(self.row_list_list):
             row = []
             for column_index, entry in enumerate(row_object.entry_list):
-                print(row_object)
                 unchecked_value = entry.get()
                 value, error = self._validate_entry(
                     unchecked_value,

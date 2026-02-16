@@ -26,11 +26,17 @@ class CustomMenuBar:
         }
 
         insight_dict = {
-            "Get insights": None
+            "Get insights": open_window(
+                master=master,
+                name="Get insights",
+            )
         }
 
         help_dict = {
-            "Help": None,
+            "Help": open_window(
+                master=master,
+                name="Help",
+            ),
             "Report bugs": None
         }
 
@@ -45,10 +51,3 @@ class CustomMenuBar:
 
     def return_menu(self):
         return self.menu
-
-    def recommend_or_save(self, master, recommendation) -> Callable:
-        def command():
-            master.refresh_content(recommendation=recommendation)
-            master.table_frame.read_table
-        return command
-

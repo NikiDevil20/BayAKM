@@ -45,7 +45,6 @@ class YieldSimulator:
             df[self.target] = np.nan
         self.rows_without_yield = self._find_rows_without_yield()
 
-
         return self._iterate_df()
 
     @staticmethod
@@ -59,8 +58,6 @@ class YieldSimulator:
                 parameter_dict[parameter.name] = list(parameter.values)
 
         return parameter_dict
-
-
 
     def _append_yield(
             self,

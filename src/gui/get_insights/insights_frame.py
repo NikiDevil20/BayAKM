@@ -30,7 +30,7 @@ class InsightsFrame(BaseFrame):
         self.dirs = DirPaths()
 
         if not self._check_measurements():
-            error_subwindow(self.master.master, "Cannot get insight before adding measurements.")
+            error_subwindow(self.master, "Cannot get insight before adding measurements.")
             self.destroy()
 
         else:
@@ -41,7 +41,7 @@ class InsightsFrame(BaseFrame):
             self.plot_frame = None
             self.type_menu = None
             self.canvas = None
-            self.campaign = self.master.master.master.campaign.campaign
+            self.campaign = self.master.master.campaign.campaign
             self.insights = SHAPInsight.from_campaign(self.campaign)
             self.index_entry = None
 
@@ -52,7 +52,7 @@ class InsightsFrame(BaseFrame):
             return False
         if not os.path.exists(self.dirs.return_file_path("campaign")):
             return False
-        if self.master.master.master.campaign.campaign.measurements.empty:
+        if self.master.master.campaign.campaign.measurements.empty:
             return False
         return True
 
