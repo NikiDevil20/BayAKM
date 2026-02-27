@@ -11,6 +11,7 @@ bases:
   NEt3: "CCN(CC)CC"
   NH4OH: '[NH4+].[OH-]'
   pyridine: "c1ccncc1"
+  K2CO3: "[K+].[K+][O-]C(=O)[O-]"
 ligands:
   TPP: "c1ccccc1P(c2ccccc2)c3ccccc3"
   Amphos: "CN(C)C1=CC=C(P(C(C)(C)C)C(C)(C)C)C=C1"
@@ -22,12 +23,27 @@ ligands:
   Sphos_Pd_G2: "COC1=CC=CC(OC)=C1C2=C(P(C3CCCCC3)C4CCCCC4)C=CC=C2.NC5=C(C6=C([Pd]Cl)C=CC=C6)C=CC=C5"
   tBuBrettphos: "COc1ccc(OC)c(c1P(C(C)(C)C)C(C)(C)C)-c2c(cc(cc2C(C)C)C(C)C)C(C)C"
   tBuXantPhos: "CC(C)(C)P(c1cccc2c1Oc3c(cccc3C2(C)C)P(C(C)(C)C)C(C)(C)C)C(C)(C)C"
+  SPhos: "COc1cccc(c1c2ccccc2P(C3CCCCC3)C4CCCCC4)OC"
+  QPhos: "P([C-]12C3=C4C5=C1[Fe+2]23451234C(C5C=CC=CC=5)5=C1(C1C=CC=CC=1)C2(C1C=CC=CC=1)=C3(C1C=CC=CC=1)[C-]45C1C=CC=CC=1)(C(C)(C)C)C(C)(C)C"
+  RuPhos: "CC(C)OC1=C(C(=CC=C1)OC(C)C)C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4"
+  BrettPhos: "CC(C)C1=CC(=C(C(=C1)C(C)C)C2=C(C=CC(=C2P(C3CCCCC3)C4CCCCC4)OC)OC)C(C)C"
+  XantPhos: "CC1(C2=C(C(=CC=C2)P(C3=CC=CC=C3)C4=CC=CC=C4)OC5=C1C=CC=C5P(C6=CC=CC=C6)C7=CC=CC=C7)C "
+  P(oTol)3: "CC1=CC=CC=C1P(C2=CC=CC=C2C)C3=CC=CC=C3C"
+  XPhos: "CC(C)C1=CC(=C(C(=C1)C(C)C)C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C)C"
+catalysts:
+  Pd(OAc)2: "CC(=O)[O-].CC(=O)[O-].[Pd+2]"
+  Pd2(dba)3: "O=C(/C=C/C1=CC=CC=C1)/C=C/C2=CC=CC=C2.O=C(/C=C/C3=CC=CC=C3)/C=C/C4=CC=CC=C4.O=C(/C=C/C5=CC=CC=C5)/C=C/C6=CC=CC=C6.[Pd].[Pd]"
+  Pd(dba)2: "C1=CC=C(C=C1)/C=C/C(=O)/C=C/C2=CC=CC=C2.C1=CC=C(C=C1)/C=C/C(=O)/C=C/C2=CC=CC=C2.C(Cl)(Cl)Cl.[Pd]"
+  Pd(PPh3)2Cl2: "C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3.C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3.Cl[Pd]Cl"
+  Pd(PPh3)4: "C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3.C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3.C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3.C1=CC=C(C=C1)P(C2=CC=CC=C2)C3=CC=CC=C3.[Pd]"
+  PEPPSI_iPr: "CC(C)C1=C(C(=CC=C1)C(C)C)N2[CH-]N(C=C2)C3=C(C=CC=C3C(C)C)C(C)C.C1=CC(=CN=C1)Cl.Cl[Pd]Cl"
+
 solvents:
   acetone: "CC(=O)C"
   acetonitrile: "CC#N"
   benzene: "c1ccccc1"
   chloroform: "C(Cl)(Cl)Cl"
-  Dioxane: "O1CCOCC1"
+  dioxane: "O1CCOCC1"
   DME: "COCCOC"
   DMF: "CN(C)C=O"
   DMSO: "CS(=O)C"

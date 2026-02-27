@@ -1,12 +1,12 @@
 from typing import Callable
 
+from src.gui.main.gui_constants import find_app
 from src.gui.menubar.abstract_menu import AbstractMenu
 from src.gui.menubar.open_window import open_window
 
 
 class CustomMenuBar:
     def __init__(self, master):
-
         file_dict = {
             "New campaign": open_window(
                 master=master,
@@ -19,10 +19,10 @@ class CustomMenuBar:
         }
 
         campaign_dict = {
-            "Save": master.table_frame.read_table,
-            "New recommendation": master.table_frame.get_new_recommendation,
+            "Save": lambda: master.table_frame.read_table(),
+            "New recommendation": lambda: master.table_frame.get_new_recommendation(),
             "break": None,
-            "Add row": master.table_frame.add_empty_row
+            "Add row": lambda: master.table_frame.add_empty_row()
         }
 
         insight_dict = {
@@ -48,6 +48,8 @@ class CustomMenuBar:
         }
 
         self.menu = AbstractMenu(master, toplevel_dict).return_menu()
+
+
 
     def return_menu(self):
         return self.menu

@@ -24,8 +24,6 @@ class YieldPlotter:
             self.maxs.append(batch.max())
 
         self.batches = np.arange(1, len(self.data) + 1)
-        print(self.means)
-        print(self.mins)
 
     def create_plot(
             self,

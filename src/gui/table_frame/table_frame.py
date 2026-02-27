@@ -7,6 +7,7 @@ import numpy as np
 from baybe.parameters import SubstanceParameter, NumericalDiscreteParameter, NumericalContinuousParameter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from src.gui.main.gui_constants import find_app
 from src.gui.table_frame.pi_plot_frame import PIPlotFrame
 from src.logic.output.plot_saver import command_save_plot
 from src.logic.smiles.sum_formula_converter import SumFormulaConverter
@@ -24,7 +25,7 @@ class TableFrame(ctk.CTkFrame):
         super().__init__(master)
 
         self.content_frame = None
-        self.data = None
+        self.data = data
         self.both_plot_frame = None
         self.header_frame = None
         self.dirs = DirPaths()
@@ -48,8 +49,7 @@ class TableFrame(ctk.CTkFrame):
             self._build_plot_save_buttons()
 
     def refresh_table(self, df):
-        self.destroy()
-        self.__init__(data=df)
+        self._create_table_from_df(df)
 
     def _create_header(
             self,
@@ -58,6 +58,7 @@ class TableFrame(ctk.CTkFrame):
     ):
         if self.header_frame:
             self.header_frame.destroy()
+
 
         self.header_frame = ctk.CTkFrame(master=self)
         width = 120
@@ -101,13 +102,21 @@ class TableFrame(ctk.CTkFrame):
         return param_dict
 
     def _create_table_from_df(self, df=None):
-        if self.content_frame:
-            self.content_frame.destroy()
+        if not self.content_frame:
+            self.content_frame = ctk.CTkScrollableFrame(
+                master=self,
+            )
+            self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=5, sticky="nsew")
+        else:
+            for child in self.content_frame.winfo_children():
+                child.pack_forget()
 
-        self.df = self.master.df
+        self.df = df
         self.categories = list(self.df.columns)
+
         parameter_list = build_param_list()
         param_dict = self._param_dict_from_list(parameter_list)
+
         self._create_header(self.df.columns, param_dict)
         self.all_valid_entries = []
         self.batch_no_list = list(self.df["Batch"])
@@ -119,13 +128,8 @@ class TableFrame(ctk.CTkFrame):
             valid_entries = self._get_vaild_entries_per_column(parameter_name)
             self.all_valid_entries.append(valid_entries)
 
-        self.content_frame = ctk.CTkScrollableFrame(
-            master=self,
-        )
-        self.content_frame.grid(row=1, column=0, pady=[0, 5], padx=5, sticky="nsew")
 
         self.columnconfigure(0, weight=1)
-
         self.row_list_list = [
             Row(
                 master=self.content_frame,
@@ -173,35 +177,30 @@ class TableFrame(ctk.CTkFrame):
         conti_dict = yaml_dict["Numerical Continuous Parameters"]
         return conti_dict
 
+    def compare_old_with_new_table(self):
+        old_columns = self.df.columns
+        new_columns = self.master.df.columns
+
+        if not old_columns.equals(new_columns):
+            self.df = self.master.df
+
     def read_table(self):
+        self.compare_old_with_new_table()
         rows = []
-        df = self.master.df
-        self.refresh_table(df)
-
-        # self._create_table_from_df()
-        columns = self.df.columns
-        error_list = []
-
         for row_index, row_object in enumerate(self.row_list_list):
-            row = []
-            for column_index, entry in enumerate(row_object.entry_list):
-                unchecked_value = entry.get()
-                value, error = self._validate_entry(
-                    unchecked_value,
-                    columns[column_index],
-                    row_index
-                )
-                if error:
-                    error_list.append(error)
-                row.append(value)
-            rows.append(row)
+            var_list = row_object.get_vars()
+            value_list = [v.get() for v in var_list]
+            typed_value_list = []
+            for value in value_list:
+                try:
+                    typed_value_list.append(float(value))
+                except ValueError:
+                    typed_value_list.append(value)
 
-        if error_list:
-            for error in error_list:
-                error_subwindow(self, error)
-            return
+            rows.append(typed_value_list)
 
-        df = pd.DataFrame(rows, columns=columns)
+        df = pd.DataFrame(rows, columns=self.df.columns)
+        self.refresh_table(df)
         create_output(df)
 
     def _validate_entry(self, value, column, row_index):
@@ -352,7 +351,7 @@ class TableFrame(ctk.CTkFrame):
             self.data.append([])
 
         for index, batch_no in enumerate(batch_no_list):
-            self.data[batch_no-1].append(yield_list[index])
+            self.data[int(batch_no)-1].append(yield_list[index])
 
         for v_list in self.data:
             empty_allowed = 0
@@ -447,7 +446,7 @@ class Row:
 
         self.state = "readonly"
 
-        self.entry_list = self._create_widgets()
+        self.entry_list, self.var_list = self._create_widgets()
 
         if self.row_complete():
             self.disable_row()
@@ -464,12 +463,13 @@ class Row:
 
     def _create_widgets(self):
         entry_list_per_row = []
+        var_list = []
         background_frame = ctk.CTkFrame(master=self.master)
 
         self.batch_widget = self._batch_no_entry(master=background_frame)
 
         for col_number in range(len(self.row_content) - 3):
-            combo_box = self._create_combobox(
+            combo_box, combo_var = self._create_combobox(
                 master=background_frame,
                 starting_value=self.row_content[col_number],  # Type: ignore
                 all_values=self.col_content[col_number],  # Type: ignore
@@ -477,23 +477,27 @@ class Row:
                 position=col_number
             )
             entry_list_per_row.append(combo_box)
+            var_list.append(combo_var)
             background_frame.columnconfigure(col_number, weight=1)
         for col_number in [3, 2, 1]:
             index = len(self.row_content) - col_number
             width = 60
             if col_number == 2:
                 width = 30
+            entry_var = ctk.StringVar(value=_format_to_str(self.row_content[index], is_yield=True))
             entry = ctk.CTkEntry(
                 fg_color=self.color,
                 master=background_frame,
-                width=width
+                width=width,
+                textvariable=entry_var,
             )
-            entry.insert(0, _format_to_str(self.row_content[index], is_yield=True))  # Type: ignore
+            # entry.insert(0, _format_to_str(self.row_content[index], is_yield=True))  # Type: ignore
             entry.grid(row=0, column=index, pady=2, padx=2, sticky="ew")
             background_frame.columnconfigure(index, weight=1)
             entry_list_per_row.append(entry)
+            var_list.append(entry_var)
         background_frame.pack(expand=True, fill="both")
-        return entry_list_per_row
+        return entry_list_per_row, var_list
 
     @staticmethod
     def _create_combobox(
@@ -502,7 +506,7 @@ class Row:
             all_values: list[int | str | float],
             color: str,
             position: int
-    ) -> ctk.CTkComboBox:
+    ) -> tuple[ctk.CTkComboBox, ctk.StringVar]:
         starting_value = SumFormulaConverter.make_formula(_format_to_str(starting_value))
         all_values = [
             SumFormulaConverter.make_formula(_format_to_str(v)) for v in all_values
@@ -511,17 +515,20 @@ class Row:
         string_length = len(max(all_values, key=len))
         width = string_length * 8 + 40
 
+        combo_var = ctk.StringVar(value=starting_value)
+
         combo_box = ctk.CTkComboBox(
             master=master,
             fg_color=color,
             values=all_values,
             width=width,
             state="readonly",
-            text_color_disabled="black"
+            text_color_disabled="black",
+            variable=combo_var,
         )
-        combo_box.set(starting_value)
+        combo_var.set(starting_value)
         combo_box.grid(row=0, column=position, pady=2, padx=2, sticky="ew")
-        return combo_box
+        return combo_box, combo_var
 
     def disable_row(self):
         if self.state == "disabled":
@@ -568,6 +575,9 @@ class Row:
 
     def batch_number(self):
         return self.batch_widget.get()
+
+    def get_vars(self):
+        return self.var_list
 
 
 class PlotFrame(ctk.CTkFrame):

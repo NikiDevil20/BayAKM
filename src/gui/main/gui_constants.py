@@ -56,5 +56,13 @@ class Row(ctk.CTkFrame):
     def return_widget(self, position: int):
         return self.widget_list[position]
 
+def find_app(self):
+    w = self
+    while w is not None:
+        if isinstance(w, ctk.CTk):
+            return w
+        w = getattr(w, 'master', None)
+    return None
+
 
 

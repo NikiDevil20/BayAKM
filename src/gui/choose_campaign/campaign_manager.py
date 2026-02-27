@@ -6,7 +6,7 @@ import customtkinter as ctk
 
 from src.environment.dir_paths import DirPaths
 from src.gui.help.help import error_subwindow
-from src.gui.main.gui_constants import Row, PackagedWidget, SUBHEADER, FGCOLOR
+from src.gui.main.gui_constants import find_app, PackagedWidget, Row, SUBHEADER, FGCOLOR
 from src.gui.new_campaign_tabview.new_page_factory import BaseFrame
 
 HEADER_TEXT = "Choose campaign"
@@ -92,7 +92,10 @@ class ListFrame(ctk.CTkScrollableFrame):
     def _switch_and_refresh(self, campaign):
         self.cmp.switch_campaign(campaign)
         self._refresh()
-        self.master.master.master.master.master.destroy()
+        try:
+            self.winfo_toplevel().destroy()
+        except Exception:
+            pass
 
     def _delete_and_refresh(self, campaign, active_campaign):
         if active_campaign.endswith(campaign):
@@ -117,8 +120,13 @@ class ListFrame(ctk.CTkScrollableFrame):
 
         self._build_list()
 
-        self.master.master.master.master.master.master.refresh_content()
-
+        # self.master.master.master.master.master.master.refresh_content()
+        app = find_app(self)
+        if app is not None:
+            try:
+                app.refresh_content()
+            except Exception:
+                pass
 
 
 class CampaignHandler:

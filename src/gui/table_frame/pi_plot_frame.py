@@ -34,7 +34,7 @@ class PIPlotFrame(ctk.CTkFrame):
             base_fontsize: int = 10,
             layout: str = "constrained"
     ):
-        fig = plt.figure(layout=layout, figsize=figsize)
+        fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(projection="3d")
         cmap = plt.get_cmap("viridis")
         pi_max = max([np.max(p) for p in self.pi_list])
