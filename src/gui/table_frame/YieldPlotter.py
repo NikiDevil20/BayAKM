@@ -18,6 +18,7 @@ class YieldPlotter:
         self.mins = []
         self.maxs = []
         for batch in self.data:
+            batch = np.array([float(n) for n in batch])
             mean = batch.mean()
             self.means.append(mean)
             self.mins.append(batch.min())

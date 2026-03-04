@@ -45,8 +45,7 @@ class TableFrame(ctk.CTkFrame):
             self._create_table_from_df(data)
             # self._create_bottom_frame()
             self.build_plot_frame()
-            self._build_pi_plot_frame()
-            self._build_plot_save_buttons()
+
 
     def refresh_table(self, df):
         self._create_table_from_df(df)
@@ -351,7 +350,12 @@ class TableFrame(ctk.CTkFrame):
             self.data.append([])
 
         for index, batch_no in enumerate(batch_no_list):
-            self.data[int(batch_no)-1].append(yield_list[index])
+            _yield = yield_list[index]
+
+            if _yield == "":
+                continue
+
+            self.data[int(batch_no)-1].append(_yield)
 
         for v_list in self.data:
             empty_allowed = 0
@@ -363,6 +367,10 @@ class TableFrame(ctk.CTkFrame):
 
         self.both_plot_frame = ctk.CTkFrame(master=self)
         self.both_plot_frame.grid(row=0, column=2, pady=5, padx=(0, 5), sticky="nsew", rowspan=2)
+
+        self._build_pi_plot_frame()
+        self._build_plot_save_buttons()
+
         plot_frame = PlotFrame(master=self.both_plot_frame, data=self.data)
         plot_frame.grid(row=0, column=0, pady=(10, 5), padx=10)
 

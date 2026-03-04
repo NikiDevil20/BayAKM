@@ -7,6 +7,7 @@ from time import time
 import pandas as pd
 
 from src.logic.config.config_loader import Config
+from src.logic.smiles.sum_formula_converter import SumFormulaConverter
 from src.environment.dir_paths import DirPaths
 
 dirs = DirPaths()
@@ -30,6 +31,8 @@ def create_output(df: pd.DataFrame) -> None:
     Returns:
         None
     """
+
+
     df.to_csv(
         dirs.return_file_path("output"),
         sep=";",
@@ -65,12 +68,20 @@ def import_output_to_df() -> pd.DataFrame:
         without the "Journal number" column.
     """
     info_string("Measurements", "Reading results.csv...")
-    df = pd.read_csv(
+
+
+    unconverted_df = pd.read_csv(
         filepath_or_buffer=dirs.return_file_path("output"),
         sep=";",
         decimal=".",
         keep_default_na=False
     )
+    df = sanitize_df(unconverted_df)
+
+    return df
+
+def sanitize_df(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.map(SumFormulaConverter.make_string)
     return df
 
 
